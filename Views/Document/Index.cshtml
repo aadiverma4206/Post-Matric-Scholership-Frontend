@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "Document Upload Center";
+    Layout = "_Layout";
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.BankAccount;
+    var acad = (Scholarship.Web.ViewModels.AcademicDetailsViewModel?)ViewBag.Academic;
+    var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>)(ViewBag.Certificates ?? new List<Scholarship.Web.ViewModels.CertificateViewModel>());
+    var docs = (List<Scholarship.Web.ViewModels.DocumentItemViewModel>)(ViewBag.Documents ?? new List<Scholarship.Web.ViewModels.DocumentItemViewModel>());
+
+    // Helper function to find document by type or entity link
+    Scholarship.Web.ViewModels.DocumentItemViewModel? FindDoc(uint typeId, ulong? fallbackDocId = null)
+    {
+        var d = docs.FirstOrDefault(x => x.DocumentTypeId == typeId);
+        if (d != null) return d;
+        if (fallbackDocId.HasValue && fallbackDocId.Value > 0)
+        {
+            return docs.FirstOrDefault(x => x.DocumentId == fallbackDocId.Value) 
+                   ?? new Scholarship.Web.ViewModels.DocumentItemViewModel { DocumentId = fallbackDocId.Value, DocumentTypeId = typeId, FileName = "Document Attached" };
+        }
+        return null;
+    }
+
+    var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
+    var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
+    var incomeCert = certs.FirstOrDefault(c => c.CertificateTypeId == 3);
+
+    var docDefinitions = new[]
+    {
+        new { Id = 1u, Name = "Student Passport Photo", Accept = ".jpg,.jpeg", MaxSize = "50 KB", FallbackId = profile?.PhotoDocumentId, Note = "Passport photo with clear white/light background." },
+        new { Id = 2u, Name = "Class 10th (High School) Marksheet", Accept = ".pdf,.jpg,.jpeg", MaxSize = "120 KB", FallbackId = acad?.TenthMarksheetDocId, Note = "Scanned copy of official 10th board marksheet." },
+        new { Id = 3u, Name = "Previous Qualifying Exam Marksheet", Accept = ".pdf,.jpg,.jpeg", MaxSize = "120 KB", FallbackId = acad?.PreviousMarksheetDocId, Note = "Last passed semester/year marksheet." },
+        new { Id = 4u, Name = "Bank Passbook Front Page / Cheque", Accept = ".pdf,.jpg,.jpeg", MaxSize = "120 KB", FallbackId = bank?.PassbookDocumentId, Note = "Must clearly display Account Number, Name and IFSC code." },
+        new { Id = 5u, Name = "Caste Certificate (Jati Praman Patra)", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = casteCert?.DocumentId, Note = "Valid caste certificate issued by competent authority." },
+        new { Id = 6u, Name = "Domicile Certificate (Niwas Praman Patra)", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = domicileCert?.DocumentId, Note = "Resident / Domicile certificate of Chhattisgarh." },
+        new { Id = 7u, Name = "Income Certificate (Aay Praman Patra)", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = incomeCert?.DocumentId, Note = "Current financial year family income certificate." },
+        new { Id = 8u, Name = "Disability / Divyangjan Certificate", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Required only if Differently-Abled status is selected." },
+        new { Id = 9u, Name = "Current College Fee Receipt", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Admission or semester fee receipt for current academic year." },
+        new { Id = 12u, Name = "Admission Slip / Enrollment Proof", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Proof of enrollment issued by the institution." },
+        new { Id = 10u, Name = "Other Supplementary Document", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Any additional required annexure or supporting proof." }
+    };
+}
+
+<div class="container my-3">
+    <div class="gov-card shadow-sm mb-4">
+        <div class="gov-card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-arrow-up me-2"></i> Document Upload Repository</h5>
+            <span class="badge bg-light text-dark">AY 2025-26</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-info py-2 small mb-4">
+                <strong><i class="bi bi-info-circle-fill me-1"></i> Upload Guidelines:</strong> 
+                Scanned files must be clear and legible. Permitted formats: PDF, JPG, JPEG. 
+                Please ensure documents do not exceed maximum specified limits. All uploaded files are encrypted and hashed with SHA-256 integrity check.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle small">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 25%;" class="text-start">Document Name</th>
+                            <th style="width: 12%;">Allowed Format</th>
+                            <th style="width: 10%;">Max Size</th>
+                            <th style="width: 18%;">Current Status</th>
+                            <th style="width: 30%;">Upload / Replace Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < docDefinitions.Length; i++)
+                        {
+                            var def = docDefinitions[i];
+                            var uploadedDoc = FindDoc(def.Id, def.FallbackId);
+                            bool isUploaded = uploadedDoc != null && uploadedDoc.DocumentId > 0;
+
+                            <tr class="@(isUploaded ? "table-light" : "")">
+                                <td class="text-center fw-bold">@(i + 1)</td>
+                                <td>
+                                    <span class="fw-bold text-dark d-block">@def.Name</span>
+                                    <small class="text-muted">@def.Note</small>
+                                    @if (isUploaded && !string.IsNullOrEmpty(uploadedDoc?.FileName))
+                                    {
+                                        <div class="mt-1 text-primary small">
+                                            <i class="bi bi-paperclip me-1"></i><strong>@uploadedDoc.FileName</strong>
+                                            @if (uploadedDoc.UploadedAt != default)
+                                            {
+                                                <span class="text-muted ms-1">(@uploadedDoc.UploadedAt.ToString("dd-MM-yyyy"))</span>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                                <td class="text-center font-monospace">@def.Accept.ToUpperInvariant()</td>
+                                <td class="text-center font-monospace">@def.MaxSize</td>
+                                <td class="text-center">
+                                    @if (isUploaded)
+                                    {
+                                        <span class="badge bg-success py-1 px-2 d-inline-block mb-1">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Uploaded
+                                        </span>
+                                        <div>
+                                            <a href="/Document/Download/@uploadedDoc!.DocumentId" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2 small">
+                                                <i class="bi bi-eye me-1"></i> View / Download
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark py-1 px-2">
+                                            <i class="bi bi-exclamation-circle me-1"></i> Not Uploaded
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <form asp-action="Upload" method="post" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="documentTypeId" value="@def.Id" />
+                                        <input type="file" name="file" class="form-control form-control-sm" accept="@def.Accept" required />
+                                        <button type="submit" class="btn btn-primary btn-sm text-nowrap fw-bold" title="@(isUploaded ? "Replace Document" : "Upload Document")">
+                                            <i class="bi bi-upload me-1"></i>@(isUploaded ? "Replace" : "Upload")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <a asp-controller="Application" asp-action="Preview" class="btn btn-success btn-sm fw-bold px-3">
+                Proceed to Application Preview <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>

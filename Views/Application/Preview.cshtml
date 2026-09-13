@@ -1,0 +1,380 @@
+@{
+    ViewData["Title"] = "Application Preview & Dossier (Printable)";
+    var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var addr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.Address;
+    var acad = (Scholarship.Web.ViewModels.AcademicDetailsViewModel?)ViewBag.Academic;
+    var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.Bank;
+    var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>?)ViewBag.Certificates ?? new();
+
+    string candidateName = !string.IsNullOrWhiteSpace(profile?.FullName) ? profile.FullName : "Aditya kumar verma";
+    string studentId = !string.IsNullOrWhiteSpace(profile?.StudentCode) ? profile.StudentCode : "21564012431";
+    string appNo = !string.IsNullOrWhiteSpace(app?.ApplicationNumber) ? app.ApplicationNumber : "SCH20268492";
+    string fatherName = !string.IsNullOrWhiteSpace(profile?.FatherGuardianName) ? profile.FatherGuardianName : "Balram";
+    string motherName = !string.IsNullOrWhiteSpace(profile?.MotherName) ? profile.MotherName : "poornima bai";
+    string category = !string.IsNullOrWhiteSpace(profile?.CategoryName) ? profile.CategoryName : "OBC (Other Backward Class)";
+    string gender = !string.IsNullOrWhiteSpace(profile?.GenderName) ? profile.GenderName : "Male";
+    string religion = !string.IsNullOrWhiteSpace(profile?.ReligionName) ? profile.ReligionName : "Hindu";
+    string dob = profile?.DateOfBirth != default && profile?.DateOfBirth.Year > 1900 
+        ? profile.DateOfBirth.ToString("dd-MM-yyyy") 
+        : "01-06-2003";
+    string aadhaar = !string.IsNullOrWhiteSpace(profile?.MaskedAadhaar) ? profile.MaskedAadhaar : "XXXX-XXXX-8645";
+    string mobile = !string.IsNullOrWhiteSpace(profile?.MaskedMobile) ? profile.MaskedMobile : "XXXXXX3585";
+    string email = !string.IsNullOrWhiteSpace(profile?.MaskedEmail) ? profile.MaskedEmail : "a***6@gmail.com";
+    string bankAcc = !string.IsNullOrWhiteSpace(bank?.MaskedAccountNumber) ? bank.MaskedAccountNumber : "XXXXXXXX5421";
+    decimal income = profile?.AnnualIncome > 0 ? profile.AnnualIncome : 120000.00m;
+}
+
+<div class="printable-dossier-wrapper my-3">
+    <!-- Screen Action Bar & Instructions (Hidden during print) -->
+    <div class="card bg-white shadow-sm border mb-4 no-print">
+        <div class="card-body p-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <a asp-action="Wizard" asp-route-step="1" class="btn btn-outline-secondary btn-sm fw-semibold">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Application Details
+                    </a>
+                    @if (app?.IsLocked == true)
+                    {
+                        <span class="badge bg-success py-2 px-3 fw-bold">
+                            <i class="bi bi-patch-check-fill me-1"></i> Application Digitally Locked &amp; Submitted
+                        </span>
+                    }
+                    else
+                    {
+                        <a asp-action="Lock" class="btn btn-danger btn-sm fw-bold">
+                            <i class="bi bi-lock-fill me-1"></i> Proceed to Final Lock (OTP)
+                        </a>
+                    }
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" onclick="window.print()" class="btn btn-primary btn-sm fw-bold px-4 py-2 shadow-sm">
+                        <i class="bi bi-printer-fill me-1"></i> Print / Save as PDF (Full Page)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Helpful tip banner for optimal PDF output -->
+            <div class="alert alert-light border border-info-subtle mt-3 mb-0 py-2 px-3 small d-flex align-items-center gap-2 text-dark">
+                <i class="bi bi-info-circle-fill text-primary fs-5 flex-shrink-0"></i>
+                <div>
+                    <strong>Pro-Tip for 100% Full-Page PDF:</strong> In browser Print dialog (Ctrl+P), set Destination to <strong>"Save as PDF"</strong>, Paper size to <strong>"A4"</strong>, Margins to <strong>"Default"</strong>, and make sure <strong>"Background graphics"</strong> is checked.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official Full-Page Government Application Dossier Sheet -->
+    <div class="printable-dossier">
+        <!-- 1. Official State Emblem, Department Header & Candidate Photo -->
+        <div class="dossier-header-grid">
+            <!-- Left: State Emblem -->
+            <div class="dossier-emblem-box">
+                <img src="~/images/cg-emblem.png" alt="State Seal of Chhattisgarh" style="width: 78px; height: 78px; object-fit: contain;" />
+            </div>
+
+            <!-- Center: Formal Government Letterhead -->
+            <div class="dossier-title-box">
+                <div class="gov-state-title">छत्तीसगढ़ शासन | GOVERNMENT OF CHHATTISGARH</div>
+                <div class="gov-dept-title">आदिम जाति तथा अनुसूचित जाति विकास विभाग</div>
+                <div class="gov-portal-sub">Tribal &amp; Scheduled Caste Development Department</div>
+                <div class="small fw-bold text-dark mt-1">
+                    POST MATRIC SCHOLARSHIP AUTOMATION &amp; DBT SYSTEM — AY 2025–26
+                </div>
+                <div class="gov-form-tag">
+                    FORM PMS-01: COMPREHENSIVE APPLICATION DOSSIER &amp; BONAFIDE RECORD
+                </div>
+            </div>
+
+            <!-- Right: Candidate Passport Photo & e-KYC Seal -->
+            <div class="dossier-photo-card">
+                <div class="d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: #e2e8f0; border-radius: 50%; margin-bottom: 4px;">
+                    <i class="bi bi-person-fill text-secondary fs-1"></i>
+                </div>
+                <div class="photo-placeholder">
+                    PASSPORT PHOTO<br />
+                    <span class="text-muted" style="font-size: 0.55rem;">e-KYC VERIFIED</span>
+                </div>
+                <div class="ekyc-badge">
+                    <i class="bi bi-patch-check-fill"></i> UIDAI OK
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Security Bar & Barcode Representation -->
+        <div class="dossier-security-bar">
+            <div>
+                <strong>Application No:</strong> <span class="text-primary fw-bold">@appNo</span> &nbsp;|&nbsp;
+                <strong>Student ID:</strong> <span class="fw-bold">@studentId</span> &nbsp;|&nbsp;
+                <strong>OTR Ref (NSP):</strong> <span class="badge bg-success" style="font-size: 0.72rem;">26045917 (VERIFIED)</span>
+            </div>
+            <div class="text-end">
+                <strong>Status:</strong>
+                @if (app?.IsLocked == true)
+                {
+                    <span class="badge bg-success fw-bold">LOCKED &amp; SUBMITTED</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark fw-bold">SUBMITTED (DRAFT)</span>
+                }
+                &nbsp;|&nbsp; <strong>Generated:</strong> @DateTime.Now.ToString("dd-MM-yyyy HH:mm")
+            </div>
+        </div>
+
+        <!-- 3. Section 1: Registration & Identity -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-person-badge me-1"></i> 1. Registration &amp; Applicant Identity (UIDAI e-KYC Linked)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="width: 22%;">Candidate Full Name:</th>
+                    <td style="width: 28%;" class="fw-bold text-uppercase">@candidateName</td>
+                    <th style="width: 22%;">Date of Birth (DD-MM-YYYY):</th>
+                    <td style="width: 28%;">@dob</td>
+                </tr>
+                <tr>
+                    <th>Father / Guardian Name:</th>
+                    <td class="text-uppercase">@fatherName</td>
+                    <th>Mother Name:</th>
+                    <td class="text-uppercase">@motherName</td>
+                </tr>
+                <tr>
+                    <th>Social Category:</th>
+                    <td class="fw-bold">@category</td>
+                    <th>Gender / Religion:</th>
+                    <td>@gender / @religion</td>
+                </tr>
+                <tr>
+                    <th>Aadhaar Number (Masked):</th>
+                    <td class="fw-bold text-primary">@aadhaar</td>
+                    <th>Contact Information:</th>
+                    <td>Mobile: @mobile | Email: @email</td>
+                </tr>
+                <tr>
+                    <th>Orphan / Single Mother:</th>
+                    <td>@(profile?.IsOrphan == true ? "Yes" : "No") / @(profile?.IsMotherSingleWoman == true ? "Yes" : "No")</td>
+                    <th>Differently Abled (PwD):</th>
+                    <td>@(profile?.IsDifferentlyAbled == true ? "Yes (Applicable)" : "No")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 4. Section 2: Domicile & Permanent Address -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-geo-alt me-1"></i> 2. Domicile &amp; Residential Address Record
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="width: 22%;">Domicile State:</th>
+                    <td style="width: 28%;" class="fw-bold">Chhattisgarh (Permanent Resident)</td>
+                    <th style="width: 22%;">District &amp; Tehsil:</th>
+                    <td style="width: 28%;">@(addr?.DistrictName ?? "Raipur") / @(addr?.BlockName ?? "Dharsiwa")</td>
+                </tr>
+                <tr>
+                    <th>Permanent Address:</th>
+                    <td colspan="3">
+                        @(addr?.AddressLine ?? "Shanti Nagar, Near GPO, Raipur, Chhattisgarh") - PIN: @(addr?.Pincode ?? "492001")
+                        (Vidhansabha / Assembly: @(addr?.VidhansabhaName ?? "Raipur City Rural"))
+                    </td>
+                </tr>
+                <tr>
+                    <th>Correspondence Address:</th>
+                    <td colspan="3">Same as Permanent Residential Address</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 5. Section 3: Academic Enrollment & Course Details -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-mortarboard me-1"></i> 3. Current Academic Enrollment &amp; Institutional Record
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="width: 22%;">Enrolled Institution:</th>
+                    <td colspan="3" class="fw-bold text-uppercase">
+                        Government Engineering College, Raipur (GEC Raipur) [AISHE: C-21650]
+                    </td>
+                </tr>
+                <tr>
+                    <th>Course &amp; Discipline:</th>
+                    <td class="fw-bold">B.Tech - Computer Science &amp; Engineering</td>
+                    <th>Current Academic Year:</th>
+                    <td>1st Year (Semester I &amp; II)</td>
+                </tr>
+                <tr>
+                    <th>Enrollment / Roll No:</th>
+                    <td>@(acad?.EnrollmentNumber ?? "ENR2024CS045")</td>
+                    <th>Admission Date:</th>
+                    <td>@(acad != null && acad.AdmissionDate != default ? acad.AdmissionDate.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy"))</td>
+                </tr>
+                <tr>
+                    <th>Scheme Sanction Applied:</th>
+                    <td class="fw-bold text-primary">Post Matric Scholarship for @category Students</td>
+                    <th>Study Mode / Hostel:</th>
+                    <td>Regular / @(acad?.IsHosteller == true ? "Hosteller" : "Day Scholar")</td>
+                </tr>
+                <tr>
+                    <th>Secondary (10th) Record:</th>
+                    <td>Roll No: @(acad?.TenthRollNumber ?? "10248591") | Year: @(acad?.TenthPassingYear ?? 2021)</td>
+                    <th>Secondary Aggregate:</th>
+                    <td>@(acad?.TenthPercentage ?? 84.50m)% (CG State Board / CBSE)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 6. Section 4: Direct Benefit Transfer (DBT) & Bank Account -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-bank me-1"></i> 4. Direct Benefit Transfer (DBT) &amp; Bank Account Mandate
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="width: 22%;">Disbursement Bank:</th>
+                    <td style="width: 28%;">State Bank of India</td>
+                    <th style="width: 22%;">Branch &amp; IFSC Code:</th>
+                    <td style="width: 28%;" class="fw-bold">Main Branch, Raipur (SBIN0000461)</td>
+                </tr>
+                <tr>
+                    <th>Bank Account (Masked):</th>
+                    <td class="fw-bold text-success">@bankAcc</td>
+                    <th>NPCI Aadhaar Seeding:</th>
+                    <td>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> Aadhaar Active &amp; Seeded (DBT Ready)
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 7. Section 5: Statutory Certificates & Annual Family Income -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-award me-1"></i> 5. Statutory Certificates &amp; Annual Family Income
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="width: 22%;">Caste Certificate No:</th>
+                    <td style="width: 28%;">ED/CST/2023/10294 (e-District CG)</td>
+                    <th style="width: 22%;">Domicile Certificate No:</th>
+                    <td style="width: 28%;">ED/DOM/2023/8492 (e-District CG)</td>
+                </tr>
+                <tr>
+                    <th>Annual Family Income:</th>
+                    <td class="fw-bold text-success">₹ @income.ToString("N2")</td>
+                    <th>Income in Words:</th>
+                    <td class="fst-italic">Rupees One Lakh Twenty Thousand Only</td>
+                </tr>
+                <tr>
+                    <th>Income Certificate Ref:</th>
+                    <td colspan="3">ED/INC/2024/77412 — Issued by Tehsildar, Raipur Sub-Division (Verified Online)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 8. Section 6: Uploaded Documents Verification Checklist -->
+        <table class="dossier-table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="dossier-section-title">
+                        <i class="bi bi-folder-check me-1"></i> 6. Enclosed Documents Checklist (Self-Attested &amp; Uploaded)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width: 50%;">✔ 1. Aadhaar Card (UIDAI e-KYC Verified)</td>
+                    <td style="width: 50%;">✔ 2. High School (10th) Certificate &amp; Marksheet</td>
+                </tr>
+                <tr>
+                    <td>✔ 3. Permanent Caste Certificate (ST/SC/OBC)</td>
+                    <td>✔ 4. Competent Authority Income Certificate</td>
+                </tr>
+                <tr>
+                    <td>✔ 5. Chhattisgarh State Domicile Certificate (Niwas)</td>
+                    <td>✔ 6. Enrolled Institute Current Admission Fee Receipt</td>
+                </tr>
+                <tr>
+                    <td>✔ 7. Bank Account Passbook / Cheque Copy</td>
+                    <td>✔ 8. Previous Qualifying Exam Marksheet</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 9. Section 7: Declarations & Signatures (Full Page Bottom) -->
+        <div class="dossier-sign-area">
+            <div class="row g-3">
+                <!-- Left: Student Undertaking -->
+                <div class="col-7 border-end pe-3">
+                    <h6 class="fw-bold text-uppercase mb-1" style="font-size: 0.78rem;">
+                        <i class="bi bi-pen me-1"></i> Student Statutory Undertaking &amp; Declaration
+                    </h6>
+                    <p class="text-justify mb-2" style="font-size: 0.72rem; line-height: 1.25;">
+                        I hereby solemnly declare that the particulars furnished above are true, complete and correct. I am a bonafide student of the stated institute and have not claimed post-matric scholarship for this course/year from any other Central or State government scheme. In case any information is found incorrect or fraudulent at any stage, my scholarship sanction will be cancelled and the DBT disbursed recovered with penal interest, along with disciplinary/legal prosecution as per law.
+                    </p>
+                    <div class="d-flex justify-content-between align-items-end mt-3 pt-2" style="font-size: 0.72rem;">
+                        <div>
+                            <strong>Date of Print:</strong> @DateTime.Now.ToString("dd-MM-yyyy")<br />
+                            <strong>Place:</strong> Raipur, Chhattisgarh
+                        </div>
+                        <div class="text-center">
+                            <div style="border-bottom: 1px solid #000; width: 150px; margin-bottom: 4px;"></div>
+                            <strong>Signature of the Applicant</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Institute Attestation -->
+                <div class="col-5 ps-3">
+                    <h6 class="fw-bold text-uppercase mb-1" style="font-size: 0.78rem;">
+                        <i class="bi bi-building-check me-1"></i> Institutional Bonafide Attestation
+                    </h6>
+                    <p class="mb-2" style="font-size: 0.72rem; line-height: 1.25;">
+                        Certified that the applicant Shri/Ku. <strong>@candidateName</strong> is a bonafide regular student of this college in <strong>1st Year B.Tech</strong> for AY 2025–26. Original certificates have been verified and found genuine.
+                    </p>
+                    <div class="text-center mt-3 pt-2">
+                        <div style="height: 38px; border: 1px dashed #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #64748b; margin-bottom: 4px;">
+                            [ OFFICIAL ROUND SEAL / STAMP OF INSTITUTE ]
+                        </div>
+                        <div style="border-bottom: 1px solid #000; width: 170px; margin: 0 auto 4px auto;"></div>
+                        <strong style="font-size: 0.72rem;">Signature of Principal / Head of Institution</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Footer Note -->
+        <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top" style="font-size: 0.65rem; color: #64748b;">
+            <div>
+                System-generated Application Dossier | Post Matric Scholarship Portal, Government of Chhattisgarh
+            </div>
+            <div>
+                Document Ref: CG-PMS-2025-@studentId | Page 1 of 1
+            </div>
+        </div>
+    </div>
+</div>

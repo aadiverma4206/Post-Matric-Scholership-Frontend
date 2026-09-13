@@ -1,0 +1,152 @@
+@{
+    ViewData["Title"] = "View Basic Profile";
+    Layout = "_Layout";
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var permAddr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.PermanentAddress;
+    var corrAddr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.CorrespondenceAddress;
+}
+
+<div class="container-fluid my-3">
+    <div class="row">
+        <!-- Sidebar Navigation matching PDF Page 6 -->
+        <div class="col-lg-3 col-md-4 mb-4 no-print">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <i class="bi bi-person-circle fs-1 mb-2 d-block"></i>
+                    <h6 class="fw-bold mb-1">Student Id : @(profile?.StudentCode ?? User.FindFirst("StudentCode")?.Value ?? "PMS20261002")</h6>
+                    <small class="opacity-75">Last Login: @DateTime.Now.ToString("dd-MM-yyyy hh:mm tt")</small>
+                </div>
+                <div class="list-group list-group-flush small">
+                    <a asp-controller="Profile" asp-action="Index" class="list-group-item list-group-item-action active text-danger fw-bold">
+                        <i class="bi bi-person-badge me-2"></i> View Basic Profile
+                    </a>
+                    <a asp-controller="Profile" asp-action="Edit" class="list-group-item list-group-item-action">
+                        <i class="bi bi-pencil-square me-2"></i> Add / Update Profile
+                    </a>
+                    <a asp-controller="Academic" asp-action="Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-mortarboard me-2"></i> Academic Details
+                    </a>
+                    <a asp-controller="Bank" asp-action="Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-bank me-2"></i> Bank Detail
+                    </a>
+                    <a asp-controller="Document" asp-action="Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-upload me-2"></i> Document Upload
+                    </a>
+                    <a asp-controller="Application" asp-action="Lock" class="list-group-item list-group-item-action text-danger fw-bold">
+                        <i class="bi bi-lock-fill me-2"></i> Lock Application
+                    </a>
+                    <a asp-controller="Account" asp-action="ChangePassword" class="list-group-item list-group-item-action">
+                        <i class="bi bi-key me-2"></i> Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Profile Dossier matching PDF Page 5 -->
+        <div class="col-lg-9 col-md-8">
+            <div class="gov-card shadow-sm">
+                <div class="gov-card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-person-vcard me-2"></i> @(profile?.FullName?.ToUpper() ?? "STUDENT") (Student Id : @(profile?.StudentCode ?? "PMS20261002"))
+                    </h5>
+                    <a asp-action="Edit" class="btn btn-warning btn-sm fw-bold">
+                        <i class="bi bi-pencil-fill me-1"></i> Edit Profile
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <!-- Student Photo -->
+                        <div class="col-md-3 text-center border-end pe-4 mb-3">
+                            <div class="border p-2 rounded bg-light mb-2 d-inline-block shadow-sm">
+                                @if (profile?.PhotoDocumentId != null && profile.PhotoDocumentId > 0)
+                                {
+                                    <img src="/Document/Download/@profile.PhotoDocumentId" alt="Student Photo" class="rounded" style="width: 120px; height: 140px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                                    <i class="bi bi-person-bounding-box text-secondary" style="font-size: 6rem; display: none;"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-bounding-box text-secondary" style="font-size: 6rem;"></i>
+                                }
+                            </div>
+                            <h6 class="fw-bold mb-0 text-uppercase">@(profile?.FullName ?? "Student Profile")</h6>
+                            <span class="badge bg-success mt-1"><i class="bi bi-patch-check-fill me-1"></i>Aadhaar Seeded</span>
+                        </div>
+
+                        <!-- Contact & Basic Details Grid -->
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6 border-end">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-geo-alt-fill me-1"></i>Contact Detail</h6>
+                                    <table class="table table-sm table-borderless small mb-0">
+                                        <tr>
+                                            <th class="text-muted" style="width: 40%;">Mobile No:</th>
+                                            <td class="fw-bold">@(profile?.MaskedMobile ?? "XXXXXX6387")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Email ID:</th>
+                                            <td class="fw-bold">@(profile?.MaskedEmail ?? "XXXXX1808@gmail.com")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Home Address:</th>
+                                            <td>@(permAddr?.AddressLine ?? "SONDRA, POST SONDRA")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">PIN Code:</th>
+                                            <td>@(permAddr?.Pincode ?? "493221")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Post Office:</th>
+                                            <td>@(permAddr?.PostOfficeName ?? "SONDRA B.O")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">District:</th>
+                                            <td>@(permAddr?.DistrictName ?? "RAIPUR")</td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-info-circle-fill me-1"></i>Basic Detail</h6>
+                                    <table class="table table-sm table-borderless small mb-0">
+                                        <tr>
+                                            <th class="text-muted" style="width: 45%;">Father / Guardian:</th>
+                                            <td class="fw-bold">@(profile?.FatherGuardianName ?? "HILESHWAR SAHU")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Mother Name:</th>
+                                            <td class="fw-bold">@(profile?.MotherName ?? "BASANTI SAHU")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Date of Birth:</th>
+                                            <td>@(profile?.DateOfBirth.ToString("dd-MM-yyyy") ?? "18-08-2005")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Gender:</th>
+                                            <td>@(profile?.GenderName ?? "Female")</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Category:</th>
+                                            <td><span class="badge bg-primary">@(profile?.CategoryName ?? "OBC")</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted">Aadhaar Card No:</th>
+                                            <td class="fw-bold text-success">@(profile?.MaskedAadhaar ?? "XXXX-XXXX-4548")</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Return to Dashboard
+                    </a>
+                    <a asp-controller="Academic" asp-action="Index" class="btn btn-primary btn-sm fw-bold">
+                        Continue to Academic Details <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,304 @@
+@model Scholarship.Web.ViewModels.AcademicDetailsViewModel
+@{
+    ViewData["Title"] = "Student Academic Details";
+    Layout = "_Layout";
+    var acad = (Scholarship.Web.ViewModels.AcademicDetailsViewModel?)ViewBag.Academic;
+    var districts = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Districts ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var courseTypes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.CourseTypes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var admissionTypes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.AdmissionTypes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var studyModes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.StudyModes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var boards = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Boards ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+}
+
+<div class="container my-3">
+    <!-- Statutory Warning matching PDF Page 11-12 -->
+    <div class="alert alert-warning py-2 small shadow-sm mb-4">
+        <strong>NOTE :</strong>
+        1) Fields marked with (<span class="text-danger fw-bold">*</span>) are mandatory. 
+        2) Please fill all the information in English only. 
+        3) You cannot change Institute's State later on this year or during a course duration. Please be careful in Selecting the Institute's State.
+        <br />
+        <strong>नोट :</strong> एक बार संस्थान का राज्य चयन कर सेव करने के बाद इसमें पुनः सुधार करने नहीं दिया जाएगा, कृपया इसे चुनने में सावधानी बरतें।
+    </div>
+
+    <form asp-action="Index" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <!-- Section 1: Current Institute Location & Details (PDF Pages 11-16) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-geo-alt-fill me-2"></i> Current Institute Location &amp; Enrollment
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Institute State <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="InstituteState" value="CG" checked id="stCG">
+                                <label class="form-check-label small fw-bold" for="stCG">Chhattisgarh State</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="InstituteState" value="OTHER" id="stOther">
+                                <label class="form-check-label small" for="stOther">Other State</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Institute District <span class="required-asterisk">*</span></label>
+                        <select class="form-select" id="InstituteDistrictSelect" required>
+                            @foreach (var d in districts)
+                            {
+                                <option value="@d.Id" selected="@(d.Id == 1)">@d.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Institute <span class="required-asterisk">*</span></label>
+                        <select class="form-select" id="InstituteSelect" required>
+                            <option value="1" data-code="13870012">GOVT. NAGARJUNA P.G. COLLEGE OF SCIENCE, RAIPUR / 13870012</option>
+                            <option value="2" data-code="13870022">GOVERNMENT ENGINEERING COLLEGE RAIPUR / 13870022</option>
+                            <option value="3" data-code="13870047">PT. RAVISHANKAR SHUKLA UNIVERSITY, RAIPUR / 13870047</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Selected Institute ID</label>
+                        <input class="form-control fw-bold bg-light" id="SelectedInstituteIdDisplay" value="13870012" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Admission Date (DD-MM-YYYY) <span class="required-asterisk">*</span></label>
+                        <input type="date" class="form-control" name="AdmissionDate" value="@(acad?.AdmissionDate.ToString("yyyy-MM-dd") ?? "2025-07-15")" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Enrollment Number</label>
+                        <input class="form-control" name="EnrollmentNumber" value="@(acad?.EnrollmentNumber ?? "AI/07747")" placeholder="Institute Enrollment No." />
+                    </div>
+                </div>
+
+                <!-- Course Details (PDF Pages 16-17) -->
+                <h6 class="fw-bold text-primary mt-4 mb-2 border-bottom pb-2">
+                    <i class="bi bi-book-half me-1"></i> Current Course Details
+                </h6>
+                <div class="alert alert-light border py-2 small mb-3">
+                    <strong>NOTE :</strong> यदि आपकी संस्था में आपको अपना पाठ्यक्रम दर्शित नहीं हो रहा है तो इस सम्बन्ध में तत्काल संस्था से संपर्क करें। 
+                    (If you are not seeing your course in your institution, contact the institution immediately.)
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Admission Type <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="AdmissionTypeId" required>
+                            <option value="1" selected>Merit Basis</option>
+                            <option value="2">Management Quota</option>
+                            <option value="3">NRI Quota</option>
+                            <option value="4">Spot Admission</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Mode of Study <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="StudyModeId" required>
+                            <option value="1" selected>Regular Course</option>
+                            <option value="2">Distance / Correspondence Learning</option>
+                            <option value="3">Part time</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Course <span class="required-asterisk">*</span></label>
+                        <select class="form-select" id="CourseSelect" required>
+                            <option value="1" data-code="10356" selected>PGDCA (1 Year Course)</option>
+                            <option value="2" data-code="10101">B. Sc.</option>
+                            <option value="3" data-code="10102">B. Sc. (Hons.)</option>
+                            <option value="4" data-code="10201">B. C. A. (3 Year Course)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Branch <span class="required-asterisk">*</span></label>
+                        <select class="form-select" id="BranchSelect" required>
+                            <option value="1" selected>Computer Application (Course Duration- 1 Year)</option>
+                            <option value="2">Physics, Chemistry, Mathematics</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Selected Course Code</label>
+                        <input class="form-control fw-bold bg-light" id="SelectedCourseCodeDisplay" value="10356" readonly />
+                        <input type="hidden" name="InstituteCourseId" value="1" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Select Course Year <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="CourseYear" required>
+                            <option value="1" selected>1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Hosteller or Day Scholar? <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="IsHosteller" required>
+                            <option value="false" selected>Day Scholar</option>
+                            <option value="true">Hosteller</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Lateral Entry Admission? <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="IsLateralEntry" required>
+                            <option value="false" selected>No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: High School (10th Class) Details (PDF Page 10-11) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-award-fill me-2"></i> High School (10th Class) Details
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Roll Number <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="TenthRollNumber" value="@(acad?.TenthRollNumber ?? "1211808065")" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Confirm Roll Number <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="ConfirmTenthRollNumber" value="@(acad?.TenthRollNumber ?? "1211808065")" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">School Category <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="SchoolType" required>
+                            <option value="GOVERNMENT" selected>Government School</option>
+                            <option value="NON_GOVERNMENT">Non-Government / Private</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Year of Passing (YYYY) <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="TenthPassingYear" value="@(acad?.TenthPassingYear ?? 2021)" maxlength="4" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Board Name <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="TenthBoardId" required>
+                            <option value="1" selected>CGBSE (Chhattisgarh Board)</option>
+                            <option value="2">CBSE</option>
+                            <option value="3">ICSE</option>
+                            <option value="4">Other Recognized Board</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="TenthPercentage" value="@(acad?.TenthPercentage ?? 78.50m)" required />
+                    </div>
+                </div>
+
+                <!-- Upload High School (10th) Marksheet -->
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Class 10th Marksheet (PDF / JPG, Max 120KB)</label>
+                        <input type="file" class="form-control" name="tenthMarksheetFile" accept=".pdf,.jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
+                    </div>
+                    @if (acad?.TenthMarksheetDocId != null && acad.TenthMarksheetDocId > 0)
+                    {
+                        <div class="col-md-6 pt-3">
+                            <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>10th Marksheet Uploaded</span>
+                            <br />
+                            <a href="/Document/Download/@acad.TenthMarksheetDocId" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View Uploaded 10th Marksheet
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Previous Completed Course Details (PDF Pages 17-18) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-journal-text me-2"></i> Previous Completed Course Details (12th / Diploma / Graduation)
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Previous Course Type <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="PreviousCourseTypeId" required>
+                            <option value="5" selected>Non - Professional Degree Courses</option>
+                            <option value="4">Professional Degree Courses</option>
+                            <option value="1">School Education Courses (12th)</option>
+                            <option value="2">ITI / Polytechnic Courses</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Previous Course <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="PreviousCourseId" required>
+                            <option value="2" selected>B. Sc.</option>
+                            <option value="1">B. A.</option>
+                            <option value="3">B. Com.</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Previous Roll Number <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="PreviousRollNumber" value="@(acad?.PreviousRollNumber ?? "210459821")" required />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Passing Year (YYYY) <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="PreviousPassingYear" value="@(acad?.PreviousPassingYear ?? 2024)" maxlength="4" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="PreviousPercentage" value="@(acad?.PreviousPercentage ?? 74.20m)" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Previous Institute Name <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="PreviousInstituteName" value="@(acad?.PreviousInstituteName ?? "GOVT NAGARJUNA P.G. COLLEGE OF SCIENCE RAIPUR C.G.")" required />
+                    </div>
+                </div>
+
+                <!-- Upload Previous Marksheet (PDF Page 18) -->
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Previous / Last Exam Marksheet (PDF / JPG Max 120KB) <span class="required-asterisk">*</span></label>
+                        <input type="file" class="form-control" name="marksheetFile" accept=".pdf,.jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
+                    </div>
+                    @if (acad?.PreviousMarksheetDocId != null && acad.PreviousMarksheetDocId > 0)
+                    {
+                        <div class="col-md-6 pt-3">
+                            <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>Previous Marksheet Uploaded</span>
+                            <br />
+                            <a href="/Document/Download/@acad.PreviousMarksheetDocId" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View Uploaded Marksheet
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between my-4">
+            <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Profile
+            </a>
+            <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                <i class="bi bi-check-circle-fill me-1"></i> Save Academic Details
+            </button>
+        </div>
+    </form>
+</div>

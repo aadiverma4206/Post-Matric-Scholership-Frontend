@@ -1,0 +1,210 @@
+@{
+    ViewData["Title"] = "Government of Chhattisgarh - Post Matric Scholarship Portal";
+}
+
+<!-- Hero Banner Section -->
+<div class="card border-0 shadow-sm overflow-hidden mb-4" style="background: linear-gradient(135deg, #07254a 0%, #0d386c 60%, #0284c7 100%); border-radius: var(--gov-radius-lg); position: relative;">
+    <div class="p-4 p-md-5 text-white" style="position: relative; z-index: 2;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); font-size: 0.82rem;">
+                    <span class="badge bg-warning text-dark fw-bold">LIVE</span>
+                    <span>Academic Year 2025-26 Applications Now Active</span>
+                </div>
+                <h1 class="display-6 fw-bold mb-2 text-white">
+                    Post Matric Scholarship Portal
+                </h1>
+                <h2 class="h5 fw-normal text-info-emphasis mb-3 text-white-50">
+                    आदिम जाति तथा अनुसूचित जाति विकास विभाग, छत्तीसगढ़ शासन (ST &amp; SC Development Department)
+                </h2>
+                <p class="lead fs-6 text-light opacity-90 mb-4 lh-base" style="max-width: 680px;">
+                    An integrated, transparent, paperless e-governance platform for online application, institutional scrutiny, district approval, and Direct Benefit Transfer (DBT) of post-matric scholarships for eligible ST, SC, and OBC students in higher education.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-warning fw-bold px-4 py-2 shadow">
+                        <i class="bi bi-person-plus-fill me-2"></i>New Student Registration
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light fw-bold px-4 py-2">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login to Portal
+                    </a>
+                    <a asp-controller="Account" asp-action="ForgotUserId" class="btn btn-link text-white-50 text-decoration-none px-2 py-2">
+                        <i class="bi bi-search me-1"></i>Search 11-Digit User ID
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center d-none d-lg-block">
+                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);">
+                    <div class="gov-emblem-badge mx-auto mb-3" style="width: 84px; height: 84px;">
+                        <img src="~/images/cg-emblem.png" alt="Emblem of Chhattisgarh" style="width: 100%; height: 100%; object-fit: contain;" />
+                    </div>
+                    <h6 class="fw-bold text-warning mb-1">ST &amp; SC Development Department</h6>
+                    <p class="small text-light opacity-75 mb-3">Government of Chhattisgarh</p>
+                    <div class="badge bg-success py-2 px-3 w-100 fs-6">
+                        <i class="bi bi-shield-check me-1"></i> 100% Direct DBT Transfer
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Performance Metrics Strip -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm p-3 h-100 text-center" style="border-radius: var(--gov-radius-md); border-top: 3px solid var(--gov-blue-accent) !important;">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Registered Students</div>
+            <div class="fs-3 fw-bold text-primary">4,20,000+</div>
+            <small class="text-muted"><i class="bi bi-person-check-fill text-success me-1"></i>Verified Profiles</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm p-3 h-100 text-center" style="border-radius: var(--gov-radius-md); border-top: 3px solid var(--gov-green) !important;">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Scholarship Disbursed</div>
+            <div class="fs-3 fw-bold text-success">₹ 185+ Cr</div>
+            <small class="text-muted"><i class="bi bi-bank2 text-success me-1"></i>Aadhaar DBT Disbursal</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm p-3 h-100 text-center" style="border-radius: var(--gov-radius-md); border-top: 3px solid var(--gov-saffron) !important;">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Enrolled Institutes</div>
+            <div class="fs-3 fw-bold text-warning-emphasis">1,250+</div>
+            <small class="text-muted"><i class="bi bi-building-check text-warning me-1"></i>Govt. &amp; Private Colleges</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm p-3 h-100 text-center" style="border-radius: var(--gov-radius-md); border-top: 3px solid var(--gov-navy) !important;">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Current Session</div>
+            <div class="fs-3 fw-bold text-dark">AY 2025-26</div>
+            <small class="text-muted"><i class="bi bi-check-circle-fill text-primary me-1"></i>Open for Applications</small>
+        </div>
+    </div>
+</div>
+
+<!-- 4-Step Application Process -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: var(--gov-radius-md);">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h5 class="fw-bold mb-0 text-primary">
+            <i class="bi bi-diagram-3-fill me-2"></i>How to Apply: 4-Step Seamless e-Scholarship Process
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100 border">
+                    <div class="step-circle bg-primary text-white mb-3" style="width: 48px; height: 48px; font-size: 1.1rem;">1</div>
+                    <h6 class="fw-bold text-dark mb-1">Online Registration</h6>
+                    <p class="small text-muted mb-0">Fill basic details, 10th roll number, parents' info &amp; receive permanent 11-digit User ID.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100 border">
+                    <div class="step-circle bg-info text-white mb-3" style="width: 48px; height: 48px; font-size: 1.1rem;">2</div>
+                    <h6 class="fw-bold text-dark mb-1">Fill Application Form</h6>
+                    <p class="small text-muted mb-0">Provide current course, college enrollment, caste/income certificate and bank details.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100 border">
+                    <div class="step-circle bg-warning text-dark mb-3" style="width: 48px; height: 48px; font-size: 1.1rem;">3</div>
+                    <h6 class="fw-bold text-dark mb-1">OTP Lock &amp; Scrutiny</h6>
+                    <p class="small text-muted mb-0">Verify via Aadhaar OTP and lock form. College &amp; District officials conduct scrutiny.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100 border">
+                    <div class="step-circle bg-success text-white mb-3" style="width: 48px; height: 48px; font-size: 1.1rem;">4</div>
+                    <h6 class="fw-bold text-dark mb-1">DBT Fund Disbursal</h6>
+                    <p class="small text-muted mb-0">Scholarship amount credited directly to your Aadhaar-seeded active bank account.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Major Post Matric Schemes -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--gov-radius-md);">
+            <div class="card-header text-white fw-bold py-3" style="background: linear-gradient(135deg, #0a4b91, #0284c7);">
+                <i class="bi bi-mortarboard-fill me-2"></i>Post Matric Scholarship (ST)
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    Post-Matric financial assistance provided by the Ministry of Tribal Affairs and State ST Welfare Department for Scheduled Tribe students enrolled in recognized post-secondary courses.
+                </p>
+                <ul class="small list-unstyled d-flex flex-column gap-2 text-secondary">
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Annual Family Income:</strong> Up to ₹ 2.50 Lakh</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Coverage:</strong> Tuition, Maintenance &amp; Non-refundable fees</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Course Level:</strong> Diploma, UG, PG, Doctorate</li>
+                </ul>
+            </div>
+            <div class="card-footer bg-white border-0 pb-3">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                    Apply for ST Scheme
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--gov-radius-md);">
+            <div class="card-header text-white fw-bold py-3" style="background: linear-gradient(135deg, #0f766e, #059669);">
+                <i class="bi bi-mortarboard-fill me-2"></i>Post Matric Scholarship (SC)
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    Centrally Sponsored Scheme implemented with Chhattisgarh State Government to empower Scheduled Caste students to complete post-matriculation or post-secondary education.
+                </p>
+                <ul class="small list-unstyled d-flex flex-column gap-2 text-secondary">
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Annual Family Income:</strong> Up to ₹ 2.50 Lakh</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Coverage:</strong> Academic allowance &amp; Compulsory fees</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Course Level:</strong> Technical, Professional &amp; General</li>
+                </ul>
+            </div>
+            <div class="card-footer bg-white border-0 pb-3">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-success btn-sm w-100 fw-bold">
+                    Apply for SC Scheme
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--gov-radius-md);">
+            <div class="card-header text-white fw-bold py-3" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+                <i class="bi bi-mortarboard-fill me-2"></i>Post Matric Scholarship (OBC)
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    State post-matric scholarship scheme assisting meritorious students belonging to Other Backward Classes pursuing undergraduate, postgraduate, and professional qualifications.
+                </p>
+                <ul class="small list-unstyled d-flex flex-column gap-2 text-secondary">
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Annual Family Income:</strong> Up to ₹ 1.00 Lakh</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Coverage:</strong> Tuition Allowance &amp; Stipend</li>
+                    <li><i class="bi bi-check2 text-success me-2 fw-bold"></i><strong>Category:</strong> Non-Creamy Layer OBC</li>
+                </ul>
+            </div>
+            <div class="card-footer bg-white border-0 pb-3">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-warning btn-sm w-100 fw-bold text-dark">
+                    Apply for OBC Scheme
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Important Mandatory Instructions for Students -->
+<div class="alert alert-warning border-warning shadow-sm p-4" style="border-radius: var(--gov-radius-md);">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-2 text-warning flex-shrink-0"></i>
+        <div>
+            <h5 class="fw-bold text-dark mb-2">Important Instructions for Applicants (AY 2025-26):</h5>
+            <ol class="small mb-0 text-dark lh-base ps-3">
+                <li class="mb-1"><strong>Aadhaar-Seeded Bank Account is Mandatory:</strong> The scholarship amount will ONLY be transferred through Aadhaar Payment Bridge (APB) to the bank account mapped with NPCI. Verify your seeding status with your bank branch.</li>
+                <li class="mb-1"><strong>Double Entry Verification:</strong> Ensure all names, dates of birth, and parents' details match your 10th Class mark sheet and Aadhaar card exactly.</li>
+                <li class="mb-1"><strong>Official Digital Certificates:</strong> Only online generated Caste &amp; Income certificates with valid Barcode / QR verification numbers from Edistrict portal are accepted.</li>
+                <li><strong>Application Lock via OTP:</strong> After completing the form, locking your application with mobile OTP is mandatory. Unlocked draft applications will NOT be forwarded for institute scrutiny.</li>
+            </ol>
+        </div>
+    </div>
+</div>

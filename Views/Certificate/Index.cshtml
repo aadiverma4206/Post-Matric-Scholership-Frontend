@@ -1,0 +1,222 @@
+@{
+    ViewData["Title"] = "Caste, Domicile & Income Certificates";
+    Layout = "_Layout";
+    var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>)(ViewBag.Certificates ?? new List<Scholarship.Web.ViewModels.CertificateViewModel>());
+    var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
+    var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
+    var incomeCert = certs.FirstOrDefault(c => c.CertificateTypeId == 3);
+}
+
+<div class="container my-3">
+    <!-- Statutory Instructions matching PDF Page 22 -->
+    <div class="alert alert-secondary py-2 small shadow-sm mb-4">
+        <strong>Note :</strong>
+        1) कृपया आवेदन लॉक करने के पूर्व पोर्टल में प्रविष्ट सभी जानकारी ध्यानपूर्वक जाँच कर लेवे |
+        2) संस्था का नाम, कोर्स, ब्रांच एवं कोर्स ईयर में किसी भी प्रकार की त्रुटि होने पर संस्था / जिला स्तर से Temporary Reject करवा ले और पुनः लॉग इन कर त्रुटि का सुधार कर आवेदन लॉक करें |
+        3) आवेदन लॉक करने के बाद प्रिंटेड हार्ड कॉपी संस्थान में जमा करने की आवश्यकता नहीं है |
+    </div>
+
+    <!-- Caste Certificate Form (PDF Page 21) -->
+    <div class="gov-form-section mb-4">
+        <div class="gov-section-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-patch-check-fill me-2"></i> Caste Certificate (जाति प्रमाण पत्र)</span>
+            <span class="badge @(casteCert?.DocumentId != null ? "bg-success" : "bg-primary")">
+                <i class="bi @(casteCert?.DocumentId != null ? "bi-check-circle" : "bi-shield-check") me-1"></i>
+                @(casteCert?.DocumentId != null ? "Uploaded & Verified" : "eDistrict / Offline")
+            </span>
+        </div>
+        <div class="gov-section-body">
+            <form asp-action="Save" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="CertificateTypeId" value="1" />
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" checked id="casteOnlineYes">
+                                <label class="form-check-label small" for="casteOnlineYes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" id="casteOnlineNo">
+                                <label class="form-check-label small" for="casteOnlineNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Certificate Generated From <span class="required-asterisk">*</span></label>
+                        <input class="form-control bg-light" name="GeneratedFrom" value="eDistrict" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="ReferenceNumber" value="@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "0705011901008219")" required />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Save Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Caste Certificate File Upload -->
+                <div class="row g-3 align-items-center mb-3 pt-2 border-top">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Caste Certificate Scan (PDF / JPG, Max 200KB)</label>
+                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Caste Certificate (PDF or JPG).</div>
+                    </div>
+                    @if (casteCert?.DocumentId != null && casteCert.DocumentId > 0)
+                    {
+                        <div class="col-md-6 pt-3">
+                            <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>Certificate Document Uploaded</span>
+                            <br />
+                            <a href="/Document/Download/@casteCert.DocumentId" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View Uploaded Caste Certificate
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="alert alert-success py-1 small mb-0">
+                    <i class="bi bi-check-circle-fill me-1"></i> Caste Certificate verification synchronized with CG eDistrict Portal and Scholarship database.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Domicile Certificate Form (PDF Page 21) -->
+    <div class="gov-form-section mb-4">
+        <div class="gov-section-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-house-check-fill me-2"></i> Domicile Certificate (मूल निवास प्रमाण पत्र)</span>
+            <span class="badge @(domicileCert?.DocumentId != null ? "bg-success" : "bg-primary")">
+                <i class="bi @(domicileCert?.DocumentId != null ? "bi-check-circle" : "bi-shield-check") me-1"></i>
+                @(domicileCert?.DocumentId != null ? "Uploaded & Verified" : "eDistrict / Offline")
+            </span>
+        </div>
+        <div class="gov-section-body">
+            <form asp-action="Save" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="CertificateTypeId" value="2" />
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" checked id="domicileOnlineYes">
+                                <label class="form-check-label small" for="domicileOnlineYes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" id="domicileOnlineNo">
+                                <label class="form-check-label small" for="domicileOnlineNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Certificate Generated From <span class="required-asterisk">*</span></label>
+                        <input class="form-control bg-light" name="GeneratedFrom" value="eDistrict" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="ReferenceNumber" value="@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "0707011901015485")" required />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Save Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Domicile Certificate File Upload -->
+                <div class="row g-3 align-items-center mb-3 pt-2 border-top">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Domicile Certificate Scan (PDF / JPG, Max 200KB)</label>
+                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Domicile / Niwas Certificate (PDF or JPG).</div>
+                    </div>
+                    @if (domicileCert?.DocumentId != null && domicileCert.DocumentId > 0)
+                    {
+                        <div class="col-md-6 pt-3">
+                            <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>Certificate Document Uploaded</span>
+                            <br />
+                            <a href="/Document/Download/@domicileCert.DocumentId" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View Uploaded Domicile Certificate
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="alert alert-success py-1 small mb-0">
+                    <i class="bi bi-check-circle-fill me-1"></i> Domicile Certificate verification synchronized with CG eDistrict Portal and Scholarship database.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Income Certificate Form (PDF Page 22) -->
+    <div class="gov-form-section mb-4">
+        <div class="gov-section-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-currency-rupee me-2"></i> Income Certificate (आय प्रमाण पत्र)</span>
+            <span class="badge @(incomeCert?.DocumentId != null ? "bg-success" : "bg-primary")">
+                <i class="bi @(incomeCert?.DocumentId != null ? "bi-check-circle" : "bi-shield-check") me-1"></i>
+                @(incomeCert?.DocumentId != null ? "Uploaded & Verified" : "eDistrict / Offline")
+            </span>
+        </div>
+        <div class="gov-section-body">
+            <form asp-action="Save" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="CertificateTypeId" value="3" />
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Annual Family Income (INR) <span class="required-asterisk">*</span></label>
+                        <input class="form-control fw-bold" name="AnnualIncome" value="90000" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Confirm Annual Income <span class="required-asterisk">*</span></label>
+                        <input class="form-control fw-bold" value="90000" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Income Certificate Reference No. <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="ReferenceNumber" value="@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "0706012601066286")" required />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Save Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Income Certificate File Upload -->
+                <div class="row g-3 align-items-center mb-3 pt-2 border-top">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Income Certificate Scan (PDF / JPG, Max 200KB)</label>
+                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Income Certificate (PDF or JPG).</div>
+                    </div>
+                    @if (incomeCert?.DocumentId != null && incomeCert.DocumentId > 0)
+                    {
+                        <div class="col-md-6 pt-3">
+                            <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>Income Document Uploaded</span>
+                            <br />
+                            <a href="/Document/Download/@incomeCert.DocumentId" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View Uploaded Income Certificate
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="alert alert-info py-1 small mb-0">
+                    <i class="bi bi-info-circle me-1"></i> Note: Income certificate is required to be validated once during course duration.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between my-4">
+        <a asp-controller="Bank" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Bank Details
+        </a>
+        <a asp-controller="Application" asp-action="Preview" class="btn btn-primary fw-bold px-4 py-2">
+            Proceed to Final Application Preview <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,291 @@
+@{
+    ViewData["Title"] = "Student Portal Dashboard";
+    var dash = (Scholarship.Web.ViewModels.StudentDashboardViewModel?)ViewBag.StudentDashboard;
+    var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.Bank;
+    int profileScore = (int)(ViewBag.ProfileCompletion ?? 0);
+    int appScore = (int)(ViewBag.AppCompletion ?? 0);
+}
+
+<div class="row g-4">
+    <!-- Sidebar Navigation -->
+    <div class="col-lg-3 col-md-4 no-print">
+        <div class="card shadow-sm border-0" style="border-radius: var(--gov-radius-md); overflow: hidden;">
+            <div class="card-header text-white py-3" style="background: linear-gradient(135deg, var(--gov-navy), var(--gov-navy-light)); border-bottom: 2px solid var(--gov-saffron);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-grid-fill text-warning"></i>
+                    <h6 class="fw-bold mb-0">Portal Navigation</h6>
+                </div>
+            </div>
+            <div class="list-group list-group-flush small">
+                <a asp-controller="Dashboard" asp-action="Index" class="list-group-item list-group-item-action active fw-semibold py-2">
+                    <i class="bi bi-speedometer2 me-2 text-warning"></i>Dashboard
+                </a>
+                <a asp-controller="Profile" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-person-badge me-2 text-primary"></i>Basic Student Profile
+                </a>
+                <a asp-controller="Profile" asp-action="Edit" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-pencil-square me-2 text-info"></i>Update Personal Details
+                </a>
+                <a asp-controller="Academic" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-mortarboard me-2 text-success"></i>Academic &amp; Course
+                </a>
+                <a asp-controller="Bank" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-bank me-2 text-primary"></i>Bank Account (DBT)
+                </a>
+                <a asp-controller="Certificate" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-award me-2 text-warning"></i>Caste &amp; Income Certificates
+                </a>
+                <a asp-controller="Document" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-file-earmark-arrow-up me-2 text-secondary"></i>Document Uploads
+                </a>
+                <a asp-controller="Application" asp-action="Wizard" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-ui-checks-grid me-2 text-primary"></i>Application Wizard
+                </a>
+                <a asp-controller="Application" asp-action="Preview" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-file-earmark-person me-2 text-info"></i>Print Application Dossier
+                </a>
+                <a asp-controller="Application" asp-action="Lock" class="list-group-item list-group-item-action text-danger fw-bold py-2">
+                    <i class="bi bi-shield-lock-fill me-2"></i>Lock Application (OTP)
+                </a>
+                <a asp-controller="Application" asp-action="Status" class="list-group-item list-group-item-action text-primary fw-bold py-2">
+                    <i class="bi bi-clock-history me-2"></i>Track Status Timeline
+                </a>
+                <a asp-controller="Account" asp-action="ChangePassword" class="list-group-item list-group-item-action py-2">
+                    <i class="bi bi-key me-2 text-muted"></i>Change Password
+                </a>
+            </div>
+        </div>
+
+        <!-- Helpdesk Box in Sidebar -->
+        <div class="card border-0 shadow-sm mt-3 p-3 bg-light" style="border-radius: var(--gov-radius-md);">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-headset text-primary fs-5"></i>
+                <h6 class="fw-bold mb-0 text-dark">Need Assistance?</h6>
+            </div>
+            <p class="small text-muted mb-2">For technical issues with application locking or Aadhaar e-KYC:</p>
+            <div class="small fw-bold text-dark"><i class="bi bi-telephone text-primary me-1"></i> 1800-233-1234</div>
+            <div class="small text-muted"><i class="bi bi-clock me-1"></i> Mon-Sat 10 AM - 5:30 PM</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Area -->
+    <div class="col-lg-9 col-md-8">
+        <!-- Student Greeting Banner -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: var(--gov-radius-md); background: linear-gradient(135deg, var(--gov-surface) 0%, var(--gov-surface-secondary) 100%); border-left: 4px solid var(--gov-blue-accent) !important;">
+            <div class="card-body p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-success py-1 px-2"><i class="bi bi-check2-circle me-1"></i> Active Student Profile</span>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">AY 2025-26</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">
+                        Namaste, @(profile?.FullName ?? User.FindFirst("FullName")?.Value ?? "Student")!
+                    </h4>
+                    <p class="mb-0 text-muted small">
+                        <strong>Student Registration ID:</strong> 
+                        <span class="badge bg-dark font-monospace">@(profile?.StudentCode ?? User.FindFirst("StudentCode")?.Value ?? "PMS20261002")</span>
+                        <span class="mx-2">|</span>
+                        <strong>Department:</strong> ST &amp; SC Development Department, Chhattisgarh
+                    </p>
+                </div>
+                <div>
+                    @if (dash?.IsLocked == true)
+                    {
+                        <a asp-controller="Application" asp-action="Preview" class="btn btn-outline-primary fw-bold shadow-sm">
+                            <i class="bi bi-printer me-1"></i>Print Dossier
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Application" asp-action="Wizard" class="btn btn-primary fw-bold shadow-sm" style="background: linear-gradient(135deg, var(--gov-navy), var(--gov-blue-primary)); border: none;">
+                            <i class="bi bi-pencil-square me-1"></i>Continue Application
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card blue">
+                    <p class="stat-label">Application Status</p>
+                    <h5 class="fw-bold mb-1">
+                        @if (app != null && app.IsLocked)
+                        {
+                            <span class="badge bg-warning text-dark"><i class="bi bi-lock-fill"></i> LOCKED</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-light text-dark"><i class="bi bi-pencil"></i> DRAFT</span>
+                        }
+                    </h5>
+                    <small class="opacity-75">@(app?.IsLocked == true ? "Forwarded to Institute" : "Pending OTP Lock")</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card green">
+                    <p class="stat-label">Bank Seeded (DBT)</p>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-check-circle-fill me-1"></i> VERIFIED
+                    </h5>
+                    <small class="opacity-75">@(bank?.MaskedAccountNumber ?? "Aadhaar Mapped")</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card amber">
+                    <p class="stat-label">e-KYC &amp; OTR</p>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-shield-fill-check me-1"></i> LINKED
+                    </h5>
+                    <small class="opacity-75">Aadhaar Authenticated</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card purple">
+                    <p class="stat-label">Disbursement</p>
+                    <h5 class="fw-bold mb-1">
+                        @(dash?.ApplicationStatusId == 12 ? "DISBURSED" : "PENDING")
+                    </h5>
+                    <small class="opacity-75">Awaiting Scrutiny</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracking Cards -->
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--gov-radius-md);">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="fw-bold mb-0 text-primary">
+                    <i class="bi bi-bar-chart-steps me-2"></i>Application Progression &amp; Completeness
+                </h6>
+                <span class="small text-muted">Mandatory 100% required for submission</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold small text-dark"><i class="bi bi-person-check me-1 text-primary"></i>Profile Completion</span>
+                            <span class="fw-bold small text-success">@profileScore%</span>
+                        </div>
+                        <div class="progress" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @profileScore%;" aria-valuenow="@profileScore" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">Includes Personal, Parents, Address &amp; Category data.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold small text-dark"><i class="bi bi-ui-checks me-1 text-primary"></i>Application Form Completion</span>
+                            <span class="fw-bold small text-info">@appScore%</span>
+                        </div>
+                        <div class="progress" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: @appScore%;" aria-valuenow="@appScore" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted mt-1 d-block">Includes Academic details, Bank, Certificates &amp; OTP Lock.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Application Summary Dossier Card -->
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--gov-radius-md); overflow: hidden;">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-card-checklist text-primary fs-5"></i>
+                    <h6 class="fw-bold mb-0 text-dark">Official Application Summary Record</h6>
+                </div>
+                <div>
+                    @if (dash?.IsLocked == true)
+                    {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-bold">
+                            <i class="bi bi-lock-fill me-1"></i>LOCKED &amp; SUBMITTED
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 fw-bold">
+                            <i class="bi bi-pencil-fill me-1"></i>DRAFT (IN PROGRESS)
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0 small">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light text-muted" style="width: 25%;">Application ID:</th>
+                                <td><strong class="text-primary font-monospace fs-6">@(dash?.ApplicationNumber ?? app?.ApplicationNumber ?? "SCH20268492")</strong></td>
+                                <th class="bg-light text-muted" style="width: 25%;">Student ID:</th>
+                                <td><span class="font-monospace fw-bold">@(dash?.StudentCode ?? profile?.StudentCode ?? "PMS20261002")</span></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Academic Session:</th>
+                                <td>@(dash?.AcademicYear ?? "2025-26")</td>
+                                <th class="bg-light text-muted">Selected Scheme:</th>
+                                <td><strong>@(dash?.Scheme ?? "Post Matric Scholarship for SC/ST/OBC Students")</strong></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Social Category:</th>
+                                <td><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fw-bold">@(dash?.Category ?? "OBC")</span></td>
+                                <th class="bg-light text-muted">Current Course:</th>
+                                <td class="fw-bold">@(dash?.CurrentCourse ?? "PGDCA (1 Year Course)")</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Enrolled Institute:</th>
+                                <td colspan="3" class="fw-bold text-primary">
+                                    <i class="bi bi-building me-1"></i> @(dash?.Institute ?? "GOVT. NAGARJUNA P.G. COLLEGE OF SCIENCE, RAIPUR (C.G.)")
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Current Workflow Status:</th>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">@(dash?.ApplicationStatus ?? "DRAFT")</span>
+                                </td>
+                                <th class="bg-light text-muted">Verification Status:</th>
+                                <td>
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">@(dash?.VerificationStatus ?? "PENDING")</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Bank DBT (NPCI) Status:</th>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.BankStatus ?? "SEEDED & VERIFIED")
+                                    </span>
+                                </td>
+                                <th class="bg-light text-muted">Aadhaar e-KYC Status:</th>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.OtrStatus ?? "LINKED & VERIFIED")
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Application Lock Date:</th>
+                                <td>@(dash?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? "Pending Lock")</td>
+                                <th class="bg-light text-muted">Next Mandatory Action:</th>
+                                <td>
+                                    @if (dash?.IsLocked == true)
+                                    {
+                                        <span class="text-success fw-bold">
+                                            <i class="bi bi-shield-check me-1"></i>Under Scrutiny by College Nodal Officer
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Application" asp-action="Lock" class="btn btn-danger btn-sm fw-bold">
+                                            <i class="bi bi-lock-fill me-1"></i>Lock Application via OTP
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

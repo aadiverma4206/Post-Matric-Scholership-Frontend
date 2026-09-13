@@ -1,0 +1,350 @@
+@{
+    ViewData["Title"] = "Student Profile Updation";
+    Layout = "_Layout";
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var addr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.Address;
+    var occupations = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Occupations ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var householdCats = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.HouseholdCategories ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var depCriteria = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.DeprivationCriteria ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+}
+
+<div class="container my-3">
+    <!-- Notice Banner matching PDF Page 7 -->
+    <div class="alert alert-warning py-2 small shadow-sm mb-4">
+        <strong>NOTE :</strong>
+        1) Fields marked with (<span class="text-danger fw-bold">*</span>) are mandatory. 
+        2) Please fill all the information in English only except where Hindi information is asked for. 
+        3) Please enter Hindi details in UNICODE only. 
+        4) Please do not prefix Mr./Ms./Mrs./Sh./Ku. etc. in Father name and Mother name.
+    </div>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <!-- Section 1: Edit Previously Entered Basic Details (PDF Page 7) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-person-lines-fill me-2"></i> Edit Previously Entered Basic Details
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Are you Orphan? <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOrphan" value="true" @(profile?.IsOrphan == true ? "checked" : "") id="orphanYes">
+                                <label class="form-check-label small" for="orphanYes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsOrphan" value="false" @(profile?.IsOrphan != true ? "checked" : "") id="orphanNo">
+                                <label class="form-check-label small" for="orphanNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Father / Husband / Guardian Name <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="FatherGuardianName" value="@(profile?.FatherGuardianName ?? "HILESHWAR SAHU")" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Mother Name <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="MotherName" value="@(profile?.MotherName ?? "BASANTI SAHU")" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Is Mother Single Woman? <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsMotherSingleWoman" value="true" @(profile?.IsMotherSingleWoman == true ? "checked" : "") id="singleYes">
+                                <label class="form-check-label small" for="singleYes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsMotherSingleWoman" value="false" @(profile?.IsMotherSingleWoman != true ? "checked" : "") id="singleNo">
+                                <label class="form-check-label small" for="singleNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Aadhaar Registered Mobile No. <span class="required-asterisk">*</span></label>
+                        <input class="form-control" value="@(profile?.MaskedMobile ?? "XXXXXX6387")" readonly />
+                        <div class="form-text small text-muted">This Mobile Number is registered for using services of this portal.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Student's E-mail Id <span class="required-asterisk">*</span></label>
+                        <input class="form-control" value="@(profile?.MaskedEmail ?? "XXXXX1808@gmail.com")" readonly />
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Alternate Mobile Number</label>
+                        <input class="form-control" name="AlternateMobile" value="@profile?.AlternateMobile" placeholder="Optional alternate mobile" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Alternate E-mail Id</label>
+                        <input class="form-control" name="AlternateEmail" value="@profile?.AlternateEmail" placeholder="Optional alternate email" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Hindi (Hindi unicode) Details (PDF Page 8) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-translate me-2"></i> हिंदी (Hindi Unicode) में जानकारी दर्ज करें
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">प्रथम नाम (First Name in Hindi) <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="FirstNameHindi" value="जया" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">मध्य नाम (Middle Name in Hindi)</label>
+                        <input class="form-control" name="MiddleNameHindi" placeholder="मध्य नाम" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">अंतिम नाम (Last Name in Hindi)</label>
+                        <input class="form-control" name="LastNameHindi" value="साहू" />
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">पिता/पति/अभिभावक का पूर्ण नाम <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="FatherNameHindi" value="हिलेश्वर साहू" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">माता का पूरा नाम <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="MotherNameHindi" value="बसंती साहू" required />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Other Basic Details (PDF Page 8) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-briefcase-fill me-2"></i> Other Basic Details
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Father's / Guardian Occupation <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="FatherOccupationId" required>
+                            <option value="">--Select Occupation--</option>
+                            <option value="1">Government</option>
+                            <option value="2">Private</option>
+                            <option value="3">Farmer</option>
+                            <option value="4" selected>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Mother's Occupation <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="MotherOccupationId" required>
+                            <option value="">--Select Occupation--</option>
+                            <option value="1">Government</option>
+                            <option value="2">Private</option>
+                            <option value="3">Farmer</option>
+                            <option value="4" selected>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Religion <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="ReligionId" required>
+                            <option value="1" selected>Hindu</option>
+                            <option value="2">Muslim</option>
+                            <option value="3">Christian</option>
+                            <option value="4">Sikh</option>
+                            <option value="5">Parsi</option>
+                            <option value="6">Jain</option>
+                            <option value="7">Buddhist</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Household Category <span class="required-asterisk">*</span></label>
+                        <select class="form-select" name="HouseholdCategoryId" required>
+                            <option value="1" selected>BPL (Below Poverty Line)</option>
+                            <option value="2">APL (Above Poverty Line)</option>
+                            <option value="3">EWS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Enter BPL Number</label>
+                        <input class="form-control" name="BplNumber" value="BPL/2026/94821" placeholder="BPL Card Number" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Is Differently Abled (दिव्यांग) <span class="required-asterisk">*</span></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="true" id="diffYes">
+                                <label class="form-check-label small" for="diffYes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="false" checked id="diffNo">
+                                <label class="form-check-label small" for="diffNo">No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deprivation Criteria Checklist (PDF Pages 8-9) -->
+                <h6 class="fw-bold text-primary mt-4 mb-3 border-bottom pb-2">
+                    <i class="bi bi-check2-square me-1"></i> Other Household Details (Deprivation Criteria)
+                </h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover small">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80%;">Deprivation Criterion</th>
+                                <th style="width: 20%;" class="text-center">Applicable?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1. Only one room with kucha walls and kucha roof? (केवल एक कमरा, जिसमें कच्ची दीवारें और कच्ची छत हो?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_1" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_1" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2. No adult member between age 16 to 59? (16 से 59 वर्ष की आयु के बीच कोई वयस्क सदस्य नहीं हैं?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_2" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_2" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3. Female headed households with no adult male member between 16 to 59? (महिला मुखिया वाले परिवार?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_3" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_3" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4. Disabled member and no able-bodied adult member? (विकलांग सदस्य और कोई सक्षम वयस्क सदस्य नहीं?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_4" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_4" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5. SC/ST households? (अनुसूचित जाति / अनुसूचित जनजाति परिवार?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_5" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_5" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6. No literate adult above 25 years? (25 वर्ष से अधिक आयु का कोई साक्षर वयस्क नहीं हैं?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_6" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_6" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7. Landless households deriving major part of income from manual casual labour? (भूमिहीन परिवार?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="DepCriteria_7" value="no" checked> No &nbsp;
+                                    <input type="radio" name="DepCriteria_7" value="yes"> Yes
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8. Does the student belong to a household where one or both parents are illiterate? (क्या माता-पिता निरक्षर हैं?)</td>
+                                <td class="text-center">
+                                    <input type="radio" name="ParentsIlliterate" value="false" checked> No &nbsp;
+                                    <input type="radio" name="ParentsIlliterate" value="true"> Yes
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Correspondence Address (PDF Pages 9-10) -->
+        <div class="gov-form-section mb-4">
+            <div class="gov-section-header">
+                <i class="bi bi-pin-map-fill me-2"></i> Correspondence Address Details
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">District <span class="required-asterisk">*</span></label>
+                        <select class="form-select dynamic-district" id="DistrictId" name="DistrictId" required>
+                            <option value="1" selected>RAIPUR</option>
+                            <option value="2">DURG</option>
+                            <option value="3">BILASPUR</option>
+                            <option value="4">BALOD</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Block <span class="required-asterisk">*</span></label>
+                        <select class="form-select dynamic-block" id="BlockId" name="BlockId" required>
+                            <option value="1" selected>DHARSIWA</option>
+                            <option value="2">ARANG</option>
+                            <option value="3">ABHANPUR</option>
+                            <option value="4">TILDA</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Vidhansabha <span class="required-asterisk">*</span></label>
+                        <select class="form-select dynamic-vidhansabha" id="VidhansabhaId" name="VidhansabhaId" required>
+                            <option value="1" selected>Raipur Gramin</option>
+                            <option value="2">Raipur City North</option>
+                            <option value="3">Raipur City South</option>
+                            <option value="4">Raipur City West</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold">Address Line <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="AddressLine" value="@(addr?.AddressLine ?? "SONDRA, POST SONDRA")" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">PIN Code <span class="required-asterisk">*</span></label>
+                        <input class="form-control" name="Pincode" value="@(addr?.Pincode ?? "493221")" maxlength="6" required />
+                    </div>
+                </div>
+
+                <!-- Student Photo Upload (PDF Page 10) -->
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Upload Student Photo (JPG / JPEG, Max 50KB)</label>
+                        <input type="file" class="form-control" name="photoFile" accept=".jpg,.jpeg" />
+                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Passport size photo. Only JPG/JPEG file (Max 50KB) allowed.</div>
+                    </div>
+                    @if (profile?.PhotoDocumentId != null && profile.PhotoDocumentId > 0)
+                    {
+                        <div class="col-md-6 d-flex align-items-center gap-3 pt-3">
+                            <img src="/Document/Download/@profile.PhotoDocumentId" alt="Current Photo" class="rounded border shadow-sm" style="width: 70px; height: 80px; object-fit: cover;" />
+                            <div>
+                                <span class="badge bg-success mb-1"><i class="bi bi-check-circle me-1"></i>Photo Uploaded</span>
+                                <br />
+                                <a href="/Document/Download/@profile.PhotoDocumentId" target="_blank" class="btn btn-link btn-sm p-0 small text-decoration-none">
+                                    <i class="bi bi-eye me-1"></i>View Full Photo
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between my-4">
+            <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                <i class="bi bi-check-circle-fill me-1"></i> Save &amp; Update Profile
+            </button>
+        </div>
+    </form>
+</div>

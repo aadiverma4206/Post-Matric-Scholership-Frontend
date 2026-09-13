@@ -1,0 +1,1155 @@
+/* ==========================================================================
+   POST MATRIC SCHOLARSHIP PORTAL - MODERN GOVERNMENT DESIGN SYSTEM
+   Standardized according to National e-Governance Standards (NeGD / GIGW 3.0)
+   ST & SC Development Department, Government of Chhattisgarh
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+
+:root {
+  /* Official Government Color Tokens */
+  --gov-navy-dark: #031838;
+  --gov-navy: #07254a;
+  --gov-navy-light: #0d386c;
+  --gov-blue-primary: #0a4b91;
+  --gov-blue-hover: #083c74;
+  --gov-blue-accent: #0284c7;
+  --gov-blue-subtle: #f0f7ff;
+  
+  /* Indian National Accents */
+  --gov-saffron: #f97316;
+  --gov-saffron-dark: #ea580c;
+  --gov-saffron-subtle: #fff7ed;
+  --gov-green: #059669;
+  --gov-green-dark: #047857;
+  --gov-green-subtle: #ecfdf5;
+  --gov-gold: #d97706;
+  --gov-gold-light: #fef3c7;
+
+  /* Neutrals & Surfaces */
+  --gov-bg: #f4f6fa;
+  --gov-surface: #ffffff;
+  --gov-surface-secondary: #f8fafc;
+  --gov-border: #e2e8f0;
+  --gov-border-strong: #cbd5e1;
+  
+  /* Typography */
+  --gov-text-primary: #0f172a;
+  --gov-text-secondary: #475569;
+  --gov-text-muted: #64748b;
+  --gov-text-light: #f8fafc;
+  --font-scale: 1rem;
+
+  /* Shadows */
+  --gov-shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --gov-shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+  --gov-shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.05);
+  --gov-shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --gov-shadow-hover: 0 16px 32px -4px rgba(7, 37, 74, 0.12);
+
+  /* Transitions & Border Radius */
+  --gov-radius-sm: 6px;
+  --gov-radius-md: 10px;
+  --gov-radius-lg: 14px;
+  --gov-radius-xl: 18px;
+  --gov-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base Document Styling */
+html {
+  font-size: var(--font-scale);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--gov-bg);
+  color: var(--gov-text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tiranga National Ribbon */
+.gov-tiranga-stripe {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #ff9933 0%, #ff9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%, #138808 100%);
+  display: block;
+}
+
+/* ==========================================================================
+   1. GOVERNMENT TOP UTILITY BAR (Accessibility & Helplines)
+   ========================================================================== */
+.gov-top-bar {
+  background: var(--gov-navy-dark);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gov-top-bar a {
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: var(--gov-transition);
+}
+
+.gov-top-bar a:hover {
+  color: #ffffff;
+}
+
+.gov-top-bar .separator {
+  color: rgba(255, 255, 255, 0.2);
+  margin: 0 8px;
+}
+
+.accessibility-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-accessibility {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: var(--gov-transition);
+}
+
+.btn-accessibility:hover, .btn-accessibility:focus {
+  background: #ffffff;
+  color: var(--gov-navy);
+}
+
+/* ==========================================================================
+   2. MAIN PORTAL BRANDING HEADER
+   ========================================================================== */
+.gov-portal-header {
+  background: linear-gradient(135deg, var(--gov-navy) 0%, var(--gov-navy-light) 65%, #0e457f 100%);
+  color: #ffffff;
+  padding: 16px 0;
+  box-shadow: var(--gov-shadow-md);
+  position: relative;
+  z-index: 10;
+}
+
+.gov-emblem-badge {
+  width: 64px;
+  height: 64px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  border: 2px solid var(--gov-gold);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.gov-emblem-badge::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(217, 119, 6, 0.5);
+}
+
+.gov-portal-title h1 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  margin: 0;
+  line-height: 1.25;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.gov-portal-title h2 {
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin: 2px 0 0 0;
+  color: #bfdbfe;
+  line-height: 1.3;
+}
+
+.gov-portal-title .sub-hindi {
+  font-size: 0.82rem;
+  color: var(--gov-gold-light);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* User Account Capsule in Header */
+.user-account-capsule {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  padding: 4px 14px 4px 6px;
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--gov-transition);
+}
+
+.user-account-capsule:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.user-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gov-saffron), var(--gov-gold));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Official Government Initiative Badges */
+.gov-initiative-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--gov-radius-sm);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  color: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   3. ANNOUNCEMENT TICKER BAR (Official Updates)
+   ========================================================================== */
+.gov-announcement-strip {
+  background: #ffffff;
+  border-bottom: 1px solid var(--gov-border);
+  box-shadow: var(--gov-shadow-xs);
+  padding: 6px 0;
+  font-size: 0.85rem;
+}
+
+.announcement-badge {
+  background: linear-gradient(135deg, var(--gov-saffron), var(--gov-saffron-dark));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: var(--gov-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.announcement-text {
+  color: var(--gov-text-secondary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   4. MODERN GOVERNMENT NAVIGATION BAR
+   ========================================================================== */
+.gov-nav-bar {
+  background: #ffffff;
+  border-bottom: 2px solid var(--gov-border);
+  box-shadow: var(--gov-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: var(--gov-transition);
+}
+
+.gov-nav-link {
+  color: var(--gov-navy);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  transition: var(--gov-transition);
+  border-bottom: 3px solid transparent;
+}
+
+.gov-nav-link i {
+  font-size: 1.05rem;
+  color: var(--gov-blue-accent);
+  transition: var(--gov-transition);
+}
+
+.gov-nav-link:hover {
+  color: var(--gov-blue-primary);
+  background: var(--gov-blue-subtle);
+  border-bottom-color: var(--gov-blue-accent);
+}
+
+.gov-nav-link:hover i {
+  transform: translateY(-1px);
+}
+
+.gov-nav-link.active {
+  color: var(--gov-blue-primary);
+  font-weight: 700;
+  border-bottom-color: var(--gov-saffron);
+  background: rgba(2, 132, 199, 0.04);
+}
+
+.gov-nav-link.active i {
+  color: var(--gov-saffron);
+}
+
+/* ==========================================================================
+   5. GOVERNMENT FORM SECTIONS & CARDS
+   ========================================================================== */
+.gov-card {
+  background: var(--gov-surface);
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-md);
+  box-shadow: var(--gov-shadow-sm);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: var(--gov-transition);
+}
+
+.gov-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--gov-shadow-md);
+}
+
+.gov-card-header {
+  background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 14px 20px;
+  border-bottom: 2px solid var(--gov-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gov-form-section {
+  background: var(--gov-surface);
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-md);
+  box-shadow: var(--gov-shadow-sm);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: var(--gov-transition);
+}
+
+.gov-form-section:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--gov-shadow-md);
+}
+
+.gov-section-header {
+  background: linear-gradient(90deg, var(--gov-navy) 0%, var(--gov-navy-light) 100%);
+  color: #ffffff;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--gov-saffron);
+}
+
+.gov-section-header.secondary {
+  background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+  border-bottom-color: var(--gov-blue-accent);
+}
+
+.gov-section-body {
+  padding: 24px;
+}
+
+.required-asterisk {
+  color: #dc2626;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--gov-text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.form-control, .form-select {
+  border: 1px solid var(--gov-border-strong);
+  border-radius: var(--gov-radius-sm);
+  font-size: 0.92rem;
+  padding: 9px 13px;
+  color: var(--gov-text-primary);
+  background-color: #ffffff;
+  transition: var(--gov-transition);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--gov-blue-accent);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+  outline: none;
+}
+
+.form-control:disabled, .form-control[readonly] {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: var(--gov-text-muted);
+}
+
+/* Double Entry Confirmation Indicator */
+.match-indicator {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 4px;
+  display: block;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.match-success {
+  color: var(--gov-green);
+}
+
+.match-fail {
+  color: #dc2626;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   6. GOVERNMENT LOGIN & AUTH CARDS
+   ========================================================================== */
+.gov-login-container {
+  max-width: 480px;
+  margin: 36px auto;
+}
+
+.gov-login-card {
+  background: var(--gov-surface);
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-lg);
+  box-shadow: var(--gov-shadow-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.gov-login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gov-saffron) 0%, var(--gov-gold) 50%, var(--gov-green) 100%);
+}
+
+.gov-login-header {
+  background: linear-gradient(135deg, var(--gov-navy) 0%, var(--gov-navy-light) 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 28px 24px 22px;
+}
+
+.captcha-box {
+  background: #f8fafc;
+  border: 1.5px dashed var(--gov-border-strong);
+  border-radius: var(--gov-radius-sm);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.captcha-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--gov-navy);
+  user-select: none;
+  text-decoration: line-through;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+}
+
+/* ==========================================================================
+   7. DASHBOARD METRICS & STAT CARDS
+   ========================================================================== */
+.stat-card {
+  border-radius: var(--gov-radius-md);
+  border: none;
+  color: #ffffff;
+  padding: 20px;
+  box-shadow: var(--gov-shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: var(--gov-transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--gov-shadow-hover);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.stat-card.blue {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.stat-card.green {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.stat-card.amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card.purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.stat-card.navy {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* ==========================================================================
+   8. MULTI-STEP WIZARD STEPPER
+   ========================================================================== */
+.wizard-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  position: relative;
+  padding: 0 10px;
+}
+
+.wizard-steps::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.wizard-step-item {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.step-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gov-text-muted);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: var(--gov-transition);
+}
+
+.step-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gov-text-muted);
+  display: block;
+  line-height: 1.25;
+}
+
+.wizard-step-item.active .step-circle {
+  border-color: var(--gov-blue-accent);
+  background: var(--gov-blue-accent);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25);
+  transform: scale(1.06);
+}
+
+.wizard-step-item.active .step-title {
+  color: var(--gov-blue-primary);
+  font-weight: 700;
+}
+
+.wizard-step-item.completed .step-circle {
+  border-color: var(--gov-green);
+  background: var(--gov-green);
+  color: #ffffff;
+}
+
+.wizard-step-item.completed .step-title {
+  color: var(--gov-green-dark);
+}
+
+/* ==========================================================================
+   9. STATUS BADGES & DATA TABLES
+   ========================================================================== */
+.badge-status {
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.status-draft {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.status-locked {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.status-pending {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.status-approved {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.status-rejected {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Modern Government Data Table */
+.gov-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-md);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.gov-table th {
+  background: #f8fafc;
+  color: var(--gov-navy);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--gov-border);
+}
+
+.gov-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gov-border);
+  font-size: 0.88rem;
+  color: var(--gov-text-primary);
+  vertical-align: middle;
+}
+
+.gov-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.gov-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   10. GOVERNMENT APPLICATION DOSSIER (Printable / Preview Format)
+   ========================================================================== */
+.printable-dossier {
+  background: #ffffff;
+  border: 2px solid #334155;
+  padding: 24px;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: var(--gov-shadow-md);
+}
+
+.dossier-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.04);
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.dossier-photo-box {
+  width: 130px;
+  height: 160px;
+  border: 2px dashed #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  text-align: center;
+  padding: 8px;
+}
+
+.dossier-signature-box {
+  width: 200px;
+  height: 60px;
+  border: 1px dashed #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+/* ==========================================================================
+   11. HIGH CONTRAST ACCESSIBILITY MODE
+   ========================================================================== */
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .gov-portal-header,
+body.high-contrast .gov-top-bar,
+body.high-contrast .gov-nav-bar,
+body.high-contrast .gov-form-section,
+body.high-contrast .card,
+body.high-contrast footer {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+body.high-contrast a,
+body.high-contrast .gov-nav-link,
+body.high-contrast .form-label {
+  color: #ffff00 !important;
+}
+
+body.high-contrast .form-control,
+body.high-contrast .form-select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+/* ==========================================================================
+   12. FULL-PAGE PRINT-READY DOSSIER STYLES (National e-Governance Standard)
+   ========================================================================== */
+
+/* Dossier Screen Layout */
+.printable-dossier-wrapper {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.printable-dossier {
+  background: #ffffff;
+  padding: 24px;
+  border: 2px solid var(--gov-navy);
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(7, 37, 74, 0.12);
+  margin-bottom: 30px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.dossier-header-grid {
+  display: grid;
+  grid-template-columns: 85px 1fr 140px;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 2px solid var(--gov-navy);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.dossier-emblem-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dossier-title-box {
+  text-align: center;
+}
+
+.dossier-title-box .gov-state-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--gov-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.dossier-title-box .gov-dept-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gov-blue-primary);
+  margin: 2px 0 0 0;
+  line-height: 1.2;
+}
+
+.dossier-title-box .gov-portal-sub {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gov-text-secondary);
+  margin: 2px 0 0 0;
+}
+
+.dossier-title-box .gov-form-tag {
+  display: inline-block;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 3px;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.dossier-photo-card {
+  width: 125px;
+  height: 145px;
+  border: 1.5px solid var(--gov-navy);
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.dossier-photo-card .photo-placeholder {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.dossier-photo-card .ekyc-badge {
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Dossier Security Ribbon */
+.dossier-security-bar {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid var(--gov-navy);
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+}
+
+.dossier-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+}
+
+.dossier-table th,
+.dossier-table td {
+  border: 1px solid #cbd5e1;
+  padding: 5px 8px;
+  vertical-align: middle;
+}
+
+.dossier-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.dossier-section-title {
+  background: var(--gov-navy) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 5px 10px !important;
+  border: 1px solid var(--gov-navy) !important;
+}
+
+.dossier-sign-area {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  padding: 12px;
+  font-size: 0.8rem;
+}
+
+/* Print Setup for Full A4 Page Cover */
+@page {
+  size: A4 portrait;
+  margin: 6mm 8mm 6mm 8mm;
+}
+
+@media print {
+  /* 1. Complete Suppression of Web UI Chrome */
+  .no-print,
+  .gov-tiranga-stripe,
+  .gov-top-bar,
+  .gov-portal-header,
+  .gov-announcement-strip,
+  .gov-nav-bar,
+  footer,
+  .btn,
+  .accessibility-controls,
+  .alert,
+  .toast,
+  header {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 2. Full-Page Document Canvas */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif !important;
+    font-size: 8.5pt !important;
+    line-height: 1.25 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main,
+  .container,
+  .container-fluid,
+  .printable-dossier-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* 3. Full-Width Clean Official Dossier Sheet */
+  .printable-dossier {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    padding: 4mm 5mm !important;
+    border: 2px solid #07254a !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
+
+  .dossier-header-grid {
+    grid-template-columns: 65px 1fr 115px !important;
+    gap: 10px !important;
+    border-bottom: 2px solid #07254a !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .dossier-emblem-box img {
+    width: 65px !important;
+    height: 65px !important;
+  }
+
+  .dossier-title-box .gov-state-title {
+    font-size: 11pt !important;
+    color: #07254a !important;
+  }
+
+  .dossier-title-box .gov-dept-title {
+    font-size: 9.5pt !important;
+    color: #0a4b91 !important;
+  }
+
+  .dossier-title-box .gov-portal-sub {
+    font-size: 7.5pt !important;
+    color: #334155 !important;
+  }
+
+  .dossier-title-box .gov-form-tag {
+    font-size: 7pt !important;
+    padding: 1px 6px !important;
+    border: 1px solid #475569 !important;
+    background-color: #f1f5f9 !important;
+  }
+
+  .dossier-photo-card {
+    width: 110px !important;
+    height: 130px !important;
+    border: 1.5px solid #07254a !important;
+    background: #ffffff !important;
+  }
+
+  .dossier-security-bar {
+    border: 1px solid #475569 !important;
+    border-left: 4px solid #07254a !important;
+    background: #f1f5f9 !important;
+    padding: 4px 6px !important;
+    margin-bottom: 8px !important;
+    font-size: 7.5pt !important;
+  }
+
+  .dossier-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 6px !important;
+    font-size: 7.5pt !important;
+  }
+
+  .dossier-table th,
+  .dossier-table td {
+    border: 0.75pt solid #334155 !important;
+    padding: 2.5px 5px !important;
+    color: #000000 !important;
+  }
+
+  .dossier-table th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .dossier-section-title {
+    background-color: #07254a !important;
+    color: #ffffff !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    padding: 3px 6px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .dossier-sign-area {
+    border: 0.75pt solid #334155 !important;
+    background: #ffffff !important;
+    padding: 6px !important;
+    font-size: 7.5pt !important;
+  }
+
+  /* Prevent row and section splitting across pages */
+  tr, .dossier-section, .signature-block, .dossier-sign-area {
+    page-break-inside: avoid !important;
+  }
+
+  .page-break {
+    page-break-after: always !important;
+  }
+
+  /* Force background colors to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

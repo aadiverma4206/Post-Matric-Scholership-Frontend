@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Final Application Lock (OTP Authentication)";
+    var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+}
+
+<div class="container my-4" style="max-width: 680px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-lock-fill me-2"></i>Final Application Lock Authentication</h5>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Warning Banner -->
+            <div class="alert alert-warning border-warning shadow-sm">
+                <div class="d-flex">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 text-warning me-3"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Important Warning:</h6>
+                        <p class="mb-0 small text-dark">
+                            <strong>"After locking the application, protected application information cannot be modified."</strong><br />
+                            Please ensure you have reviewed your marks, certificates, and bank account numbers carefully in the Application Preview before proceeding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lock Details -->
+            <div class="bg-light p-3 rounded border mb-4 small">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <strong>Application Number:</strong> @(app?.ApplicationNumber ?? "SCH20268492")
+                    </div>
+                    <div class="col-sm-6">
+                        <strong>Student Registration ID:</strong> @(app?.StudentCode ?? "PMS20261002")
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Dispatch & Verification Box -->
+            <div class="text-center py-2">
+                <p class="text-muted small mb-3">
+                    A 6-digit One-Time Password (OTP) will be dispatched to your registered Aadhaar mobile number to cryptographically sign and lock your scholarship dossier.
+                </p>
+
+                <button type="button" class="btn btn-outline-primary fw-bold px-4 mb-3" id="btnSendLockOtp" data-app-id="@(app?.ApplicationId ?? 1)">
+                    <i class="bi bi-send-fill me-2"></i>Send OTP to Registered Mobile
+                </button>
+
+                <div id="otpFeedback" class="alert small text-center" style="display: none;"></div>
+
+                <!-- OTP Submission Form -->
+                <form asp-action="ConfirmLock" method="post" id="otpInputGroup" style="display: none;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="applicationId" value="@(app?.ApplicationId ?? 1)" />
+
+                    <div class="mb-3" style="max-width: 260px; margin: 0 auto;">
+                        <label class="form-label fw-bold small">Enter 6-Digit OTP <span class="text-danger">*</span></label>
+                        <input type="text" name="otpCode" class="form-control text-center fs-4 fw-bold letter-spacing-3" maxlength="6" placeholder="000000" autocomplete="one-time-code" required />
+                    </div>
+
+                    <button type="submit" id="btnSubmitLock" class="btn btn-danger btn-lg px-5 fw-bold shadow">
+                        <i class="bi bi-lock-fill me-2"></i>Verify OTP &amp; Final Lock Application
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light text-center py-3">
+            <a asp-action="Preview" class="text-decoration-none small text-muted">
+                <i class="bi bi-arrow-left me-1"></i>Back to Application Preview
+            </a>
+        </div>
+    </div>
+</div>

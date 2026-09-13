@@ -1,0 +1,132 @@
+@model Scholarship.Web.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Citizen & Official Login";
+}
+
+<div class="gov-login-container">
+    <div class="gov-login-card">
+        <!-- Header with Emblem & Title -->
+        <div class="gov-login-header">
+            <div class="d-flex justify-content-center mb-2">
+                <div class="gov-emblem-badge" style="width: 72px; height: 72px;">
+                    <img src="~/images/cg-emblem.png" alt="Chhattisgarh Emblem" style="width: 100%; height: 100%; object-fit: contain;" />
+                </div>
+            </div>
+            <div class="sub-hindi small text-warning mb-1">छत्तीसगढ़ शासन | Government of Chhattisgarh</div>
+            <h4 class="fw-bold mb-1 text-white">Post Matric Scholarship Portal</h4>
+            <p class="small mb-0 text-white-50">ST &amp; SC Development Department</p>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-shield-lock-fill me-2 text-primary"></i>Sign In to Portal
+                </h5>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                    <i class="bi bi-lock-fill"></i> SSL 256-Bit
+                </span>
+            </div>
+
+            <form asp-action="Login" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                <input type="hidden" asp-for="CaptchaToken" id="CaptchaToken" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 border-start border-danger border-3" role="alert"></div>
+
+                @if (!string.IsNullOrEmpty(ViewBag.RegisteredUserId as string))
+                {
+                    <div class="alert alert-success border-success py-3 px-3 mb-4 shadow-sm border-start border-success border-4" role="alert">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
+                                    <strong class="text-success">Registration Successful!</strong>
+                                </div>
+                                <div class="small mt-1 text-dark">
+                                    Your 11-digit User ID: 
+                                    <span class="badge bg-primary fs-6 px-2 py-1 font-monospace" id="registeredIdBadge">@ViewBag.RegisteredUserId</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="navigator.clipboard.writeText('@ViewBag.RegisteredUserId'); alert('User ID copied to clipboard: @ViewBag.RegisteredUserId');">
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                <!-- User ID -->
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">
+                        <i class="bi bi-person-badge-fill text-primary me-1"></i>User ID / Registration No. <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                        <input asp-for="UserName" class="form-control font-monospace fw-bold" placeholder="Enter 11-digit User ID (e.g. 26012345678)" autocomplete="username" />
+                    </div>
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">
+                        <i class="bi bi-key-fill text-primary me-1"></i>Portal Password <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Enter Password" autocomplete="current-password" id="inputPassword" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="const p = document.getElementById('inputPassword'); p.type = p.type === 'password' ? 'text' : 'password';">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <!-- Captcha -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-shield-check text-primary me-1"></i>Security Verification Code <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="captcha-box mb-2">
+                        <span id="captchaDisplay" class="captcha-text">@Model.CaptchaToken</span>
+                        <button id="btnRefreshCaptcha" class="btn btn-outline-secondary btn-sm" type="button" title="Refresh Captcha">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                    <input asp-for="CaptchaInput" class="form-control text-uppercase font-monospace fw-bold text-center letter-spacing" placeholder="Type captcha characters" maxlength="6" autocomplete="off" />
+                    <span asp-validation-for="CaptchaInput" class="text-danger small"></span>
+                </div>
+
+                <!-- Action Button -->
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, var(--gov-navy) 0%, var(--gov-blue-primary) 100%); border: none;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Portal
+                    </button>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="p-2 mb-3 bg-light rounded text-center small text-muted border">
+                    <i class="bi bi-info-circle me-1 text-primary"></i> For security, never share your User ID or OTP with anyone.
+                </div>
+
+                <!-- Account Recovery Links -->
+                <div class="pt-2 border-top">
+                    <div class="d-flex justify-content-between align-items-center small mb-3">
+                        <a asp-action="ForgotPassword" class="text-decoration-none text-danger fw-semibold">
+                            <i class="bi bi-question-circle me-1"></i>Forgot Password?
+                        </a>
+                        <a asp-action="ForgotUserId" class="text-decoration-none text-primary fw-semibold">
+                            <i class="bi bi-search me-1"></i>Find 11-digit User ID
+                        </a>
+                    </div>
+                    <div class="text-center pt-2 border-top">
+                        <span class="text-muted small">Are you a new student applying for scholarship?</span><br />
+                        <a asp-action="Register" class="btn btn-outline-success btn-sm mt-2 fw-bold w-100 py-2">
+                            <i class="bi bi-person-plus-fill me-1"></i>Register New Student Account (AY 2025-26)
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

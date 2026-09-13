@@ -1,0 +1,318 @@
+@model Scholarship.Web.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Student Registration";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="gov-emblem-badge me-3 p-1" style="width: 50px; height: 50px;">
+                <img src="~/images/cg-emblem.png" alt="Chhattisgarh Emblem" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;" />
+            </div>
+            <div>
+                <h3 class="fw-bold text-primary mb-0">New Student Online Registration</h3>
+                <p class="text-muted small mb-0">Post Matric Scholarship Portal (Academic Year 2025-26)</p>
+            </div>
+        </div>
+        <a asp-action="Login" class="btn btn-outline-primary btn-sm"><i class="bi bi-box-arrow-in-right me-1"></i>Already Registered? Login</a>
+    </div>
+
+    <form asp-action="Register" method="post" id="registrationForm" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+
+        <!-- 1. Basic Details -->
+        <div class="gov-form-section">
+            <div class="gov-section-header">
+                <i class="bi bi-1-circle-fill me-2"></i> 1. Basic Details
+            </div>
+            <div class="gov-section-body">
+                <!-- Row 1: Names -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="FirstName" class="form-label">First Name <span class="required-asterisk">*</span></label>
+                        <input asp-for="FirstName" class="form-control" placeholder="First Name as in 10th marksheet" />
+                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="MiddleName" class="form-label">Middle Name</label>
+                        <input asp-for="MiddleName" class="form-control" placeholder="Middle Name (Optional)" />
+                        <span asp-validation-for="MiddleName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="LastName" class="form-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Last Name (Optional)" />
+                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Parents & Orphan -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="IsOrphan" class="form-label">Are you Orphan? <span class="required-asterisk">*</span></label>
+                        <select asp-for="IsOrphan" class="form-select">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="FatherGuardianName" class="form-label">Father / Guardian Name <span class="required-asterisk">*</span></label>
+                        <input asp-for="FatherGuardianName" class="form-control" placeholder="Father or Guardian Name" />
+                        <span asp-validation-for="FatherGuardianName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="MotherName" class="form-label">Mother Name <span class="required-asterisk">*</span></label>
+                        <input asp-for="MotherName" class="form-control" placeholder="Mother Name" />
+                        <span asp-validation-for="MotherName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Row 3: Mother Single Woman -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check pt-2">
+                            <input asp-for="IsMotherSingleWoman" class="form-check-input" type="checkbox" id="singleMotherCheck" />
+                            <label class="form-check-label fw-bold" for="singleMotherCheck">
+                                Is your Mother Single Woman? (Divorced / Widow / Unmarried)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Profile Related Details -->
+        <div class="gov-form-section">
+            <div class="gov-section-header">
+                <i class="bi bi-2-circle-fill me-2"></i> 2. Profile Related Details
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="DateOfBirth" class="form-label">Date of Birth <span class="required-asterisk">*</span></label>
+                        <input asp-for="DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CategoryId" class="form-label">Category <span class="required-asterisk">*</span></label>
+                        <select asp-for="CategoryId" class="form-select">
+                            <option value="">-- Select Category --</option>
+                            @if (ViewBag.Categories != null)
+                            {
+                                foreach (var cat in (List<Scholarship.Web.ViewModels.LookupItemViewModel>)ViewBag.Categories)
+                                {
+                                    <option value="@cat.Id">@cat.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="GenderId" class="form-label">Gender <span class="required-asterisk">*</span></label>
+                        <select asp-for="GenderId" class="form-select">
+                            <option value="">-- Select Gender --</option>
+                            @if (ViewBag.Genders != null)
+                            {
+                                foreach (var g in (List<Scholarship.Web.ViewModels.LookupItemViewModel>)ViewBag.Genders)
+                                {
+                                    <option value="@g.Id">@g.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="GenderId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="ReligionId" class="form-label">Religion <span class="required-asterisk">*</span></label>
+                        <select asp-for="ReligionId" class="form-select">
+                            <option value="">-- Select Religion --</option>
+                            @if (ViewBag.Religions != null)
+                            {
+                                foreach (var rel in (List<Scholarship.Web.ViewModels.LookupItemViewModel>)ViewBag.Religions)
+                                {
+                                    <option value="@rel.Id">@rel.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="ReligionId" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Personal Details -->
+        <div class="gov-form-section">
+            <div class="gov-section-header">
+                <i class="bi bi-3-circle-fill me-2"></i> 3. Personal Details &amp; Identification
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="AadhaarNumber" class="form-label">Aadhaar Card Number <span class="required-asterisk">*</span></label>
+                        <input asp-for="AadhaarNumber" class="form-control" placeholder="12-digit UIDAI number" maxlength="12" />
+                        <span asp-validation-for="AadhaarNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="MobileNumber" class="form-label">Mobile Number <span class="required-asterisk">*</span></label>
+                        <input asp-for="MobileNumber" class="form-control" placeholder="10-digit mobile number" maxlength="10" />
+                        <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Email" class="form-label">Email Address <span class="required-asterisk">*</span></label>
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="AlternateMobile" class="form-label">Alternate Mobile Number</label>
+                        <input asp-for="AlternateMobile" class="form-control" placeholder="Alternate Mobile (Optional)" maxlength="10" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="AlternateEmail" class="form-label">Alternate Email Address</label>
+                        <input asp-for="AlternateEmail" class="form-control" placeholder="Alternate Email (Optional)" />
+                    </div>
+                </div>
+
+                <!-- Aadhaar Consent -->
+                <div class="alert alert-warning p-3 border-warning">
+                    <div class="form-check">
+                        <input asp-for="AadhaarConsent" class="form-check-input" type="checkbox" id="aadhaarConsentCheck" />
+                        <label class="form-check-label fw-bold text-dark" for="aadhaarConsentCheck">
+                            I give voluntary consent to the ST &amp; SC Development Department, Chhattisgarh to authenticate and verify my identity using my Aadhaar number via UIDAI / e-KYC for scholarship eligibility and Direct Benefit Transfer (DBT) disbursement. <span class="required-asterisk">*</span>
+                        </label>
+                    </div>
+                    <span asp-validation-for="AadhaarConsent" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Permanent Address -->
+        <div class="gov-form-section">
+            <div class="gov-section-header">
+                <i class="bi bi-4-circle-fill me-2"></i> 4. Permanent Address
+            </div>
+            <div class="gov-section-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label asp-for="AddressLine" class="form-label">Home Address (House No, Street, Landmark) <span class="required-asterisk">*</span></label>
+                        <input asp-for="AddressLine" class="form-control" placeholder="Detailed Address" />
+                        <span asp-validation-for="AddressLine" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Pincode" class="form-label">PIN Code <span class="required-asterisk">*</span></label>
+                        <input asp-for="Pincode" class="form-control" placeholder="6-digit PIN" maxlength="6" />
+                        <span asp-validation-for="Pincode" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Geography Cascading Dropdowns -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="StateId" class="form-label">State <span class="required-asterisk">*</span></label>
+                        <select asp-for="StateId" class="form-select" id="StateId">
+                            <option value="">-- Select State --</option>
+                            @if (ViewBag.States != null)
+                            {
+                                foreach (var s in (List<Scholarship.Web.ViewModels.LookupItemViewModel>)ViewBag.States)
+                                {
+                                    <option value="@s.Id">@s.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="StateId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="DistrictId" class="form-label">District <span class="required-asterisk">*</span></label>
+                        <select asp-for="DistrictId" class="form-select" id="DistrictId">
+                            <option value="">-- Select District --</option>
+                            @if (ViewBag.Districts != null)
+                            {
+                                foreach (var d in (List<Scholarship.Web.ViewModels.LookupItemViewModel>)ViewBag.Districts)
+                                {
+                                    <option value="@d.Id">@d.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="DistrictId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="BlockId" class="form-label">Block <span class="required-asterisk">*</span></label>
+                        <select asp-for="BlockId" class="form-select" id="BlockId">
+                            <option value="">-- Select Block --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="VidhansabhaId" class="form-label">Vidhan Sabha (Constituency) <span class="required-asterisk">*</span></label>
+                        <select asp-for="VidhansabhaId" class="form-select" id="VidhansabhaId">
+                            <option value="">-- Select Vidhan Sabha --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CityVillageId" class="form-label">City / Village <span class="required-asterisk">*</span></label>
+                        <select asp-for="CityVillageId" class="form-select" id="CityVillageId">
+                            <option value="">-- Select City / Village --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="PostOfficeId" class="form-label">Post Office <span class="required-asterisk">*</span></label>
+                        <select asp-for="PostOfficeId" class="form-select" id="PostOfficeId">
+                            <option value="">-- Select Post Office --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Create Login Password -->
+        <div class="gov-form-section">
+            <div class="gov-section-header">
+                <i class="bi bi-5-circle-fill me-2"></i> 5. Create Your Login Password
+            </div>
+            <div class="gov-section-body">
+                <div class="alert alert-success d-flex align-items-center mb-3">
+                    <i class="bi bi-check-circle-fill fs-3 me-3 text-success"></i>
+                    <div>
+                        <strong class="d-block">Automatic 11-Digit Unique User ID Generation</strong>
+                        <span class="small text-muted">You do not need to choose a User ID. Upon submitting this form, your unique 11-digit numeric User ID (e.g. 31423565891) will be generated automatically and displayed for logging in.</span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label">Create Password <span class="required-asterisk">*</span></label>
+                        <input asp-for="Password" class="form-control" placeholder="Min. 8 characters" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm Password <span class="required-asterisk">*</span></label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Re-enter Password" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Password Policy Notice -->
+                <div class="alert alert-info py-2 small">
+                    <i class="bi bi-info-circle-fill me-1"></i>
+                    <strong>Password Policy:</strong> Must be at least 8 characters long, containing uppercase &amp; lowercase letters, at least one digit (0-9), and a special character (!@@#$%^&amp;*).
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Registration -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <button type="reset" class="btn btn-secondary px-4">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Form
+            </button>
+            <button type="submit" class="btn btn-success btn-lg px-5 fw-bold shadow">
+                <i class="bi bi-check2-circle me-2"></i>Submit &amp; Register Account
+            </button>
+        </div>
+    </form>
+</div>

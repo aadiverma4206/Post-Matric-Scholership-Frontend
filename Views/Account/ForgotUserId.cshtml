@@ -1,0 +1,98 @@
+@model Scholarship.Web.ViewModels.ForgotUserIdViewModel
+@{
+    ViewData["Title"] = "Find / Recover Your User ID";
+    Layout = "_Layout";
+    var result = ViewBag.UserIdResult as Scholarship.Web.ViewModels.ForgotUserIdResultViewModel;
+}
+
+<div class="row justify-content-center my-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="gov-card shadow">
+            <div class="gov-card-header bg-primary text-white text-center py-3">
+                <div class="d-flex justify-content-center mb-2">
+                    <div class="gov-emblem-badge p-1" style="width: 60px; height: 60px;">
+                        <img src="~/images/cg-emblem.png" alt="Emblem" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;" />
+                    </div>
+                </div>
+                <h4 class="fw-bold mb-0">Find Your User ID</h4>
+                <p class="small text-white-50 mb-0">Post Matric Scholarship Portal (Chhattisgarh)</p>
+            </div>
+            <div class="card-body p-4">
+                @if (result != null)
+                {
+                    <div class="alert alert-success border-success p-3 mb-4 text-center">
+                        <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
+                        <h5 class="fw-bold text-success mb-1">User ID Found Successfully!</h5>
+                        <p class="small text-muted mb-3">Here are the account credentials associated with your entered email / mobile:</p>
+                        
+                        <div class="bg-light p-3 rounded border mb-3 text-start">
+                            @if (!string.IsNullOrEmpty(result.FullName))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-muted small">Student Name:</span>
+                                    <strong class="d-block text-dark">@result.FullName</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(result.MaskedEmail))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-muted small">Registered Email:</span>
+                                    <div class="font-monospace text-dark">@result.MaskedEmail</div>
+                                </div>
+                            }
+                            <div class="mt-2 pt-2 border-top">
+                                <span class="text-muted small d-block mb-1">Your 11-Digit User ID:</span>
+                                <div class="d-flex align-items-center justify-content-between bg-white p-2 rounded border">
+                                    <span class="fs-4 fw-bold text-primary font-monospace" id="foundUserId">@result.UserName</span>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard.writeText('@result.UserName'); alert('User ID copied: @result.UserName');">
+                                        <i class="bi bi-clipboard me-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a asp-action="Login" asp-route-registeredUserId="@result.UserName" class="btn btn-success fw-bold py-2">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Proceed to Login with this User ID
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                <form asp-action="ForgotUserId" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailOrMobile" class="form-label fw-bold small">
+                            <i class="bi bi-envelope-at text-primary me-1"></i>Enter Registered Email ID or Mobile <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input asp-for="EmailOrMobile" class="form-control" placeholder="e.g. yourname@example.com or 9876543210" required />
+                        </div>
+                        <span asp-validation-for="EmailOrMobile" class="text-danger small"></span>
+                        <div class="form-text small text-muted">
+                            Enter the Email Address or Mobile Number you provided during registration.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary fw-bold py-2">
+                            <i class="bi bi-search me-1"></i> Retrieve My User ID
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center small pt-2 border-top">
+                        <a asp-action="Login" class="text-decoration-none">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Login
+                        </a>
+                        <a asp-action="ForgotPassword" class="text-decoration-none text-danger">
+                            <i class="bi bi-key me-1"></i> Forgot Password?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

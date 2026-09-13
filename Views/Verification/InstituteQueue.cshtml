@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "College / Institute Nodal Scrutiny Queue";
+    var queue = (Scholarship.Web.ViewModels.PagedResultViewModel<Scholarship.Web.ViewModels.ApplicationSummaryViewModel>?)ViewBag.Queue;
+}
+
+<div class="container-fluid my-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+            <h4 class="fw-bold text-primary mb-0"><i class="bi bi-building-check me-2"></i>Institute Scrutiny &amp; Verification Desk</h4>
+            <small class="text-muted">Applications submitted by enrolled students awaiting institutional scrutiny</small>
+        </div>
+        <div>
+            <span class="badge bg-warning text-dark py-2 px-3"><i class="bi bi-info-circle me-1"></i>Institute: Govt Engineering College, Raipur</span>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body py-3">
+            <form method="get" class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold mb-1">Filter by Status</label>
+                    <select name="statusId" class="form-select form-select-sm">
+                        <option value="">All Applications</option>
+                        <option value="4" selected>LOCKED (Pending Review)</option>
+                        <option value="5">INSTITUTE_VERIFICATION</option>
+                        <option value="7">APPROVED</option>
+                        <option value="9">DEFECTIVE (Sent Back)</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold mb-1">Search Student ID / Application No</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="e.g. SCH2026..." />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-funnel me-1"></i>Apply Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Queue Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h6 class="fw-bold mb-0 text-secondary"><i class="bi bi-table me-2"></i>Pending Student Applications Queue</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0 small">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Application ID</th>
+                            <th>Student ID</th>
+                            <th>Applicant Name</th>
+                            <th>Course &amp; Year</th>
+                            <th>Lock Date</th>
+                            <th>Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong class="text-primary">SCH20268492</strong></td>
+                            <td>PMS20261002</td>
+                            <td>Aditya Verma</td>
+                            <td>B.Tech (CSE) - 1st Year</td>
+                            <td>@DateTime.Now.ToString("dd-MM-yyyy 10:30")</td>
+                            <td><span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>PENDING SCRUTINY</span></td>
+                            <td class="text-center">
+                                <a asp-action="Review" asp-route-id="1" asp-route-level="INSTITUTE" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-search me-1"></i>Scrutinize Dossier
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong class="text-primary">SCH20268493</strong></td>
+                            <td>PMS20261008</td>
+                            <td>Pooja Sahu</td>
+                            <td>B.Sc (Mathematics) - 2nd Year</td>
+                            <td>@DateTime.Now.AddHours(-3).ToString("dd-MM-yyyy 08:15")</td>
+                            <td><span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>PENDING SCRUTINY</span></td>
+                            <td class="text-center">
+                                <a asp-action="Review" asp-route-id="2" asp-route-level="INSTITUTE" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-search me-1"></i>Scrutinize Dossier
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><strong class="text-primary">SCH20268494</strong></td>
+                            <td>PMS20261014</td>
+                            <td>Rohan Ekka</td>
+                            <td>B.Tech (Civil) - 1st Year</td>
+                            <td>@DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy 16:45")</td>
+                            <td><span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>VERIFIED BY INSTITUTE</span></td>
+                            <td class="text-center">
+                                <a asp-action="Review" asp-route-id="3" asp-route-level="INSTITUTE" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>View Record
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

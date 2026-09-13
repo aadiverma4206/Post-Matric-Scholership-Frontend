@@ -1,0 +1,97 @@
+@{
+    ViewData["Title"] = "Application Tracking Status";
+    var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+}
+
+<div class="container my-4" style="max-width: 800px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Application Workflow Progression Status</h5>
+            <span class="badge bg-warning text-dark">Session: 2025-26</span>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Header Summary -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered small">
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">Application ID:</th>
+                            <td class="fw-bold text-primary">@(app?.ApplicationNumber ?? "SCH20268492")</td>
+                            <th style="width: 25%;">Current Status:</th>
+                            <td>
+                                <span class="badge bg-success py-1 px-2"><i class="bi bi-shield-check me-1"></i>LOCKED / PENDING INSTITUTE REVIEW</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Submission Date:</th>
+                            <td>@DateTime.Now.ToString("dd MMMM yyyy")</td>
+                            <th>Lock Timestamp:</th>
+                            <td>@(app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? DateTime.Now.ToString("dd-MM-yyyy 10:30"))</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Workflow Visual Timeline -->
+            <h6 class="fw-bold mb-3 text-secondary"><i class="bi bi-list-check me-2"></i>Stage-Wise Progression Timeline</h6>
+
+            <div class="list-group">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-success border-4 py-3">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-success"><i class="bi bi-check-circle-fill me-2"></i>Stage 1: Student Application Registration &amp; Form Fill</h6>
+                        <small class="text-muted">Personal, Academic, Bank, and Statutory certificates filled</small>
+                    </div>
+                    <span class="badge bg-success">COMPLETED</span>
+                </div>
+
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-success border-4 py-3">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-success"><i class="bi bi-check-circle-fill me-2"></i>Stage 2: Aadhaar OTP Final Application Lock</h6>
+                        <small class="text-muted">Dossier cryptographically locked; editing restricted</small>
+                    </div>
+                    <span class="badge bg-success">COMPLETED</span>
+                </div>
+
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-primary border-4 py-3 bg-light">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-primary"><i class="bi bi-hourglass-split me-2"></i>Stage 3: College / Institute Nodal Officer Scrutiny</h6>
+                        <small class="text-muted">Verification of admission, fees, qualifying marksheets, and attendance</small>
+                    </div>
+                    <span class="badge bg-primary">IN PROGRESS</span>
+                </div>
+
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                    <div>
+                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 4: District Welfare Officer (DWO) Sanction Scrutiny</h6>
+                        <small>Income certificate, category reservation, and scheme quota verification</small>
+                    </div>
+                    <span class="badge bg-secondary">PENDING</span>
+                </div>
+
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                    <div>
+                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 5: State Scholarship Sanction Order &amp; Treasury Bill Generation</h6>
+                        <small>Batch bill preparation for state scholarship fund release</small>
+                    </div>
+                    <span class="badge bg-secondary">PENDING</span>
+                </div>
+
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                    <div>
+                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 6: Direct Benefit Transfer (DBT) Bank Account Credit</h6>
+                        <small>Public Financial Management System (PFMS) credit confirmation</small>
+                    </div>
+                    <span class="badge bg-secondary">PENDING</span>
+                </div>
+            </div>
+
+            <!-- Back to Dashboard -->
+            <div class="text-center mt-4 pt-2">
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Student Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

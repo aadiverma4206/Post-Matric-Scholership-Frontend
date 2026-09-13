@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Post Matric Scholarship Portal (Chhattisgarh)</title>
+    
+    <!-- Google Fonts & Bootstrap 5 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Portal Government Theme & Favicon -->
+    <link rel="icon" type="image/png" href="~/images/cg-emblem.png" />
+    <link rel="stylesheet" href="~/css/portal.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Top Tiranga Gradient Stripe -->
+    <div class="gov-tiranga-stripe no-print"></div>
+
+    <!-- 1. Top Government Utility Bar -->
+    <header class="gov-top-bar no-print">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center px-4">
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <span>
+                    <i class="bi bi-geo-alt-fill text-warning me-1"></i> Government of Chhattisgarh
+                </span>
+                <span class="separator">|</span>
+                <span>
+                    <i class="bi bi-telephone-fill text-info me-1"></i> Toll-Free Helpline: <strong>1800-233-1234</strong> (10:00 AM - 5:30 PM)
+                </span>
+                <span class="separator d-none d-md-inline">|</span>
+                <span class="d-none d-md-inline text-muted">
+                    <i class="bi bi-envelope-fill me-1"></i> support.scholarship-cg@gov.in
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-3 mt-1 mt-md-0">
+                <!-- Accessibility Controls -->
+                <div class="accessibility-controls">
+                    <span class="text-muted small me-1">Font Size:</span>
+                    <button type="button" class="btn-accessibility" id="btnFontDecr" title="Decrease Font Size">A-</button>
+                    <button type="button" class="btn-accessibility" id="btnFontReset" title="Normal Font Size">A</button>
+                    <button type="button" class="btn-accessibility" id="btnFontIncr" title="Increase Font Size">A+</button>
+                    <button type="button" class="btn-accessibility ms-1" id="btnContrastToggle" title="High Contrast Mode">
+                        <i class="bi bi-circle-half"></i> Contrast
+                    </button>
+                </div>
+                <span class="separator">|</span>
+                <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2 py-1">
+                    <i class="bi bi-shield-lock-fill me-1"></i> 256-Bit SSL
+                </span>
+                <span class="badge bg-warning text-dark fw-bold px-2 py-1">AY 2025-26</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Main Portal Branding Header -->
+    <div class="gov-portal-header no-print">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center px-4">
+            <div class="d-flex align-items-center gap-3">
+                <!-- Official State Emblem -->
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="gov-emblem-badge" title="Government of Chhattisgarh Official Emblem">
+                        <img src="~/images/cg-emblem.png" alt="Emblem of Chhattisgarh" style="width: 100%; height: 100%; object-fit: contain;" />
+                    </div>
+                </a>
+                <!-- Official Title & Department Subtitle -->
+                <div class="gov-portal-title">
+                    <div class="sub-hindi">आदिम जाति तथा अनुसूचित जाति विकास विभाग, छत्तीसगढ़ शासन</div>
+                    <h1>पोस्ट मैट्रिक छात्रवृत्ति पोर्टल | Post Matric Scholarship Portal</h1>
+                    <h2>ST, SC &amp; OBC Post-Matric e-Scholarship Automation &amp; DBT Delivery System</h2>
+                </div>
+            </div>
+
+            <!-- Header Right Action / User Capsule -->
+            <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0 no-print">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="dropdown">
+                        <button class="btn user-account-capsule dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar-circle">
+                                @(User.FindFirst("FullName")?.Value?.Substring(0, 1).ToUpper() ?? "U")
+                            </div>
+                            <div class="text-start me-1">
+                                <div class="fw-bold small lh-1">@(User.FindFirst("FullName")?.Value ?? User.Identity.Name)</div>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">@(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "STUDENT")</span>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="min-width: 220px;">
+                            <li class="dropdown-header text-uppercase small fw-bold text-muted">Portal User Account</li>
+                            <li><a class="dropdown-item py-2" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Preview"><i class="bi bi-file-earmark-person text-info me-2"></i>My Application Dossier</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Status"><i class="bi bi-clock-history text-warning me-2"></i>Application Status</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Account" asp-action="ChangePassword"><i class="bi bi-key text-secondary me-2"></i>Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger py-2 fw-semibold">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout Securely
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center gap-2">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm fw-bold px-3 py-1">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-sm fw-bold px-3 py-1 shadow-sm">
+                            <i class="bi bi-person-plus-fill me-1"></i>New Registration
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Important Announcement Ticker -->
+    <div class="gov-announcement-strip no-print">
+        <div class="container-fluid d-flex align-items-center px-4">
+            <span class="announcement-badge me-3">
+                <i class="bi bi-megaphone-fill"></i> Latest Notice
+            </span>
+            <div class="overflow-hidden flex-grow-1">
+                <marquee behavior="scroll" direction="left" scrollamount="6" class="announcement-text m-0" onmouseover="this.stop();" onmouseout="this.start();">
+                    📢 <strong>Academic Year 2025-26:</strong> Post-Matric Scholarship online applications are actively invited for SC, ST &amp; OBC students studying in Government and Recognized Higher Education Institutes across Chhattisgarh. | ⚠️ <strong>Mandatory Requirement:</strong> Please ensure that your Bank Account is linked with your Aadhaar and seeded with NPCI for smooth Direct Benefit Transfer (DBT). | 📞 For any technical queries, contact the Department Helpdesk at <strong>1800-233-1234</strong>.
+                </marquee>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Modern Government Navigation Bar -->
+    <nav class="gov-nav-bar no-print">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center px-4">
+            <div class="d-flex align-items-center flex-wrap">
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a class="gov-nav-link active" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-house-door-fill"></i> Home
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Account" asp-action="Register">
+                        <i class="bi bi-person-plus-fill"></i> Student Registration
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Account" asp-action="Login">
+                        <i class="bi bi-shield-lock-fill"></i> Portal Login
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Account" asp-action="ForgotUserId">
+                        <i class="bi bi-search"></i> Search Application ID
+                    </a>
+                }
+                else
+                {
+                    <a class="gov-nav-link active" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i> Student Dashboard
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Profile" asp-action="Index">
+                        <i class="bi bi-person-badge"></i> Student Profile
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Application" asp-action="Wizard">
+                        <i class="bi bi-ui-checks-grid"></i> Application Form
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Application" asp-action="Preview">
+                        <i class="bi bi-file-earmark-person"></i> Application Dossier
+                    </a>
+                    <a class="gov-nav-link" asp-controller="Application" asp-action="Status">
+                        <i class="bi bi-clock-history"></i> Track Status
+                    </a>
+
+                    @if (User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                    {
+                        <a class="gov-nav-link text-warning-emphasis" asp-controller="Verification" asp-action="InstituteQueue">
+                            <i class="bi bi-building-check"></i> Institute Scrutiny
+                        </a>
+                    }
+                    @if (User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                    {
+                        <a class="gov-nav-link text-success-emphasis" asp-controller="Verification" asp-action="DistrictQueue">
+                            <i class="bi bi-shield-check"></i> District Scrutiny
+                        </a>
+                    }
+                }
+            </div>
+            <div class="d-none d-lg-block text-muted small">
+                <i class="bi bi-calendar3 me-1 text-primary"></i> Today: <strong>@DateTime.Now.ToString("dddd, dd MMMM yyyy")</strong>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 5. Main Content Area & Flash Messages -->
+    <main class="container-fluid px-4 my-4 flex-grow-1">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-start border-success border-4 py-3 no-print" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                    <div>
+                        <strong class="text-success">Success:</strong> @TempData["SuccessMessage"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-start border-danger border-4 py-3 no-print" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-octagon-fill text-danger fs-4 me-3"></i>
+                    <div>
+                        <strong class="text-danger">Alert:</strong> @TempData["ErrorMessage"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show shadow-sm border-start border-info border-4 py-3 no-print" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill text-info fs-4 me-3"></i>
+                    <div>
+                        <strong class="text-info">Information:</strong> @TempData["InfoMessage"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- 6. Comprehensive Modern Government Footer -->
+    <footer class="bg-dark text-light pt-5 pb-3 mt-auto no-print border-top border-warning border-3">
+        <div class="container-fluid px-4">
+            <div class="row g-4 mb-4">
+                <!-- Col 1: Department Info -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="gov-emblem-badge" style="width: 48px; height: 48px;">
+                            <img src="~/images/cg-emblem.png" alt="Emblem" style="width: 100%; height: 100%; object-fit: contain;" />
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-warning">ST &amp; SC Development Department</h6>
+                            <small class="text-white-50">Government of Chhattisgarh</small>
+                        </div>
+                    </div>
+                    <p class="small text-white-50 lh-base">
+                        The Post Matric Scholarship automated online delivery portal facilitates transparent, accountable, and direct disbursement of post-matric scholarships into Aadhaar-seeded bank accounts of eligible SC, ST, and OBC students pursuing higher education across Chhattisgarh.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <span class="gov-initiative-badge"><i class="bi bi-check2-circle text-success"></i> Digital India</span>
+                        <span class="gov-initiative-badge"><i class="bi bi-shield-check text-info"></i> Direct Benefit Transfer (DBT)</span>
+                        <span class="gov-initiative-badge"><i class="bi bi-flag-fill text-warning"></i> Viksit Bharat</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Useful Links & Citizen Services -->
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="fw-bold text-uppercase text-warning mb-3">
+                        <i class="bi bi-link-45deg me-1"></i> Quick Links &amp; Guidelines
+                    </h6>
+                    <div class="row small">
+                        <div class="col-6">
+                            <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                                <li><a asp-controller="Home" asp-action="Index" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Portal Home</a></li>
+                                <li><a asp-controller="Account" asp-action="Register" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Student Registration</a></li>
+                                <li><a asp-controller="Account" asp-action="Login" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Portal Login</a></li>
+                                <li><a asp-controller="Account" asp-action="ForgotUserId" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Search User ID</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                                <li><a href="javascript:void(0)" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Scheme Guidelines</a></li>
+                                <li><a href="javascript:void(0)" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Income Criteria Guide</a></li>
+                                <li><a href="javascript:void(0)" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Bank Aadhaar Seeding</a></li>
+                                <li><a href="javascript:void(0)" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right small text-warning me-1"></i>Frequently Asked Questions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Col 3: Helpdesk & Support Contacts -->
+                <div class="col-lg-4 col-md-12">
+                    <h6 class="fw-bold text-uppercase text-warning mb-3">
+                        <i class="bi bi-headset me-1"></i> Helpdesk &amp; Technical Support
+                    </h6>
+                    <div class="bg-secondary bg-opacity-25 rounded p-3 small">
+                        <div class="mb-2">
+                            <i class="bi bi-telephone-fill text-warning me-2"></i>
+                            <strong>Toll-Free Helpline:</strong> 1800-233-1234
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-clock-fill text-info me-2"></i>
+                            <strong>Support Hours:</strong> Monday to Saturday (10:00 AM to 05:30 PM)
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-envelope-fill text-danger me-2"></i>
+                            <strong>Official Email:</strong> support.scholarship-cg@gov.in
+                        </div>
+                        <div>
+                            <i class="bi bi-geo-alt-fill text-success me-2"></i>
+                            <strong>Office:</strong> Indravati Bhavan, Nawa Raipur, Atal Nagar, Chhattisgarh - 492002
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Legal & Compliance Strip -->
+            <div class="pt-3 border-top border-secondary border-opacity-50 d-flex flex-wrap justify-content-between align-items-center small text-white-50">
+                <div>
+                    &copy; @DateTime.Now.Year ST &amp; SC Development Department, Government of Chhattisgarh. All Rights Reserved.
+                </div>
+                <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
+                    <span>Designed for National e-Governance Standards (GIGW 3.0)</span>
+                    <span class="separator">|</span>
+                    <span>Hosted on NIC Cloud Data Centre</span>
+                    <span class="separator">|</span>
+                    <span class="badge bg-warning text-dark fw-bold">v2.5.0-Govt</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle & Custom Portal Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/portal.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

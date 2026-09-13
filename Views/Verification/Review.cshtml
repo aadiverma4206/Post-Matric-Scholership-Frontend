@@ -1,0 +1,138 @@
+@model Scholarship.Web.ViewModels.ScrutinyDecisionViewModel
+@{
+    ViewData["Title"] = "Application Scrutiny & Verification";
+    ulong appId = ViewBag.ApplicationId ?? 1;
+    string level = ViewBag.Level ?? "INSTITUTE";
+}
+
+<div class="container my-3" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div>
+            <h4 class="fw-bold text-primary mb-0"><i class="bi bi-shield-check me-2"></i>Application Scrutiny Dossier</h4>
+            <small class="text-muted">Verification Level: <strong>@level</strong> | Application ID: <strong>SCH20268492</strong></small>
+        </div>
+        <a asp-action="@(level == "DISTRICT" ? "DistrictQueue" : "InstituteQueue")" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Queue
+        </a>
+    </div>
+
+    <!-- Candidate Summary Dossier -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light fw-bold small">
+            <i class="bi bi-person-badge me-1"></i> Candidate Profile &amp; Enrollment Summary
+        </div>
+        <div class="card-body p-3">
+            <table class="table table-sm table-bordered small mb-0">
+                <tbody>
+                    <tr>
+                        <th style="width: 25%;">Student Name:</th>
+                        <td>Aditya Verma (ID: PMS20261002)</td>
+                        <th style="width: 25%;">Date of Birth:</th>
+                        <td>15-08-2005 (Age: 20)</td>
+                    </tr>
+                    <tr>
+                        <th>Father / Guardian:</th>
+                        <td>Ramesh Verma</td>
+                        <th>Social Category:</th>
+                        <td>Scheduled Caste (SC)</td>
+                    </tr>
+                    <tr>
+                        <th>Course Enrolled:</th>
+                        <td>B.Tech (Computer Science &amp; Engineering)</td>
+                        <th>Enrollment No:</th>
+                        <td>ENR2024CS045</td>
+                    </tr>
+                    <tr>
+                        <th>Annual Family Income:</th>
+                        <td>INR 1,20,000.00</td>
+                        <th>Bank Account:</th>
+                        <td>State Bank of India (XXXXXXXX5421) - DBT Active</td>
+                    </tr>
+                    <tr>
+                        <th>Caste Certificate:</th>
+                        <td>ED/CST/2023/10294 <span class="badge bg-success">e-District Verified</span></td>
+                        <th>Domicile Certificate:</th>
+                        <td>ED/DOM/2023/8492 <span class="badge bg-success">e-District Verified</span></td>
+                    </tr>
+                    <tr>
+                        <th>Uploaded Documents:</th>
+                        <td colspan="3">
+                            <div class="d-flex flex-wrap gap-2 pt-1">
+                                <a href="/Document/Index" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2 small">
+                                    <i class="bi bi-file-earmark-check me-1"></i>Open Full Document Dossier
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scrutiny Decision Form -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-pen-fill me-2"></i>Record Scrutiny Officer Verdict</h5>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="SubmitVerdict" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ApplicationId" value="@appId" />
+                <input type="hidden" name="VerificationLevel" value="@level" />
+
+                <!-- Decision Radios -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Verification Decision <span class="text-danger">*</span></label>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100 bg-light">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Status" id="statusApprove" value="APPROVED" checked />
+                                    <label class="form-check-label fw-bold text-success" for="statusApprove">
+                                        <i class="bi bi-check-circle-fill me-1"></i>APPROVE
+                                    </label>
+                                    <p class="small text-muted mb-0 mt-1">Dossier, marks, admission, and certificates verified valid.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100 bg-light">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Status" id="statusDefect" value="TEMPORARY_REJECTED" />
+                                    <label class="form-check-label fw-bold text-warning" for="statusDefect">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>DEFECTIVE / REVERT
+                                    </label>
+                                    <p class="small text-muted mb-0 mt-1">Sent back to student to correct upload or data mismatch.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100 bg-light">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Status" id="statusReject" value="REJECTED" />
+                                    <label class="form-check-label fw-bold text-danger" for="statusReject">
+                                        <i class="bi bi-x-circle-fill me-1"></i>REJECT
+                                    </label>
+                                    <p class="small text-muted mb-0 mt-1">Permanently ineligible or fraudulent information.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remarks -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Officer Scrutiny Remarks <span class="text-danger">*</span></label>
+                    <textarea name="Remarks" class="form-control" rows="3" placeholder="Enter remarks (Mandatory for rejection or defect)" required>Dossier verified with college admission register and fee receipt. Recommended for sanction.</textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary fw-bold px-5 py-2">
+                        <i class="bi bi-check2-square me-1"></i>Submit Scrutiny Verdict
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
