@@ -4,6 +4,13 @@
     var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
     var permAddr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.PermanentAddress;
     var corrAddr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.CorrespondenceAddress;
+
+    string studentCode = !string.IsNullOrWhiteSpace(profile?.StudentCode) 
+        ? profile.StudentCode 
+        : (User.FindFirst("StudentCode")?.Value ?? "-");
+    string studentName = !string.IsNullOrWhiteSpace(profile?.FullName) 
+        ? profile.FullName 
+        : (User.FindFirst("FullName")?.Value ?? "Student");
 }
 
 <div class="container-fluid my-3">
@@ -13,8 +20,8 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white text-center py-3">
                     <i class="bi bi-person-circle fs-1 mb-2 d-block"></i>
-                    <h6 class="fw-bold mb-1">Student Id : @(profile?.StudentCode ?? User.FindFirst("StudentCode")?.Value ?? "PMS20261002")</h6>
-                    <small class="opacity-75">Last Login: @DateTime.Now.ToString("dd-MM-yyyy hh:mm tt")</small>
+                    <h6 class="fw-bold mb-1">Student Id : @studentCode</h6>
+                    <small class="opacity-75">Session: 2025-26</small>
                 </div>
                 <div class="list-group list-group-flush small">
                     <a asp-controller="Profile" asp-action="Index" class="list-group-item list-group-item-action active text-danger fw-bold">
@@ -47,7 +54,7 @@
             <div class="gov-card shadow-sm">
                 <div class="gov-card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold mb-0 text-primary">
-                        <i class="bi bi-person-vcard me-2"></i> @(profile?.FullName?.ToUpper() ?? "STUDENT") (Student Id : @(profile?.StudentCode ?? "PMS20261002"))
+                        <i class="bi bi-person-vcard me-2"></i> @studentName.ToUpper() (Student Id : @studentCode)
                     </h5>
                     <a asp-action="Edit" class="btn btn-warning btn-sm fw-bold">
                         <i class="bi bi-pencil-fill me-1"></i> Edit Profile
@@ -68,7 +75,7 @@
                                     <i class="bi bi-person-bounding-box text-secondary" style="font-size: 6rem;"></i>
                                 }
                             </div>
-                            <h6 class="fw-bold mb-0 text-uppercase">@(profile?.FullName ?? "Student Profile")</h6>
+                            <h6 class="fw-bold mb-0 text-uppercase">@studentName</h6>
                             <span class="badge bg-success mt-1"><i class="bi bi-patch-check-fill me-1"></i>Aadhaar Seeded</span>
                         </div>
 
@@ -80,27 +87,27 @@
                                     <table class="table table-sm table-borderless small mb-0">
                                         <tr>
                                             <th class="text-muted" style="width: 40%;">Mobile No:</th>
-                                            <td class="fw-bold">@(profile?.MaskedMobile ?? "XXXXXX6387")</td>
+                                            <td class="fw-bold">@(!string.IsNullOrWhiteSpace(profile?.MaskedMobile) ? profile.MaskedMobile : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Email ID:</th>
-                                            <td class="fw-bold">@(profile?.MaskedEmail ?? "XXXXX1808@gmail.com")</td>
+                                            <td class="fw-bold">@(!string.IsNullOrWhiteSpace(profile?.MaskedEmail) ? profile.MaskedEmail : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Home Address:</th>
-                                            <td>@(permAddr?.AddressLine ?? "SONDRA, POST SONDRA")</td>
+                                            <td>@(!string.IsNullOrWhiteSpace(permAddr?.AddressLine) ? permAddr.AddressLine : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">PIN Code:</th>
-                                            <td>@(permAddr?.Pincode ?? "493221")</td>
+                                            <td>@(!string.IsNullOrWhiteSpace(permAddr?.Pincode) ? permAddr.Pincode : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Post Office:</th>
-                                            <td>@(permAddr?.PostOfficeName ?? "SONDRA B.O")</td>
+                                            <td>@(!string.IsNullOrWhiteSpace(permAddr?.PostOfficeName) ? permAddr.PostOfficeName : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">District:</th>
-                                            <td>@(permAddr?.DistrictName ?? "RAIPUR")</td>
+                                            <td>@(!string.IsNullOrWhiteSpace(permAddr?.DistrictName) ? permAddr.DistrictName : "-")</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -110,27 +117,36 @@
                                     <table class="table table-sm table-borderless small mb-0">
                                         <tr>
                                             <th class="text-muted" style="width: 45%;">Father / Guardian:</th>
-                                            <td class="fw-bold">@(profile?.FatherGuardianName ?? "HILESHWAR SAHU")</td>
+                                            <td class="fw-bold">@(!string.IsNullOrWhiteSpace(profile?.FatherGuardianName) ? profile.FatherGuardianName : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Mother Name:</th>
-                                            <td class="fw-bold">@(profile?.MotherName ?? "BASANTI SAHU")</td>
+                                            <td class="fw-bold">@(!string.IsNullOrWhiteSpace(profile?.MotherName) ? profile.MotherName : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Date of Birth:</th>
-                                            <td>@(profile?.DateOfBirth.ToString("dd-MM-yyyy") ?? "18-08-2005")</td>
+                                            <td>@(profile != null && profile.DateOfBirth > DateTime.MinValue ? profile.DateOfBirth.ToString("dd-MM-yyyy") : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Gender:</th>
-                                            <td>@(profile?.GenderName ?? "Female")</td>
+                                            <td>@(!string.IsNullOrWhiteSpace(profile?.GenderName) ? profile.GenderName : "-")</td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Category:</th>
-                                            <td><span class="badge bg-primary">@(profile?.CategoryName ?? "OBC")</span></td>
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(profile?.CategoryName))
+                                                {
+                                                    <span class="badge bg-primary">@profile.CategoryName</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th class="text-muted">Aadhaar Card No:</th>
-                                            <td class="fw-bold text-success">@(profile?.MaskedAadhaar ?? "XXXX-XXXX-4548")</td>
+                                            <td class="fw-bold text-success">@(!string.IsNullOrWhiteSpace(profile?.MaskedAadhaar) ? profile.MaskedAadhaar : "-")</td>
                                         </tr>
                                     </table>
                                 </div>

@@ -85,7 +85,7 @@
                     </h4>
                     <p class="mb-0 text-muted small">
                         <strong>Student Registration ID:</strong> 
-                        <span class="badge bg-dark font-monospace">@(profile?.StudentCode ?? User.FindFirst("StudentCode")?.Value ?? "PMS20261002")</span>
+                        <span class="badge bg-dark font-monospace">@(profile?.StudentCode ?? User.FindFirst("StudentCode")?.Value ?? "-")</span>
                         <span class="mx-2">|</span>
                         <strong>Department:</strong> ST &amp; SC Development Department, Chhattisgarh
                     </p>
@@ -217,32 +217,32 @@
                         <tbody>
                             <tr>
                                 <th class="bg-light text-muted" style="width: 25%;">Application ID:</th>
-                                <td><strong class="text-primary font-monospace fs-6">@(dash?.ApplicationNumber ?? app?.ApplicationNumber ?? "SCH20268492")</strong></td>
+                                <td><strong class="text-primary font-monospace fs-6">@(dash?.ApplicationNumber ?? app?.ApplicationNumber ?? "-")</strong></td>
                                 <th class="bg-light text-muted" style="width: 25%;">Student ID:</th>
-                                <td><span class="font-monospace fw-bold">@(dash?.StudentCode ?? profile?.StudentCode ?? "PMS20261002")</span></td>
+                                <td><span class="font-monospace fw-bold">@(dash?.StudentCode ?? profile?.StudentCode ?? "-")</span></td>
                             </tr>
                             <tr>
                                 <th class="bg-light text-muted">Academic Session:</th>
-                                <td>@(dash?.AcademicYear ?? "2025-26")</td>
+                                <td>@(dash?.AcademicYear ?? app?.AcademicYearCode ?? "2025-26")</td>
                                 <th class="bg-light text-muted">Selected Scheme:</th>
-                                <td><strong>@(dash?.Scheme ?? "Post Matric Scholarship for SC/ST/OBC Students")</strong></td>
+                                <td><strong>@(dash?.Scheme ?? app?.SchemeName ?? "-")</strong></td>
                             </tr>
                             <tr>
                                 <th class="bg-light text-muted">Social Category:</th>
-                                <td><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fw-bold">@(dash?.Category ?? "OBC")</span></td>
+                                <td><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fw-bold">@(dash?.Category ?? profile?.CategoryName ?? "-")</span></td>
                                 <th class="bg-light text-muted">Current Course:</th>
-                                <td class="fw-bold">@(dash?.CurrentCourse ?? "PGDCA (1 Year Course)")</td>
+                                <td class="fw-bold">@(dash?.CurrentCourse ?? app?.CourseName ?? "-")</td>
                             </tr>
                             <tr>
                                 <th class="bg-light text-muted">Enrolled Institute:</th>
                                 <td colspan="3" class="fw-bold text-primary">
-                                    <i class="bi bi-building me-1"></i> @(dash?.Institute ?? "GOVT. NAGARJUNA P.G. COLLEGE OF SCIENCE, RAIPUR (C.G.)")
+                                    <i class="bi bi-building me-1"></i> @(dash?.Institute ?? app?.InstituteName ?? "-")
                                 </td>
                             </tr>
                             <tr>
                                 <th class="bg-light text-muted">Current Workflow Status:</th>
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">@(dash?.ApplicationStatus ?? "DRAFT")</span>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">@(dash?.ApplicationStatus ?? app?.ApplicationStatus ?? "DRAFT")</span>
                                 </td>
                                 <th class="bg-light text-muted">Verification Status:</th>
                                 <td>
@@ -253,13 +253,13 @@
                                 <th class="bg-light text-muted">Bank DBT (NPCI) Status:</th>
                                 <td>
                                     <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
-                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.BankStatus ?? "SEEDED & VERIFIED")
+                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.BankStatus ?? (bank?.IsAadhaarSeeded == true ? "SEEDED & VERIFIED" : "PENDING"))
                                     </span>
                                 </td>
                                 <th class="bg-light text-muted">Aadhaar e-KYC Status:</th>
                                 <td>
                                     <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
-                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.OtrStatus ?? "LINKED & VERIFIED")
+                                        <i class="bi bi-check-circle-fill me-1"></i> @(dash?.OtrStatus ?? (!string.IsNullOrEmpty(profile?.OtrNumber) ? "LINKED & VERIFIED" : "PENDING"))
                                     </span>
                                 </td>
                             </tr>

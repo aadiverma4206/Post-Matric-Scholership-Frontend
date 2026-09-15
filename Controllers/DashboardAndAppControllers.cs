@@ -67,23 +67,35 @@ public class ApplicationController : Controller
         {
             var profileResp = await _apiClient.GetProfileAsync();
             var addrResp = await _apiClient.GetAddressAsync("PERMANENT");
+            var hhCats = await _apiClient.GetHouseholdCategoriesAsync();
             ViewBag.Profile = profileResp?.Data;
             ViewBag.Address = addrResp?.Data;
+            ViewBag.HouseholdCategories = hhCats?.Data ?? new();
         }
         else if (step == 2) // Current Course
         {
             var acadResp = await _apiClient.GetAcademicDetailsAsync();
             ViewBag.Academic = acadResp?.Data;
 
+            var institutes = await _apiClient.GetInstitutesAsync(0);
+            var courses = await _apiClient.GetCoursesAsync(null);
             var courseTypes = await _apiClient.GetCourseTypesAsync();
             var schemes = await _apiClient.GetSchemesAsync();
+            var admissionTypes = await _apiClient.GetAdmissionTypesAsync();
+            var studyModes = await _apiClient.GetStudyModesAsync();
+            ViewBag.Institutes = institutes?.Data ?? new();
+            ViewBag.Courses = courses?.Data ?? new();
             ViewBag.CourseTypes = courseTypes?.Data ?? new();
             ViewBag.Schemes = schemes?.Data ?? new();
+            ViewBag.AdmissionTypes = admissionTypes?.Data ?? new();
+            ViewBag.StudyModes = studyModes?.Data ?? new();
         }
         else if (step == 3) // 10th & Previous Qualification
         {
             var acadResp = await _apiClient.GetAcademicDetailsAsync();
+            var boards = await _apiClient.GetEducationBoardsAsync();
             ViewBag.Academic = acadResp?.Data;
+            ViewBag.Boards = boards?.Data ?? new();
         }
         else if (step == 4) // Bank Details
         {

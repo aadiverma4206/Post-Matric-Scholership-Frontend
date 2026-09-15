@@ -17,17 +17,20 @@
                     <tbody>
                         <tr>
                             <th style="width: 25%;">Application ID:</th>
-                            <td class="fw-bold text-primary">@(app?.ApplicationNumber ?? "SCH20268492")</td>
+                            <td class="fw-bold text-primary">@(app?.ApplicationNumber ?? "-")</td>
                             <th style="width: 25%;">Current Status:</th>
                             <td>
-                                <span class="badge bg-success py-1 px-2"><i class="bi bi-shield-check me-1"></i>LOCKED / PENDING INSTITUTE REVIEW</span>
+                                <span class="badge @(app?.IsLocked == true ? "bg-success" : "bg-warning text-dark") py-1 px-2">
+                                    <i class="bi @(app?.IsLocked == true ? "bi-shield-check" : "bi-pencil") me-1"></i>
+                                    @(app?.StatusName ?? (app?.IsLocked == true ? "LOCKED / PENDING SCRUTINY" : "DRAFT (IN PROGRESS)"))
+                                </span>
                             </td>
                         </tr>
                         <tr>
-                            <th>Submission Date:</th>
-                            <td>@DateTime.Now.ToString("dd MMMM yyyy")</td>
+                            <th>Academic Session:</th>
+                            <td>@(app?.AcademicYearCode ?? "2025-26")</td>
                             <th>Lock Timestamp:</th>
-                            <td>@(app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? DateTime.Now.ToString("dd-MM-yyyy 10:30"))</td>
+                            <td>@(app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? (app?.IsLocked == true ? DateTime.Now.ToString("dd-MM-yyyy") : "Not Locked Yet"))</td>
                         </tr>
                     </tbody>
                 </table>

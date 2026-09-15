@@ -39,6 +39,19 @@ public class VerificationController : Controller
     {
         ViewBag.ApplicationId = id;
         ViewBag.Level = level;
+
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        var profileResp = await _apiClient.GetProfileAsync();
+        var certsResp = await _apiClient.GetCertificatesAsync();
+        var acadResp = await _apiClient.GetAcademicDetailsAsync();
+        var bankResp = await _apiClient.GetBankAccountAsync();
+
+        ViewBag.Application = appResp?.Data;
+        ViewBag.Profile = profileResp?.Data;
+        ViewBag.Certificates = certsResp?.Data ?? new();
+        ViewBag.Academic = acadResp?.Data;
+        ViewBag.Bank = bankResp?.Data;
+
         return View();
     }
 

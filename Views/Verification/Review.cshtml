@@ -3,13 +3,21 @@
     ViewData["Title"] = "Application Scrutiny & Verification";
     ulong appId = ViewBag.ApplicationId ?? 1;
     string level = ViewBag.Level ?? "INSTITUTE";
+    var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+    var profile = (Scholarship.Web.ViewModels.StudentProfileViewModel?)ViewBag.Profile;
+    var acad = (Scholarship.Web.ViewModels.AcademicDetailsViewModel?)ViewBag.Academic;
+    var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.Bank;
+    var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>?)ViewBag.Certificates ?? new();
+
+    var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
+    var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
 }
 
 <div class="container my-3" style="max-width: 900px;">
     <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
         <div>
             <h4 class="fw-bold text-primary mb-0"><i class="bi bi-shield-check me-2"></i>Application Scrutiny Dossier</h4>
-            <small class="text-muted">Verification Level: <strong>@level</strong> | Application ID: <strong>SCH20268492</strong></small>
+            <small class="text-muted">Verification Level: <strong>@level</strong> | Application ID: <strong>@(app?.ApplicationNumber ?? ("#" + appId))</strong></small>
         </div>
         <a asp-action="@(level == "DISTRICT" ? "DistrictQueue" : "InstituteQueue")" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>Back to Queue
@@ -26,33 +34,33 @@
                 <tbody>
                     <tr>
                         <th style="width: 25%;">Student Name:</th>
-                        <td>Aditya Verma (ID: PMS20261002)</td>
+                        <td>@(profile?.FullName ?? "-") (ID: @(profile?.StudentCode ?? "-"))</td>
                         <th style="width: 25%;">Date of Birth:</th>
-                        <td>15-08-2005 (Age: 20)</td>
+                        <td>@(profile?.DateOfBirth != default && profile?.DateOfBirth.Year > 1900 ? profile.DateOfBirth.ToString("dd-MM-yyyy") : "-")</td>
                     </tr>
                     <tr>
                         <th>Father / Guardian:</th>
-                        <td>Ramesh Verma</td>
+                        <td>@(profile?.FatherGuardianName ?? "-")</td>
                         <th>Social Category:</th>
-                        <td>Scheduled Caste (SC)</td>
+                        <td>@(profile?.CategoryName ?? "-")</td>
                     </tr>
                     <tr>
                         <th>Course Enrolled:</th>
-                        <td>B.Tech (Computer Science &amp; Engineering)</td>
+                        <td>@(acad?.CourseName ?? "-") @(!string.IsNullOrWhiteSpace(acad?.BranchName) ? $"({acad.BranchName})" : "")</td>
                         <th>Enrollment No:</th>
-                        <td>ENR2024CS045</td>
+                        <td>@(acad?.EnrollmentNumber ?? "-")</td>
                     </tr>
                     <tr>
                         <th>Annual Family Income:</th>
-                        <td>INR 1,20,000.00</td>
+                        <td>@(profile?.AnnualIncome > 0 ? "INR " + profile.AnnualIncome.ToString("N2") : "-")</td>
                         <th>Bank Account:</th>
-                        <td>State Bank of India (XXXXXXXX5421) - DBT Active</td>
+                        <td>@(bank?.BankName ?? "-") (@(!string.IsNullOrWhiteSpace(bank?.MaskedAccountNumber) ? bank.MaskedAccountNumber : "-"))</td>
                     </tr>
                     <tr>
                         <th>Caste Certificate:</th>
-                        <td>ED/CST/2023/10294 <span class="badge bg-success">e-District Verified</span></td>
+                        <td>@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "-")</td>
                         <th>Domicile Certificate:</th>
-                        <td>ED/DOM/2023/8492 <span class="badge bg-success">e-District Verified</span></td>
+                        <td>@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "-")</td>
                     </tr>
                     <tr>
                         <th>Uploaded Documents:</th>
@@ -123,7 +131,7 @@
                 <!-- Remarks -->
                 <div class="mb-4">
                     <label class="form-label fw-bold">Officer Scrutiny Remarks <span class="text-danger">*</span></label>
-                    <textarea name="Remarks" class="form-control" rows="3" placeholder="Enter remarks (Mandatory for rejection or defect)" required>Dossier verified with college admission register and fee receipt. Recommended for sanction.</textarea>
+                    <textarea name="Remarks" class="form-control" rows="3" placeholder="Enter remarks (Mandatory for rejection or defect)" required></textarea>
                 </div>
 
                 <!-- Submit Button -->

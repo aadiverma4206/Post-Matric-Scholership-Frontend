@@ -8,6 +8,8 @@
     var admissionTypes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.AdmissionTypes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var studyModes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.StudyModes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var boards = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Boards ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var institutes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Institutes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var courses = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Courses ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
 }
 
 <div class="container my-3">
@@ -47,10 +49,11 @@
 
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Institute District <span class="required-asterisk">*</span></label>
-                        <select class="form-select" id="InstituteDistrictSelect" required>
+                        <select class="form-select dynamic-district" id="InstituteDistrictSelect" required>
+                            <option value="">-- Select District --</option>
                             @foreach (var d in districts)
                             {
-                                <option value="@d.Id" selected="@(d.Id == 1)">@d.Name</option>
+                                <option value="@d.Id">@d.Name</option>
                             }
                         </select>
                     </div>
@@ -58,9 +61,11 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Institute <span class="required-asterisk">*</span></label>
                         <select class="form-select" id="InstituteSelect" required>
-                            <option value="1" data-code="13870012">GOVT. NAGARJUNA P.G. COLLEGE OF SCIENCE, RAIPUR / 13870012</option>
-                            <option value="2" data-code="13870022">GOVERNMENT ENGINEERING COLLEGE RAIPUR / 13870022</option>
-                            <option value="3" data-code="13870047">PT. RAVISHANKAR SHUKLA UNIVERSITY, RAIPUR / 13870047</option>
+                            <option value="">-- Select Institute --</option>
+                            @foreach (var inst in institutes)
+                            {
+                                <option value="@inst.Id" data-code="@inst.Code">@inst.Name</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -68,15 +73,15 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Selected Institute ID</label>
-                        <input class="form-control fw-bold bg-light" id="SelectedInstituteIdDisplay" value="13870012" readonly />
+                        <input class="form-control fw-bold bg-light" id="SelectedInstituteIdDisplay" value="@(acad?.InstituteCode ?? "")" placeholder="Institute Code" readonly />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Admission Date (DD-MM-YYYY) <span class="required-asterisk">*</span></label>
-                        <input type="date" class="form-control" name="AdmissionDate" value="@(acad?.AdmissionDate.ToString("yyyy-MM-dd") ?? "2025-07-15")" required />
+                        <input type="date" class="form-control" name="AdmissionDate" value="@(acad != null && acad.AdmissionDate > DateTime.MinValue ? acad.AdmissionDate.ToString("yyyy-MM-dd") : "")" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Enrollment Number</label>
-                        <input class="form-control" name="EnrollmentNumber" value="@(acad?.EnrollmentNumber ?? "AI/07747")" placeholder="Institute Enrollment No." />
+                        <input class="form-control" name="EnrollmentNumber" value="@(acad?.EnrollmentNumber ?? "")" placeholder="Institute Enrollment No." />
                     </div>
                 </div>
 
@@ -93,27 +98,31 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Admission Type <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="AdmissionTypeId" required>
-                            <option value="1" selected>Merit Basis</option>
-                            <option value="2">Management Quota</option>
-                            <option value="3">NRI Quota</option>
-                            <option value="4">Spot Admission</option>
+                            <option value="">-- Select Admission Type --</option>
+                            @foreach (var at in admissionTypes)
+                            {
+                                <option value="@at.Id" selected="@(acad?.AdmissionTypeId == at.Id)">@at.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Mode of Study <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="StudyModeId" required>
-                            <option value="1" selected>Regular Course</option>
-                            <option value="2">Distance / Correspondence Learning</option>
-                            <option value="3">Part time</option>
+                            <option value="">-- Select Mode of Study --</option>
+                            @foreach (var sm in studyModes)
+                            {
+                                <option value="@sm.Id" selected="@(acad?.StudyModeId == sm.Id)">@sm.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Course <span class="required-asterisk">*</span></label>
                         <select class="form-select" id="CourseSelect" required>
-                            <option value="1" data-code="10356" selected>PGDCA (1 Year Course)</option>
-                            <option value="2" data-code="10101">B. Sc.</option>
-                            <option value="3" data-code="10102">B. Sc. (Hons.)</option>
-                            <option value="4" data-code="10201">B. C. A. (3 Year Course)</option>
+                            <option value="">-- Select Course --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.Id" data-code="@c.Code">@c.Name</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -122,22 +131,21 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Branch <span class="required-asterisk">*</span></label>
                         <select class="form-select" id="BranchSelect" required>
-                            <option value="1" selected>Computer Application (Course Duration- 1 Year)</option>
-                            <option value="2">Physics, Chemistry, Mathematics</option>
+                            <option value="">-- Select Branch --</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Selected Course Code</label>
-                        <input class="form-control fw-bold bg-light" id="SelectedCourseCodeDisplay" value="10356" readonly />
-                        <input type="hidden" name="InstituteCourseId" value="1" />
+                        <input class="form-control fw-bold bg-light" id="SelectedCourseCodeDisplay" value="@(acad?.CourseCode ?? "")" placeholder="Course Code" readonly />
+                        <input type="hidden" name="InstituteCourseId" id="InstituteCourseId" value="@(acad?.InstituteCourseId > 0 ? acad.InstituteCourseId : 1)" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Course Year <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="CourseYear" required>
-                            <option value="1" selected>1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
+                            <option value="1" selected="@(acad?.CourseYear == 1)">1st Year</option>
+                            <option value="2" selected="@(acad?.CourseYear == 2)">2nd Year</option>
+                            <option value="3" selected="@(acad?.CourseYear == 3)">3rd Year</option>
+                            <option value="4" selected="@(acad?.CourseYear == 4)">4th Year</option>
                         </select>
                     </div>
                 </div>
@@ -146,15 +154,15 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Hosteller or Day Scholar? <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="IsHosteller" required>
-                            <option value="false" selected>Day Scholar</option>
-                            <option value="true">Hosteller</option>
+                            <option value="false" selected="@(acad?.IsHosteller != true)">Day Scholar</option>
+                            <option value="true" selected="@(acad?.IsHosteller == true)">Hosteller</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Lateral Entry Admission? <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="IsLateralEntry" required>
-                            <option value="false" selected>No</option>
-                            <option value="true">Yes</option>
+                            <option value="false" selected="@(acad?.IsLateralEntry != true)">No</option>
+                            <option value="true" selected="@(acad?.IsLateralEntry == true)">Yes</option>
                         </select>
                     </div>
                 </div>
@@ -170,17 +178,17 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthRollNumber" value="@(acad?.TenthRollNumber ?? "1211808065")" required />
+                        <input class="form-control" name="TenthRollNumber" id="TenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Enter 10th Roll Number" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Confirm Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ConfirmTenthRollNumber" value="@(acad?.TenthRollNumber ?? "1211808065")" required />
+                        <input class="form-control" name="ConfirmTenthRollNumber" id="ConfirmTenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Re-enter 10th Roll Number" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">School Category <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="SchoolType" required>
-                            <option value="GOVERNMENT" selected>Government School</option>
-                            <option value="NON_GOVERNMENT">Non-Government / Private</option>
+                            <option value="GOVERNMENT" selected="@(acad?.SchoolType != "NON_GOVERNMENT")">Government School</option>
+                            <option value="NON_GOVERNMENT" selected="@(acad?.SchoolType == "NON_GOVERNMENT")">Non-Government / Private</option>
                         </select>
                     </div>
                 </div>
@@ -188,20 +196,21 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Year of Passing (YYYY) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthPassingYear" value="@(acad?.TenthPassingYear ?? 2021)" maxlength="4" required />
+                        <input class="form-control" name="TenthPassingYear" value="@(acad?.TenthPassingYear > 0 ? acad.TenthPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2022)" maxlength="4" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Board Name <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="TenthBoardId" required>
-                            <option value="1" selected>CGBSE (Chhattisgarh Board)</option>
-                            <option value="2">CBSE</option>
-                            <option value="3">ICSE</option>
-                            <option value="4">Other Recognized Board</option>
+                            <option value="">-- Select Board --</option>
+                            @foreach (var b in boards)
+                            {
+                                <option value="@b.Id" selected="@(acad?.TenthBoardId == b.Id)">@b.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthPercentage" value="@(acad?.TenthPercentage ?? 78.50m)" required />
+                        <input class="form-control" name="TenthPercentage" value="@(acad?.TenthPercentage > 0 ? acad.TenthPercentage.ToString("F2") : "")" placeholder="e.g. 78.50" required />
                     </div>
                 </div>
 
@@ -235,39 +244,42 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Course Type <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="PreviousCourseTypeId" required>
-                            <option value="5" selected>Non - Professional Degree Courses</option>
-                            <option value="4">Professional Degree Courses</option>
-                            <option value="1">School Education Courses (12th)</option>
-                            <option value="2">ITI / Polytechnic Courses</option>
+                        <select class="form-select" name="PreviousCourseTypeId" id="PreviousCourseTypeId" required>
+                            <option value="">-- Select Course Type --</option>
+                            @foreach (var ct in courseTypes)
+                            {
+                                <option value="@ct.Id" selected="@(acad?.PreviousCourseTypeId == ct.Id)">@ct.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Course <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="PreviousCourseId" required>
-                            <option value="2" selected>B. Sc.</option>
-                            <option value="1">B. A.</option>
-                            <option value="3">B. Com.</option>
+                        <select class="form-select" name="PreviousCourseId" id="PreviousCourseId" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.Id" selected="@(acad?.PreviousCourseId == c.Id)">@c.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousRollNumber" value="@(acad?.PreviousRollNumber ?? "210459821")" required />
+                        <input class="form-control" name="PreviousRollNumber" value="@(acad?.PreviousRollNumber ?? "")" placeholder="Enter Previous Roll Number" required />
                     </div>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Passing Year (YYYY) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousPassingYear" value="@(acad?.PreviousPassingYear ?? 2024)" maxlength="4" required />
+                        <input class="form-control" name="PreviousPassingYear" value="@(acad?.PreviousPassingYear > 0 ? acad.PreviousPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2024)" maxlength="4" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousPercentage" value="@(acad?.PreviousPercentage ?? 74.20m)" required />
+                        <input class="form-control" name="PreviousPercentage" value="@(acad?.PreviousPercentage > 0 ? acad.PreviousPercentage.ToString("F2") : "")" placeholder="e.g. 74.20" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Institute Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousInstituteName" value="@(acad?.PreviousInstituteName ?? "GOVT NAGARJUNA P.G. COLLEGE OF SCIENCE RAIPUR C.G.")" required />
+                        <input class="form-control" name="PreviousInstituteName" value="@(acad?.PreviousInstituteName ?? "")" placeholder="Enter Previous School/College Name" required />
                     </div>
                 </div>
 

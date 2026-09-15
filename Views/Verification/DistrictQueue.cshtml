@@ -1,5 +1,6 @@
 @{
     ViewData["Title"] = "District Welfare Officer Scrutiny Queue";
+    var queue = (Scholarship.Web.ViewModels.PagedResultViewModel<Scholarship.Web.ViewModels.ApplicationSummaryViewModel>?)ViewBag.Queue;
 }
 
 <div class="container-fluid my-3">
@@ -9,7 +10,7 @@
             <small class="text-muted">Applications verified by institutes awaiting district grant sanction</small>
         </div>
         <div>
-            <span class="badge bg-primary py-2 px-3"><i class="bi bi-geo-alt me-1"></i>District: Raipur</span>
+            <span class="badge bg-primary py-2 px-3"><i class="bi bi-geo-alt me-1"></i>District Sanction Desk</span>
         </div>
     </div>
 
@@ -36,21 +37,36 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><input type="checkbox" class="form-check-input" /></td>
-                            <td><strong class="text-primary">SCH20268492</strong></td>
-                            <td>PMS20261002</td>
-                            <td>Aditya Verma</td>
-                            <td>Govt Engineering College, Raipur</td>
-                            <td>B.Tech (CSE)</td>
-                            <td>SC</td>
-                            <td><span class="badge bg-info text-dark"><i class="bi bi-check2 me-1"></i>INSTITUTE APPROVED</span></td>
-                            <td class="text-center">
-                                <a asp-action="Review" asp-route-id="1" asp-route-level="DISTRICT" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-shield-check me-1"></i>Sanction / Scrutinize
-                                </a>
-                            </td>
-                        </tr>
+                        @if (queue?.Items != null && queue.Items.Any())
+                        {
+                            foreach (var item in queue.Items)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" class="form-check-input" value="@item.ApplicationId" /></td>
+                                    <td><strong class="text-primary">@item.ApplicationNumber</strong></td>
+                                    <td>@(item.StudentCode ?? "-")</td>
+                                    <td class="fw-bold">@(item.FullName ?? item.StudentName ?? "-")</td>
+                                    <td>@(item.InstituteName ?? "-")</td>
+                                    <td>@(item.CurrentCourse ?? item.CourseName ?? "-")</td>
+                                    <td>@(item.Category ?? "-")</td>
+                                    <td><span class="badge bg-info text-dark"><i class="bi bi-check2 me-1"></i>@(item.StatusName ?? item.StatusCode ?? "PENDING")</span></td>
+                                    <td class="text-center">
+                                        <a asp-action="Review" asp-route-id="@item.ApplicationId" asp-route-level="DISTRICT" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-shield-check me-1"></i>Sanction / Scrutinize
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                                    No applications found in the district sanction queue.
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>

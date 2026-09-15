@@ -15,6 +15,7 @@ public class PagedResultViewModel<T>
     public List<T> Items { get; set; } = new();
     public int TotalCount { get; set; }
     public int PageNumber { get; set; }
+    public int Page => PageNumber > 0 ? PageNumber : 1;
     public int PageSize { get; set; }
     public int TotalPages => (int)Math.Ceiling((double)TotalCount / (PageSize > 0 ? PageSize : 10));
 }
@@ -232,6 +233,13 @@ public class StudentProfileViewModel
     public uint? HouseholdCategoryId { get; set; }
     public decimal AnnualIncome { get; set; }
     public string? MaskedBplNumber { get; set; }
+    public string? BplNumber { get; set; }
+    public string? FirstNameHindi { get; set; }
+    public string? MiddleNameHindi { get; set; }
+    public string? LastNameHindi { get; set; }
+    public string? FatherNameHindi { get; set; }
+    public string? MotherNameHindi { get; set; }
+    public string? OtrNumber { get; set; }
     public List<uint> ApplicableDeprivationCriteria { get; set; } = new();
 }
 
@@ -280,9 +288,17 @@ public class AcademicDetailsViewModel
 
     // Current Academic Record
     public ulong? AcademicRecordId { get; set; }
+    public ulong? InstituteId { get; set; }
+    public uint? CourseTypeId { get; set; }
+    public ulong? CourseId { get; set; }
     [Required] public uint AcademicYearId { get; set; }
     [Required] public ulong SchemeId { get; set; }
     [Required] public ulong InstituteCourseId { get; set; }
+    public string? InstituteCode { get; set; }
+    public string? InstituteName { get; set; }
+    public string? CourseCode { get; set; }
+    public string? CourseName { get; set; }
+    public string? BranchName { get; set; }
     [Required] public DateTime AdmissionDate { get; set; } = DateTime.Today;
     [Required] public string EnrollmentNumber { get; set; } = string.Empty;
     public DateTime? EnrollmentDate { get; set; }
@@ -298,7 +314,11 @@ public class BankAccountViewModel
 {
     public ulong StudentBankAccountId { get; set; }
     [Required] public ulong BankId { get; set; }
+    public string? BankName { get; set; }
     [Required] public ulong BranchId { get; set; }
+    public string? BranchName { get; set; }
+    public string? BranchAddress { get; set; }
+    public string? IfscCode { get; set; }
     [Required] public string AccountNumber { get; set; } = string.Empty;
     [Required] public string ConfirmAccountNumber { get; set; } = string.Empty;
     public string MaskedAccountNumber { get; set; } = string.Empty;
@@ -315,6 +335,7 @@ public class CertificateViewModel
     public string GeneratedFrom { get; set; } = "EDISTRICT_PORTAL";
     [Required] public string ReferenceNumber { get; set; } = string.Empty;
     public string MaskedReferenceNumber { get; set; } = string.Empty;
+    public decimal AnnualIncome { get; set; }
     public DateTime? IssueDate { get; set; }
     public ulong? DocumentId { get; set; }
     public string VerificationStatus { get; set; } = "PENDING";
@@ -327,9 +348,19 @@ public class ApplicationSummaryViewModel
     public ulong StudentId { get; set; }
     public string? StudentCode { get; set; }
     public string? StudentName { get; set; }
+    public string? FullName => StudentName;
     public uint AcademicYearId { get; set; }
+    public string? AcademicYearCode { get; set; }
     public ulong SchemeId { get; set; }
+    public string? SchemeName { get; set; }
     public uint ApplicationStatusId { get; set; }
+    public string? StatusCode { get; set; }
+    public string? StatusName { get; set; }
+    public string? ApplicationStatus => StatusName ?? StatusCode;
+    public string? InstituteName { get; set; }
+    public string? CourseName { get; set; }
+    public string? CurrentCourse => CourseName;
+    public string? Category { get; set; }
     public int CurrentStep { get; set; }
     public bool IsLocked { get; set; }
     public DateTime? LockedAt { get; set; }

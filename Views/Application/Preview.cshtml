@@ -7,22 +7,30 @@
     var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.Bank;
     var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>?)ViewBag.Certificates ?? new();
 
-    string candidateName = !string.IsNullOrWhiteSpace(profile?.FullName) ? profile.FullName : "Aditya kumar verma";
-    string studentId = !string.IsNullOrWhiteSpace(profile?.StudentCode) ? profile.StudentCode : "21564012431";
-    string appNo = !string.IsNullOrWhiteSpace(app?.ApplicationNumber) ? app.ApplicationNumber : "SCH20268492";
-    string fatherName = !string.IsNullOrWhiteSpace(profile?.FatherGuardianName) ? profile.FatherGuardianName : "Balram";
-    string motherName = !string.IsNullOrWhiteSpace(profile?.MotherName) ? profile.MotherName : "poornima bai";
-    string category = !string.IsNullOrWhiteSpace(profile?.CategoryName) ? profile.CategoryName : "OBC (Other Backward Class)";
-    string gender = !string.IsNullOrWhiteSpace(profile?.GenderName) ? profile.GenderName : "Male";
-    string religion = !string.IsNullOrWhiteSpace(profile?.ReligionName) ? profile.ReligionName : "Hindu";
+    string candidateName = !string.IsNullOrWhiteSpace(profile?.FullName) ? profile.FullName : "-";
+    string studentId = !string.IsNullOrWhiteSpace(profile?.StudentCode) ? profile.StudentCode : "-";
+    string appNo = !string.IsNullOrWhiteSpace(app?.ApplicationNumber) ? app.ApplicationNumber : "-";
+    string fatherName = !string.IsNullOrWhiteSpace(profile?.FatherGuardianName) ? profile.FatherGuardianName : "-";
+    string motherName = !string.IsNullOrWhiteSpace(profile?.MotherName) ? profile.MotherName : "-";
+    string category = !string.IsNullOrWhiteSpace(profile?.CategoryName) ? profile.CategoryName : "-";
+    string gender = !string.IsNullOrWhiteSpace(profile?.GenderName) ? profile.GenderName : "-";
+    string religion = !string.IsNullOrWhiteSpace(profile?.ReligionName) ? profile.ReligionName : "-";
     string dob = profile?.DateOfBirth != default && profile?.DateOfBirth.Year > 1900 
         ? profile.DateOfBirth.ToString("dd-MM-yyyy") 
-        : "01-06-2003";
-    string aadhaar = !string.IsNullOrWhiteSpace(profile?.MaskedAadhaar) ? profile.MaskedAadhaar : "XXXX-XXXX-8645";
-    string mobile = !string.IsNullOrWhiteSpace(profile?.MaskedMobile) ? profile.MaskedMobile : "XXXXXX3585";
-    string email = !string.IsNullOrWhiteSpace(profile?.MaskedEmail) ? profile.MaskedEmail : "a***6@gmail.com";
-    string bankAcc = !string.IsNullOrWhiteSpace(bank?.MaskedAccountNumber) ? bank.MaskedAccountNumber : "XXXXXXXX5421";
-    decimal income = profile?.AnnualIncome > 0 ? profile.AnnualIncome : 120000.00m;
+        : "-";
+    string aadhaar = !string.IsNullOrWhiteSpace(profile?.MaskedAadhaar) ? profile.MaskedAadhaar : "-";
+    string mobile = !string.IsNullOrWhiteSpace(profile?.MaskedMobile) ? profile.MaskedMobile : "-";
+    string email = !string.IsNullOrWhiteSpace(profile?.MaskedEmail) ? profile.MaskedEmail : "-";
+    string bankAcc = !string.IsNullOrWhiteSpace(bank?.MaskedAccountNumber) 
+        ? bank.MaskedAccountNumber 
+        : (!string.IsNullOrWhiteSpace(bank?.AccountNumber) && bank.AccountNumber.Length >= 4 
+            ? "XXXX" + bank.AccountNumber.Substring(bank.AccountNumber.Length - 4) 
+            : "-");
+    decimal income = profile?.AnnualIncome ?? 0;
+
+    var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
+    var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
+    var incomeCert = certs.FirstOrDefault(c => c.CertificateTypeId == 3);
 }
 
 <div class="printable-dossier-wrapper my-3">
@@ -106,7 +114,7 @@
             <div>
                 <strong>Application No:</strong> <span class="text-primary fw-bold">@appNo</span> &nbsp;|&nbsp;
                 <strong>Student ID:</strong> <span class="fw-bold">@studentId</span> &nbsp;|&nbsp;
-                <strong>OTR Ref (NSP):</strong> <span class="badge bg-success" style="font-size: 0.72rem;">26045917 (VERIFIED)</span>
+                <strong>OTR Ref (NSP):</strong> <span class="badge bg-success" style="font-size: 0.72rem;">@(profile?.OtrNumber ?? "VERIFIED")</span>
             </div>
             <div class="text-end">
                 <strong>Status:</strong>
@@ -177,15 +185,18 @@
             <tbody>
                 <tr>
                     <th style="width: 22%;">Domicile State:</th>
-                    <td style="width: 28%;" class="fw-bold">Chhattisgarh (Permanent Resident)</td>
+                    <td style="width: 28%;" class="fw-bold">@(addr?.StateName ?? "Chhattisgarh")</td>
                     <th style="width: 22%;">District &amp; Tehsil:</th>
-                    <td style="width: 28%;">@(addr?.DistrictName ?? "Raipur") / @(addr?.BlockName ?? "Dharsiwa")</td>
+                    <td style="width: 28%;">@(addr?.DistrictName ?? "-") / @(addr?.BlockName ?? "-")</td>
                 </tr>
                 <tr>
                     <th>Permanent Address:</th>
                     <td colspan="3">
-                        @(addr?.AddressLine ?? "Shanti Nagar, Near GPO, Raipur, Chhattisgarh") - PIN: @(addr?.Pincode ?? "492001")
-                        (Vidhansabha / Assembly: @(addr?.VidhansabhaName ?? "Raipur City Rural"))
+                        @(addr?.AddressLine ?? "-") - PIN: @(addr?.Pincode ?? "-")
+                        @if (!string.IsNullOrWhiteSpace(addr?.VidhansabhaName))
+                        {
+                            <span> (Vidhansabha / Assembly: @addr.VidhansabhaName)</span>
+                        }
                     </td>
                 </tr>
                 <tr>
@@ -208,32 +219,32 @@
                 <tr>
                     <th style="width: 22%;">Enrolled Institution:</th>
                     <td colspan="3" class="fw-bold text-uppercase">
-                        Government Engineering College, Raipur (GEC Raipur) [AISHE: C-21650]
+                        @(acad?.InstituteName ?? "-")
                     </td>
                 </tr>
                 <tr>
                     <th>Course &amp; Discipline:</th>
-                    <td class="fw-bold">B.Tech - Computer Science &amp; Engineering</td>
+                    <td class="fw-bold">@(acad?.CourseName ?? "-") @(!string.IsNullOrWhiteSpace(acad?.BranchName) ? $"({acad.BranchName})" : "")</td>
                     <th>Current Academic Year:</th>
-                    <td>1st Year (Semester I &amp; II)</td>
+                    <td>@(acad?.CourseYear > 0 ? $"{acad.CourseYear} Year" : "-")</td>
                 </tr>
                 <tr>
                     <th>Enrollment / Roll No:</th>
-                    <td>@(acad?.EnrollmentNumber ?? "ENR2024CS045")</td>
+                    <td>@(acad?.EnrollmentNumber ?? "-")</td>
                     <th>Admission Date:</th>
-                    <td>@(acad != null && acad.AdmissionDate != default ? acad.AdmissionDate.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy"))</td>
+                    <td>@(acad != null && acad.AdmissionDate != default ? acad.AdmissionDate.ToString("dd-MM-yyyy") : "-")</td>
                 </tr>
                 <tr>
                     <th>Scheme Sanction Applied:</th>
-                    <td class="fw-bold text-primary">Post Matric Scholarship for @category Students</td>
+                    <td class="fw-bold text-primary">@(app?.SchemeName ?? "Post Matric Scholarship")</td>
                     <th>Study Mode / Hostel:</th>
-                    <td>Regular / @(acad?.IsHosteller == true ? "Hosteller" : "Day Scholar")</td>
+                    <td>@(acad?.StudyModeId == 2 ? "Distance" : "Regular") / @(acad?.IsHosteller == true ? "Hosteller" : "Day Scholar")</td>
                 </tr>
                 <tr>
                     <th>Secondary (10th) Record:</th>
-                    <td>Roll No: @(acad?.TenthRollNumber ?? "10248591") | Year: @(acad?.TenthPassingYear ?? 2021)</td>
+                    <td>Roll No: @(acad?.TenthRollNumber ?? "-") | Year: @(acad?.TenthPassingYear > 0 ? acad.TenthPassingYear.ToString() : "-")</td>
                     <th>Secondary Aggregate:</th>
-                    <td>@(acad?.TenthPercentage ?? 84.50m)% (CG State Board / CBSE)</td>
+                    <td>@(acad?.TenthPercentage > 0 ? $"{acad.TenthPercentage:F2}%" : "-")</td>
                 </tr>
             </tbody>
         </table>
@@ -250,18 +261,27 @@
             <tbody>
                 <tr>
                     <th style="width: 22%;">Disbursement Bank:</th>
-                    <td style="width: 28%;">State Bank of India</td>
+                    <td style="width: 28%;">@(bank?.BankName ?? "-")</td>
                     <th style="width: 22%;">Branch &amp; IFSC Code:</th>
-                    <td style="width: 28%;" class="fw-bold">Main Branch, Raipur (SBIN0000461)</td>
+                    <td style="width: 28%;" class="fw-bold">@(bank?.BranchName ?? "-") @(!string.IsNullOrWhiteSpace(bank?.IfscCode) ? $"({bank.IfscCode})" : "")</td>
                 </tr>
                 <tr>
                     <th>Bank Account (Masked):</th>
                     <td class="fw-bold text-success">@bankAcc</td>
                     <th>NPCI Aadhaar Seeding:</th>
                     <td>
-                        <span class="badge bg-success">
-                            <i class="bi bi-check-circle-fill me-1"></i> Aadhaar Active &amp; Seeded (DBT Ready)
-                        </span>
+                        @if (bank?.IsAadhaarSeeded == true)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle-fill me-1"></i> Aadhaar Active &amp; Seeded (DBT Ready)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-hourglass-split me-1"></i> Seeding Verification Pending
+                            </span>
+                        }
                     </td>
                 </tr>
             </tbody>
@@ -279,19 +299,15 @@
             <tbody>
                 <tr>
                     <th style="width: 22%;">Caste Certificate No:</th>
-                    <td style="width: 28%;">ED/CST/2023/10294 (e-District CG)</td>
+                    <td style="width: 28%;">@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "-")</td>
                     <th style="width: 22%;">Domicile Certificate No:</th>
-                    <td style="width: 28%;">ED/DOM/2023/8492 (e-District CG)</td>
+                    <td style="width: 28%;">@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "-")</td>
                 </tr>
                 <tr>
                     <th>Annual Family Income:</th>
                     <td class="fw-bold text-success">₹ @income.ToString("N2")</td>
-                    <th>Income in Words:</th>
-                    <td class="fst-italic">Rupees One Lakh Twenty Thousand Only</td>
-                </tr>
-                <tr>
                     <th>Income Certificate Ref:</th>
-                    <td colspan="3">ED/INC/2024/77412 — Issued by Tehsildar, Raipur Sub-Division (Verified Online)</td>
+                    <td>@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "-")</td>
                 </tr>
             </tbody>
         </table>
@@ -339,7 +355,7 @@
                     <div class="d-flex justify-content-between align-items-end mt-3 pt-2" style="font-size: 0.72rem;">
                         <div>
                             <strong>Date of Print:</strong> @DateTime.Now.ToString("dd-MM-yyyy")<br />
-                            <strong>Place:</strong> Raipur, Chhattisgarh
+                            <strong>Place:</strong> @(addr?.DistrictName ?? "Chhattisgarh")
                         </div>
                         <div class="text-center">
                             <div style="border-bottom: 1px solid #000; width: 150px; margin-bottom: 4px;"></div>
@@ -354,7 +370,7 @@
                         <i class="bi bi-building-check me-1"></i> Institutional Bonafide Attestation
                     </h6>
                     <p class="mb-2" style="font-size: 0.72rem; line-height: 1.25;">
-                        Certified that the applicant Shri/Ku. <strong>@candidateName</strong> is a bonafide regular student of this college in <strong>1st Year B.Tech</strong> for AY 2025–26. Original certificates have been verified and found genuine.
+                        Certified that the applicant Shri/Ku. <strong>@candidateName</strong> is a bonafide regular student of this college in <strong>@(acad?.CourseName ?? "Enrolled Course")</strong> for AY 2025–26. Original certificates have been verified and found genuine.
                     </p>
                     <div class="text-center mt-3 pt-2">
                         <div style="height: 38px; border: 1px dashed #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #64748b; margin-bottom: 4px;">

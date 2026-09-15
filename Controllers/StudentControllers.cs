@@ -41,14 +41,22 @@ public class ProfileController : Controller
         var occupations = await _apiClient.GetOccupationsAsync();
         var householdCats = await _apiClient.GetHouseholdCategoriesAsync();
         var depCriteria = await _apiClient.GetDeprivationCriteriaAsync();
+        var religions = await _apiClient.GetReligionsAsync();
+
+        ulong selectedDistrictId = addrResp?.Data?.DistrictId ?? 1;
+        var blocks = await _apiClient.GetBlocksAsync(selectedDistrictId);
+        var vidhansabhas = await _apiClient.GetVidhansabhasAsync(selectedDistrictId);
 
         ViewBag.Profile = profileResp?.Data;
         ViewBag.Address = addrResp?.Data;
         ViewBag.States = states?.Data ?? new();
         ViewBag.Districts = districts?.Data ?? new();
+        ViewBag.Blocks = blocks?.Data ?? new();
+        ViewBag.Vidhansabhas = vidhansabhas?.Data ?? new();
         ViewBag.Occupations = occupations?.Data ?? new();
         ViewBag.HouseholdCategories = householdCats?.Data ?? new();
         ViewBag.DeprivationCriteria = depCriteria?.Data ?? new();
+        ViewBag.Religions = religions?.Data ?? new();
 
         return View();
     }
@@ -99,6 +107,8 @@ public class AcademicController : Controller
         var admissionTypes = await _apiClient.GetAdmissionTypesAsync();
         var studyModes = await _apiClient.GetStudyModesAsync();
         var boards = await _apiClient.GetEducationBoardsAsync();
+        var institutes = await _apiClient.GetInstitutesAsync(1);
+        var courses = await _apiClient.GetCoursesAsync(null);
 
         ViewBag.Academic = acadResp?.Data;
         ViewBag.Districts = districts?.Data ?? new();
@@ -106,6 +116,8 @@ public class AcademicController : Controller
         ViewBag.AdmissionTypes = admissionTypes?.Data ?? new();
         ViewBag.StudyModes = studyModes?.Data ?? new();
         ViewBag.Boards = boards?.Data ?? new();
+        ViewBag.Institutes = institutes?.Data ?? new();
+        ViewBag.Courses = courses?.Data ?? new();
 
         return View();
     }

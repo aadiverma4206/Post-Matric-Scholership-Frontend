@@ -6,6 +6,10 @@
     var occupations = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Occupations ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var householdCats = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.HouseholdCategories ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var depCriteria = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.DeprivationCriteria ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var religions = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Religions ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var districts = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Districts ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var blocks = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Blocks ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var vidhansabhas = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Vidhansabhas ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
 }
 
 <div class="container my-3">
@@ -43,11 +47,11 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Father / Husband / Guardian Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="FatherGuardianName" value="@(profile?.FatherGuardianName ?? "HILESHWAR SAHU")" required />
+                        <input class="form-control" name="FatherGuardianName" value="@(profile?.FatherGuardianName ?? "")" placeholder="Father / Guardian Name" required />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Mother Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="MotherName" value="@(profile?.MotherName ?? "BASANTI SAHU")" required />
+                        <input class="form-control" name="MotherName" value="@(profile?.MotherName ?? "")" placeholder="Mother Name" required />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Is Mother Single Woman? <span class="required-asterisk">*</span></label>
@@ -67,19 +71,19 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Aadhaar Registered Mobile No. <span class="required-asterisk">*</span></label>
-                        <input class="form-control" value="@(profile?.MaskedMobile ?? "XXXXXX6387")" readonly />
+                        <input class="form-control" value="@(profile?.MaskedMobile ?? "")" placeholder="Aadhaar Registered Mobile" readonly />
                         <div class="form-text small text-muted">This Mobile Number is registered for using services of this portal.</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Student's E-mail Id <span class="required-asterisk">*</span></label>
-                        <input class="form-control" value="@(profile?.MaskedEmail ?? "XXXXX1808@gmail.com")" readonly />
+                        <input class="form-control" value="@(profile?.MaskedEmail ?? "")" placeholder="Student Email Address" readonly />
                     </div>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Alternate Mobile Number</label>
-                        <input class="form-control" name="AlternateMobile" value="@profile?.AlternateMobile" placeholder="Optional alternate mobile" />
+                        <input class="form-control" name="AlternateMobile" value="@profile?.AlternateMobile" placeholder="Optional alternate mobile" maxlength="10" />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Alternate E-mail Id</label>
@@ -98,26 +102,26 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">प्रथम नाम (First Name in Hindi) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="FirstNameHindi" value="जया" required />
+                        <input class="form-control" name="FirstNameHindi" value="@(profile?.FirstNameHindi ?? "")" placeholder="प्रथम नाम" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">मध्य नाम (Middle Name in Hindi)</label>
-                        <input class="form-control" name="MiddleNameHindi" placeholder="मध्य नाम" />
+                        <input class="form-control" name="MiddleNameHindi" value="@(profile?.MiddleNameHindi ?? "")" placeholder="मध्य नाम (वैकल्पिक)" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">अंतिम नाम (Last Name in Hindi)</label>
-                        <input class="form-control" name="LastNameHindi" value="साहू" />
+                        <input class="form-control" name="LastNameHindi" value="@(profile?.LastNameHindi ?? "")" placeholder="अंतिम नाम (वैकल्पिक)" />
                     </div>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">पिता/पति/अभिभावक का पूर्ण नाम <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="FatherNameHindi" value="हिलेश्वर साहू" required />
+                        <input class="form-control" name="FatherNameHindi" value="@(profile?.FatherNameHindi ?? "")" placeholder="पिता/पति/अभिभावक का पूरा नाम" required />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">माता का पूरा नाम <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="MotherNameHindi" value="बसंती साहू" required />
+                        <input class="form-control" name="MotherNameHindi" value="@(profile?.MotherNameHindi ?? "")" placeholder="माता का पूरा नाम" required />
                     </div>
                 </div>
             </div>
@@ -134,32 +138,30 @@
                         <label class="form-label small fw-bold">Father's / Guardian Occupation <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="FatherOccupationId" required>
                             <option value="">--Select Occupation--</option>
-                            <option value="1">Government</option>
-                            <option value="2">Private</option>
-                            <option value="3">Farmer</option>
-                            <option value="4" selected>Other</option>
+                            @foreach (var occ in occupations)
+                            {
+                                <option value="@occ.Id" selected="@(profile?.FatherOccupationId == occ.Id)">@occ.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Mother's Occupation <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="MotherOccupationId" required>
                             <option value="">--Select Occupation--</option>
-                            <option value="1">Government</option>
-                            <option value="2">Private</option>
-                            <option value="3">Farmer</option>
-                            <option value="4" selected>Other</option>
+                            @foreach (var occ in occupations)
+                            {
+                                <option value="@occ.Id" selected="@(profile?.MotherOccupationId == occ.Id)">@occ.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Religion <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="ReligionId" required>
-                            <option value="1" selected>Hindu</option>
-                            <option value="2">Muslim</option>
-                            <option value="3">Christian</option>
-                            <option value="4">Sikh</option>
-                            <option value="5">Parsi</option>
-                            <option value="6">Jain</option>
-                            <option value="7">Buddhist</option>
+                            <option value="">--Select Religion--</option>
+                            @foreach (var rel in religions)
+                            {
+                                <option value="@rel.Id" selected="@(profile?.ReligionId == rel.Id)">@rel.Name</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -168,24 +170,26 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Household Category <span class="required-asterisk">*</span></label>
                         <select class="form-select" name="HouseholdCategoryId" required>
-                            <option value="1" selected>BPL (Below Poverty Line)</option>
-                            <option value="2">APL (Above Poverty Line)</option>
-                            <option value="3">EWS</option>
+                            <option value="">--Select Household Category--</option>
+                            @foreach (var cat in householdCats)
+                            {
+                                <option value="@cat.Id" selected="@(profile?.HouseholdCategoryId == cat.Id)">@cat.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Enter BPL Number</label>
-                        <input class="form-control" name="BplNumber" value="BPL/2026/94821" placeholder="BPL Card Number" />
+                        <input class="form-control" name="BplNumber" value="@(profile?.BplNumber ?? profile?.MaskedBplNumber ?? "")" placeholder="BPL Card Number (If Applicable)" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Is Differently Abled (दिव्यांग) <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="true" id="diffYes">
+                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="true" @(profile?.IsDifferentlyAbled == true ? "checked" : "") id="diffYes">
                                 <label class="form-check-label small" for="diffYes">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="false" checked id="diffNo">
+                                <input class="form-check-input" type="radio" name="IsDifferentlyAbled" value="false" @(profile?.IsDifferentlyAbled != true ? "checked" : "") id="diffNo">
                                 <label class="form-check-label small" for="diffNo">No</label>
                             </div>
                         </div>
@@ -208,57 +212,57 @@
                             <tr>
                                 <td>1. Only one room with kucha walls and kucha roof? (केवल एक कमरा, जिसमें कच्ची दीवारें और कच्ची छत हो?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_1" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_1" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_1" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(1) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_1" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(1) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>2. No adult member between age 16 to 59? (16 से 59 वर्ष की आयु के बीच कोई वयस्क सदस्य नहीं हैं?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_2" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_2" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_2" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(2) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_2" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(2) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>3. Female headed households with no adult male member between 16 to 59? (महिला मुखिया वाले परिवार?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_3" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_3" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_3" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(3) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_3" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(3) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>4. Disabled member and no able-bodied adult member? (विकलांग सदस्य और कोई सक्षम वयस्क सदस्य नहीं?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_4" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_4" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_4" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(4) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_4" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(4) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>5. SC/ST households? (अनुसूचित जाति / अनुसूचित जनजाति परिवार?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_5" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_5" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_5" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(5) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_5" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(5) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>6. No literate adult above 25 years? (25 वर्ष से अधिक आयु का कोई साक्षर वयस्क नहीं हैं?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_6" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_6" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_6" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(6) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_6" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(6) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>7. Landless households deriving major part of income from manual casual labour? (भूमिहीन परिवार?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="DepCriteria_7" value="no" checked> No &nbsp;
-                                    <input type="radio" name="DepCriteria_7" value="yes"> Yes
+                                    <input type="radio" name="DepCriteria_7" value="no" @(profile?.ApplicableDeprivationCriteria.Contains(7) != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="DepCriteria_7" value="yes" @(profile?.ApplicableDeprivationCriteria.Contains(7) == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                             <tr>
                                 <td>8. Does the student belong to a household where one or both parents are illiterate? (क्या माता-पिता निरक्षर हैं?)</td>
                                 <td class="text-center">
-                                    <input type="radio" name="ParentsIlliterate" value="false" checked> No &nbsp;
-                                    <input type="radio" name="ParentsIlliterate" value="true"> Yes
+                                    <input type="radio" name="ParentsIlliterate" value="false" @(profile?.ParentsIlliterate != true ? "checked" : "")> No &nbsp;
+                                    <input type="radio" name="ParentsIlliterate" value="true" @(profile?.ParentsIlliterate == true ? "checked" : "")> Yes
                                 </td>
                             </tr>
                         </tbody>
@@ -277,28 +281,31 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">District <span class="required-asterisk">*</span></label>
                         <select class="form-select dynamic-district" id="DistrictId" name="DistrictId" required>
-                            <option value="1" selected>RAIPUR</option>
-                            <option value="2">DURG</option>
-                            <option value="3">BILASPUR</option>
-                            <option value="4">BALOD</option>
+                            <option value="">--Select District--</option>
+                            @foreach (var d in districts)
+                            {
+                                <option value="@d.Id" selected="@(addr?.DistrictId == d.Id)">@d.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Block <span class="required-asterisk">*</span></label>
                         <select class="form-select dynamic-block" id="BlockId" name="BlockId" required>
-                            <option value="1" selected>DHARSIWA</option>
-                            <option value="2">ARANG</option>
-                            <option value="3">ABHANPUR</option>
-                            <option value="4">TILDA</option>
+                            <option value="">--Select Block--</option>
+                            @foreach (var b in blocks)
+                            {
+                                <option value="@b.Id" selected="@(addr?.BlockId == b.Id)">@b.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Vidhansabha <span class="required-asterisk">*</span></label>
                         <select class="form-select dynamic-vidhansabha" id="VidhansabhaId" name="VidhansabhaId" required>
-                            <option value="1" selected>Raipur Gramin</option>
-                            <option value="2">Raipur City North</option>
-                            <option value="3">Raipur City South</option>
-                            <option value="4">Raipur City West</option>
+                            <option value="">--Select Vidhansabha--</option>
+                            @foreach (var v in vidhansabhas)
+                            {
+                                <option value="@v.Id" selected="@(addr?.VidhansabhaId == v.Id)">@v.Name</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -306,11 +313,11 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-8">
                         <label class="form-label small fw-bold">Address Line <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="AddressLine" value="@(addr?.AddressLine ?? "SONDRA, POST SONDRA")" required />
+                        <input class="form-control" name="AddressLine" value="@(addr?.AddressLine ?? "")" placeholder="Enter Full Correspondence Address" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">PIN Code <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="Pincode" value="@(addr?.Pincode ?? "493221")" maxlength="6" required />
+                        <input class="form-control" name="Pincode" value="@(addr?.Pincode ?? "")" placeholder="6-digit PIN Code" maxlength="6" required />
                     </div>
                 </div>
 

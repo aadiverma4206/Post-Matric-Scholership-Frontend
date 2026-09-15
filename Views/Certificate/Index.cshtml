@@ -34,11 +34,11 @@
                         <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" checked id="casteOnlineYes">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(casteCert?.IsOnlineGenerated != false ? "checked" : "") id="casteOnlineYes">
                                 <label class="form-check-label small" for="casteOnlineYes">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" id="casteOnlineNo">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(casteCert?.IsOnlineGenerated == false ? "checked" : "") id="casteOnlineNo">
                                 <label class="form-check-label small" for="casteOnlineNo">No</label>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "0705011901008219")" required />
+                        <input class="form-control" name="ReferenceNumber" value="@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Caste Certificate Number" required />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
@@ -102,11 +102,11 @@
                         <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" checked id="domicileOnlineYes">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(domicileCert?.IsOnlineGenerated != false ? "checked" : "") id="domicileOnlineYes">
                                 <label class="form-check-label small" for="domicileOnlineYes">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" id="domicileOnlineNo">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(domicileCert?.IsOnlineGenerated == false ? "checked" : "") id="domicileOnlineNo">
                                 <label class="form-check-label small" for="domicileOnlineNo">No</label>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "0707011901015485")" required />
+                        <input class="form-control" name="ReferenceNumber" value="@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Domicile Certificate Number" required />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
@@ -168,15 +168,15 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Annual Family Income (INR) <span class="required-asterisk">*</span></label>
-                        <input class="form-control fw-bold" name="AnnualIncome" value="90000" required />
+                        <input class="form-control fw-bold" name="AnnualIncome" id="AnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Enter Annual Income" required />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Confirm Annual Income <span class="required-asterisk">*</span></label>
-                        <input class="form-control fw-bold" value="90000" required />
+                        <input class="form-control fw-bold" id="ConfirmAnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Re-enter Annual Income" required />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Income Certificate Reference No. <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "0706012601066286")" required />
+                        <input class="form-control" name="ReferenceNumber" value="@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Income Certificate Ref No." required />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">

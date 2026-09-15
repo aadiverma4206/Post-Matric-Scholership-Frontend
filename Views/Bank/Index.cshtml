@@ -30,21 +30,21 @@
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">IFSC Code <span class="required-asterisk">*</span></label>
                         <div class="input-group">
-                            <input class="form-control text-uppercase" id="IfscCodeInput" value="SBIN0002852" placeholder="e.g. SBIN0002852" required />
+                            <input class="form-control text-uppercase" id="IfscCodeInput" value="@(bank?.IfscCode ?? "")" placeholder="e.g. SBIN0002852" required />
                             <button class="btn btn-outline-primary btn-sm" type="button" id="btnSearchIfsc"><i class="bi bi-search"></i></button>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Bank Name</label>
-                        <input class="form-control bg-light fw-bold" id="BankNameDisplay" value="STATE BANK OF INDIA" readonly />
+                        <input class="form-control bg-light fw-bold" id="BankNameDisplay" value="@(bank?.BankName ?? "")" placeholder="Bank Name" readonly />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Branch Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control bg-light" id="BranchNameDisplay" value="GCET, RAIPUR" readonly />
+                        <input class="form-control bg-light" id="BranchNameDisplay" value="@(bank?.BranchName ?? "")" placeholder="Branch Name" readonly />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Branch Address</label>
-                        <input class="form-control bg-light small" id="BranchAddressDisplay" value="GOVT COLLEGE OF ENGG CAMPUS, RAIPUR" readonly />
+                        <input class="form-control bg-light small" id="BranchAddressDisplay" value="@(bank?.BranchAddress ?? "")" placeholder="Branch Address" readonly />
                     </div>
                 </div>
 
@@ -52,11 +52,11 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Account Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="AccountNumber" id="AccountNumber" value="34871092841" required />
+                        <input class="form-control" name="AccountNumber" id="AccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Enter Bank Account Number" required />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Confirm Account Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ConfirmAccountNumber" id="ConfirmAccountNumber" value="34871092841" required />
+                        <input class="form-control" name="ConfirmAccountNumber" id="ConfirmAccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Re-enter Bank Account Number" required />
                     </div>
                 </div>
 
@@ -78,26 +78,21 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Select Aadhaar Seeded Bank <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="BankId" required>
-                            <option value="1" selected>STATE BANK OF INDIA</option>
-                            <option value="2">PUNJAB NATIONAL BANK</option>
-                            <option value="3">BANK OF BARODA</option>
-                            <option value="4">CHHATTISGARH RAJYA GRAMIN BANK</option>
-                            <option value="5">HDFC BANK LTD</option>
-                            <option value="6">BANK OF INDIA</option>
-                            <option value="7">CANARA BANK</option>
-                            <option value="8">UNION BANK OF INDIA</option>
-                            <option value="9">AXIS BANK</option>
-                            <option value="10">ICICI BANK LTD</option>
+                        <select class="form-select" id="BankId" name="BankId" required>
+                            <option value="">-- Select Bank --</option>
+                            @foreach (var b in banks)
+                            {
+                                <option value="@b.Id" selected="@(bank?.BankId == b.Id)">@b.Name</option>
+                            }
                         </select>
-                        <input type="hidden" name="BranchId" value="1" />
+                        <input type="hidden" id="BranchId" name="BranchId" value="@(bank?.BranchId ?? 0)" />
                     </div>
                 </div>
 
                 <!-- Mandatory Hindi Declaration Checkbox (PDF Page 20) -->
                 <div class="p-3 bg-light rounded border">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="IsAadhaarSeeded" value="true" checked id="dbtDeclaration" required />
+                        <input class="form-check-input" type="checkbox" name="IsAadhaarSeeded" value="true" @(bank?.IsAadhaarSeeded == true ? "checked" : "") id="dbtDeclaration" required />
                         <label class="form-check-label fw-bold text-dark small" for="dbtDeclaration">
                             मैं सत्यापित करता / करती हूँ कि मेरा बैंक अकाउंट सक्रिय है एवं मेरे द्वारा प्रदान किया गया बैंक खाता विवरण मेरे आधार नंबर के साथ सीडेड है |
                             <br />

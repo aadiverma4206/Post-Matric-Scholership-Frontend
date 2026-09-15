@@ -5,6 +5,9 @@
     var addr = (Scholarship.Web.ViewModels.AddressViewModel?)ViewBag.Address;
     var acad = (Scholarship.Web.ViewModels.AcademicDetailsViewModel?)ViewBag.Academic;
     var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.Bank;
+    var certs = (List<Scholarship.Web.ViewModels.CertificateViewModel>?)ViewBag.Certificates ?? new();
+    var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
+    var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
 }
 
 <div class="container my-3">
@@ -47,33 +50,44 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Full Name</label>
-                            <input class="form-control" value="@(profile?.FullName ?? "Aditya Verma")" readonly />
+                            <input class="form-control" value="@(profile?.FullName ?? "")" placeholder="Candidate Full Name" readonly />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Father / Guardian Name</label>
-                            <input class="form-control" value="@(profile?.FatherGuardianName ?? "Ramesh Verma")" readonly />
+                            <input class="form-control" value="@(profile?.FatherGuardianName ?? "")" placeholder="Father / Guardian Name" readonly />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Mother Name</label>
-                            <input class="form-control" value="@(profile?.MotherName ?? "Sunita Verma")" readonly />
+                            <input class="form-control" value="@(profile?.MotherName ?? "")" placeholder="Mother Name" readonly />
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Masked Aadhaar Number</label>
-                            <input class="form-control" value="@(profile?.MaskedAadhaar ?? "XXXX-XXXX-1234")" readonly />
+                            <input class="form-control" value="@(profile?.MaskedAadhaar ?? "")" placeholder="XXXX-XXXX-XXXX" readonly />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Annual Family Income (INR)</label>
-                            <input class="form-control" value="120000.00" name="AnnualIncome" />
+                            <input class="form-control" value="@(profile?.AnnualIncome > 0 ? profile.AnnualIncome.ToString("F2") : "")" placeholder="Enter Annual Income" name="AnnualIncome" />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Household Category</label>
                             <select class="form-select" name="HouseholdCategoryId">
-                                <option value="1">Below Poverty Line (BPL)</option>
-                                <option value="2">Above Poverty Line (APL)</option>
-                                <option value="3">Economically Weaker Section (EWS)</option>
+                                <option value="">-- Select Household Category --</option>
+                                @if (ViewBag.HouseholdCategories is List<Scholarship.Web.ViewModels.LookupItemViewModel> hhCats && hhCats.Any())
+                                {
+                                    foreach (var c in hhCats)
+                                    {
+                                        <option value="@c.Id" selected="@(profile?.HouseholdCategoryId == c.Id)">@c.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1">Below Poverty Line (BPL)</option>
+                                    <option value="2">Above Poverty Line (APL)</option>
+                                    <option value="3">Economically Weaker Section (EWS)</option>
+                                }
                             </select>
                         </div>
                     </div>
@@ -82,11 +96,11 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-8">
                             <label class="form-label">Correspondence Address Line <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="AddressLine" value="@(addr?.AddressLine ?? "Shanti Nagar, Near Post Office")" required />
+                            <input class="form-control" name="AddressLine" value="@(addr?.AddressLine ?? "")" placeholder="House / Flat / Street / Village" required />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">PIN Code <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="Pincode" value="@(addr?.Pincode ?? "492001")" maxlength="6" required />
+                            <input class="form-control" name="Pincode" value="@(addr?.Pincode ?? "")" placeholder="6-digit PIN Code" maxlength="6" required />
                         </div>
                     </div>
                 </div>
@@ -104,18 +118,40 @@
                         <div class="col-md-6">
                             <label class="form-label">Enrolled Institute (College / University) <span class="required-asterisk">*</span></label>
                             <select class="form-select" id="InstituteId" name="InstituteId" required>
-                                <option value="1">Government Engineering College, Raipur</option>
-                                <option value="2">Pt. Ravishankar Shukla University, Raipur</option>
-                                <option value="3">Government Polytechnic College, Durg</option>
+                                <option value="">-- Select Enrolled Institute --</option>
+                                @if (ViewBag.Institutes is List<Scholarship.Web.ViewModels.LookupItemViewModel> instList && instList.Any())
+                                {
+                                    foreach (var inst in instList)
+                                    {
+                                        <option value="@inst.Id" selected="@(acad?.InstituteId == inst.Id)">@inst.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1">Government Engineering College, Raipur</option>
+                                    <option value="2">Pt. Ravishankar Shukla University, Raipur</option>
+                                    <option value="3">Government Polytechnic College, Durg</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Target Scholarship Scheme <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="SchemeId" required>
-                                <option value="1">Post Matric Scholarship for SC Students</option>
-                                <option value="2">Post Matric Scholarship for ST Students</option>
-                                <option value="3">Post Matric Scholarship for OBC Students</option>
-                                <option value="4">State Higher Education Merit Scholarship</option>
+                                <option value="">-- Select Target Scheme --</option>
+                                @if (ViewBag.Schemes is List<Scholarship.Web.ViewModels.LookupItemViewModel> schemeList && schemeList.Any())
+                                {
+                                    foreach (var sch in schemeList)
+                                    {
+                                        <option value="@sch.Id" selected="@(acad?.SchemeId == sch.Id)">@sch.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1">Post Matric Scholarship for SC Students</option>
+                                    <option value="2">Post Matric Scholarship for ST Students</option>
+                                    <option value="3">Post Matric Scholarship for OBC Students</option>
+                                    <option value="4">State Higher Education Merit Scholarship</option>
+                                }
                             </select>
                         </div>
                     </div>
@@ -124,45 +160,65 @@
                         <div class="col-md-4">
                             <label class="form-label">Degree / Course Type <span class="required-asterisk">*</span></label>
                             <select class="form-select" id="CourseTypeId" name="CourseTypeId" required>
-                                <option value="4">Professional Under-Graduate Degree</option>
-                                <option value="5">General / Non-Professional Degree</option>
-                                <option value="2">ITI / Polytechnic Diploma</option>
+                                <option value="">-- Select Course Type --</option>
+                                @if (ViewBag.CourseTypes is List<Scholarship.Web.ViewModels.LookupItemViewModel> ctList && ctList.Any())
+                                {
+                                    foreach (var ct in ctList)
+                                    {
+                                        <option value="@ct.Id" selected="@(acad?.CourseTypeId == ct.Id)">@ct.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="4">Professional Under-Graduate Degree</option>
+                                    <option value="5">General / Non-Professional Degree</option>
+                                    <option value="2">ITI / Polytechnic Diploma</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Course <span class="required-asterisk">*</span></label>
                             <select class="form-select" id="CourseId" name="CourseId" required>
-                                <option value="1">Bachelor of Technology (B.Tech)</option>
-                                <option value="2">Bachelor of Science (B.Sc)</option>
-                                <option value="3">Bachelor of Computer Applications (BCA)</option>
+                                <option value="">-- Select Course --</option>
+                                @if (ViewBag.Courses is List<Scholarship.Web.ViewModels.LookupItemViewModel> courseList && courseList.Any())
+                                {
+                                    foreach (var c in courseList)
+                                    {
+                                        <option value="@c.Id" selected="@(acad?.CourseId == c.Id)">@c.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1">Bachelor of Technology (B.Tech)</option>
+                                    <option value="2">Bachelor of Science (B.Sc)</option>
+                                    <option value="3">Bachelor of Computer Applications (BCA)</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Branch / Specialization <span class="required-asterisk">*</span></label>
-                            <select class="form-select" id="BranchId" name="BranchId" required>
-                                <option value="1">Computer Science &amp; Engineering</option>
-                                <option value="2">Mechanical Engineering</option>
-                                <option value="3">Civil Engineering</option>
-                            </select>
+                            <input class="form-control" id="BranchName" name="BranchName" value="@(acad?.BranchName ?? "")" placeholder="e.g. Computer Science &amp; Engineering" required />
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Admission Date <span class="required-asterisk">*</span></label>
-                            <input class="form-control" type="date" name="AdmissionDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            <input class="form-control" type="date" name="AdmissionDate" value="@(acad != null && acad.AdmissionDate != default ? acad.AdmissionDate.ToString("yyyy-MM-dd") : "")" required />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">College Enrollment Number <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="EnrollmentNumber" placeholder="e.g. ENR2024CS045" value="ENR2024CS045" required />
+                            <input class="form-control" name="EnrollmentNumber" placeholder="Enter Enrollment / Roll No" value="@(acad?.EnrollmentNumber ?? "")" required />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Course Year <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="CourseYear">
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                                <option value="4">4th Year</option>
+                                <option value="">-- Select Course Year --</option>
+                                <option value="1" selected="@(acad?.CourseYear == 1)">1st Year</option>
+                                <option value="2" selected="@(acad?.CourseYear == 2)">2nd Year</option>
+                                <option value="3" selected="@(acad?.CourseYear == 3)">3rd Year</option>
+                                <option value="4" selected="@(acad?.CourseYear == 4)">4th Year</option>
+                                <option value="5" selected="@(acad?.CourseYear == 5)">5th Year</option>
                             </select>
                         </div>
                     </div>
@@ -171,23 +227,45 @@
                         <div class="col-md-4">
                             <label class="form-label">Admission Mode / Quota <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="AdmissionTypeId">
-                                <option value="1">State / Central Merit Entrance</option>
-                                <option value="2">Management Quota</option>
-                                <option value="4">Spot Admission</option>
+                                <option value="">-- Select Admission Mode --</option>
+                                @if (ViewBag.AdmissionTypes is List<Scholarship.Web.ViewModels.LookupItemViewModel> admTypes && admTypes.Any())
+                                {
+                                    foreach (var at in admTypes)
+                                    {
+                                        <option value="@at.Id" selected="@(acad?.AdmissionTypeId == at.Id)">@at.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1" selected="@(acad?.AdmissionTypeId == 1)">State / Central Merit Entrance</option>
+                                    <option value="2" selected="@(acad?.AdmissionTypeId == 2)">Management Quota</option>
+                                    <option value="4" selected="@(acad?.AdmissionTypeId == 4)">Spot Admission</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Mode of Study <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="StudyModeId">
-                                <option value="1">Regular / Full-Time</option>
-                                <option value="2">Distance Learning</option>
+                                <option value="">-- Select Study Mode --</option>
+                                @if (ViewBag.StudyModes is List<Scholarship.Web.ViewModels.LookupItemViewModel> smTypes && smTypes.Any())
+                                {
+                                    foreach (var sm in smTypes)
+                                    {
+                                        <option value="@sm.Id" selected="@(acad?.StudyModeId == sm.Id)">@sm.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1" selected="@(acad?.StudyModeId == 1)">Regular / Full-Time</option>
+                                    <option value="2" selected="@(acad?.StudyModeId == 2)">Distance Learning</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Hosteller / Day Scholar? <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="IsHosteller">
-                                <option value="false">Day Scholar</option>
-                                <option value="true">Hosteller</option>
+                                <option value="false" selected="@(acad?.IsHosteller != true)">Day Scholar</option>
+                                <option value="true" selected="@(acad?.IsHosteller == true)">Hosteller</option>
                             </select>
                         </div>
                     </div>
@@ -206,43 +284,54 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-3">
                             <label class="form-label">10th Roll Number <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="TenthRollNumber" placeholder="Roll Number" value="10245678" required />
+                            <input class="form-control" name="TenthRollNumber" placeholder="Enter Roll Number" value="@(acad?.TenthRollNumber ?? "")" required />
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Passing Year <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="TenthPassingYear" value="2022" type="number" required />
+                            <input class="form-control" name="TenthPassingYear" placeholder="e.g. 2023" value="@(acad?.TenthPassingYear > 0 ? acad.TenthPassingYear.ToString() : "")" type="number" required />
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Secondary Board <span class="required-asterisk">*</span></label>
                             <select class="form-select" name="TenthBoardId">
-                                <option value="1">CGBSE (Chhattisgarh Board)</option>
-                                <option value="2">CBSE</option>
-                                <option value="3">ICSE</option>
+                                <option value="">-- Select Board --</option>
+                                @if (ViewBag.Boards is List<Scholarship.Web.ViewModels.LookupItemViewModel> boardList && boardList.Any())
+                                {
+                                    foreach (var b in boardList)
+                                    {
+                                        <option value="@b.Id" selected="@(acad?.TenthBoardId == b.Id)">@b.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1" selected="@(acad?.TenthBoardId == 1)">CGBSE (Chhattisgarh Board)</option>
+                                    <option value="2" selected="@(acad?.TenthBoardId == 2)">CBSE</option>
+                                    <option value="3" selected="@(acad?.TenthBoardId == 3)">ICSE</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Percentage (%) <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="TenthPercentage" value="84.50" type="number" step="0.01" required />
+                            <input class="form-control" name="TenthPercentage" placeholder="e.g. 78.50" value="@(acad?.TenthPercentage > 0 ? acad.TenthPercentage.ToString("F2") : "")" type="number" step="0.01" required />
                         </div>
                     </div>
 
                     <h6 class="fw-bold text-primary border-bottom pb-1 mt-4 mb-3">Previous Qualifying Examination (12th / Diploma / Degree)</h6>
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Previous Course <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="PreviousInstituteName" value="Govt Higher Secondary School" required />
+                            <label class="form-label">Previous Course / School <span class="required-asterisk">*</span></label>
+                            <input class="form-control" name="PreviousInstituteName" placeholder="Enter school / college name" value="@(acad?.PreviousInstituteName ?? "")" required />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Previous Exam Roll No <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="PreviousRollNumber" value="12289410" required />
+                            <input class="form-control" name="PreviousRollNumber" placeholder="Enter previous roll number" value="@(acad?.PreviousRollNumber ?? "")" required />
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Passing Year <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="PreviousPassingYear" value="2024" type="number" required />
+                            <input class="form-control" name="PreviousPassingYear" placeholder="e.g. 2024" value="@(acad?.PreviousPassingYear > 0 ? acad.PreviousPassingYear.ToString() : "")" type="number" required />
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Percentage (%) <span class="required-asterisk">*</span></label>
-                            <input class="form-control" name="PreviousPercentage" value="81.20" type="number" step="0.01" required />
+                            <input class="form-control" name="PreviousPercentage" placeholder="e.g. 75.00" value="@(acad?.PreviousPercentage > 0 ? acad.PreviousPercentage.ToString("F2") : "")" type="number" step="0.01" required />
                         </div>
                     </div>
                 </div>
@@ -264,34 +353,42 @@
                         <div class="col-md-6">
                             <label class="form-label">Bank Name <span class="required-asterisk">*</span></label>
                             <select class="form-select" id="BankId" name="BankId" required>
-                                <option value="1">State Bank of India</option>
-                                <option value="2">Punjab National Bank</option>
-                                <option value="3">Bank of Baroda</option>
-                                <option value="4">Chhattisgarh Rajya Gramin Bank</option>
+                                <option value="">-- Select Bank --</option>
+                                @if (ViewBag.Banks is List<Scholarship.Web.ViewModels.LookupItemViewModel> bankList && bankList.Any())
+                                {
+                                    foreach (var b in bankList)
+                                    {
+                                        <option value="@b.Id" selected="@(bank?.BankId == b.Id)">@b.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="1">State Bank of India</option>
+                                    <option value="2">Punjab National Bank</option>
+                                    <option value="3">Bank of Baroda</option>
+                                    <option value="4">Chhattisgarh Rajya Gramin Bank</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Branch &amp; IFSC Code <span class="required-asterisk">*</span></label>
-                            <select class="form-select" id="BranchId" name="BranchId" required>
-                                <option value="1">Main Branch, Raipur (SBIN0000461)</option>
-                                <option value="2">Pandri Branch, Raipur (SBIN0007204)</option>
-                            </select>
+                            <input class="form-control" name="BranchName" placeholder="Branch Name &amp; IFSC Code" value="@(bank?.BranchName ?? "")" required />
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Account Number <span class="required-asterisk">*</span></label>
-                            <input class="form-control" id="AccountNumber" name="AccountNumber" placeholder="Enter Bank Account Number" required />
+                            <input class="form-control" id="AccountNumber" name="AccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Enter Bank Account Number" required />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Confirm Account Number <span class="required-asterisk">*</span></label>
-                            <input class="form-control" id="ConfirmAccountNumber" name="ConfirmAccountNumber" placeholder="Re-enter Bank Account Number" required />
+                            <input class="form-control" id="ConfirmAccountNumber" name="ConfirmAccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Re-enter Bank Account Number" required />
                         </div>
                     </div>
 
                     <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" id="aadhaarSeededCheck" name="IsAadhaarSeeded" value="true" checked />
+                        <input class="form-check-input" type="checkbox" id="aadhaarSeededCheck" name="IsAadhaarSeeded" value="true" checked="@(bank?.IsAadhaarSeeded == true)" />
                         <label class="form-check-label fw-bold small" for="aadhaarSeededCheck">
                             My bank account is active and seeded with my Aadhaar number for DBT payment receipts.
                         </label>
@@ -315,13 +412,13 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Online Generated? <span class="required-asterisk">*</span></label>
                                     <select class="form-select" name="IsOnlineCaste">
-                                        <option value="true">Yes (Generated from e-District portal)</option>
-                                        <option value="false">No (Manual / Offline)</option>
+                                        <option value="true" selected="@(casteCert?.IsOnlineGenerated != false)">Yes (Generated from e-District portal)</option>
+                                        <option value="false" selected="@(casteCert?.IsOnlineGenerated == false)">No (Manual / Offline)</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Certificate / Application Ref No <span class="required-asterisk">*</span></label>
-                                    <input class="form-control" name="CasteRefNo" placeholder="e.g. ED/CST/2023/10294" value="ED/CST/2023/10294" required />
+                                    <input class="form-control" name="CasteRefNo" placeholder="Enter Caste Certificate Ref No" value="@(casteCert?.ReferenceNumber ?? "")" required />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Source Portal</label>
@@ -339,13 +436,13 @@
                                 <div class="col-md-4">
                                     <label class="form-label">Online Generated? <span class="required-asterisk">*</span></label>
                                     <select class="form-select" name="IsOnlineDomicile">
-                                        <option value="true">Yes (Generated from e-District portal)</option>
-                                        <option value="false">No (Manual / Offline)</option>
+                                        <option value="true" selected="@(domicileCert?.IsOnlineGenerated != false)">Yes (Generated from e-District portal)</option>
+                                        <option value="false" selected="@(domicileCert?.IsOnlineGenerated == false)">No (Manual / Offline)</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Certificate / Application Ref No <span class="required-asterisk">*</span></label>
-                                    <input class="form-control" name="DomicileRefNo" placeholder="e.g. ED/DOM/2023/8492" value="ED/DOM/2023/8492" required />
+                                    <input class="form-control" name="DomicileRefNo" placeholder="Enter Domicile Certificate Ref No" value="@(domicileCert?.ReferenceNumber ?? "")" required />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Source Portal</label>
