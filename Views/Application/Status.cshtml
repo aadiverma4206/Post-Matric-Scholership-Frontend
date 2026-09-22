@@ -1,13 +1,69 @@
 @{
     ViewData["Title"] = "Application Tracking Status";
     var app = (Scholarship.Web.ViewModels.ApplicationSummaryViewModel?)ViewBag.Application;
+
+    bool isLocked = app?.IsLocked == true;
+    uint statusId = app?.ApplicationStatusId ?? 1u;
+
+    // Stage 1: Form Fill
+    string stage1Status = (app != null) ? "COMPLETED" : "IN PROGRESS";
+    string stage1Border = (app != null) ? "border-success text-success" : "border-primary text-primary";
+    string stage1Badge = (app != null) ? "bg-success" : "bg-primary";
+
+    // Stage 2: OTP Lock
+    string stage2Status = isLocked ? "COMPLETED" : "PENDING";
+    string stage2Border = isLocked ? "border-success text-success" : "border-secondary text-muted";
+    string stage2Badge = isLocked ? "bg-success" : "bg-secondary";
+
+    // Stage 3: Institute Nodal Officer Scrutiny
+    string stage3Status = "PENDING";
+    string stage3Border = "border-secondary text-muted";
+    string stage3Badge = "bg-secondary";
+    if (isLocked)
+    {
+        if (statusId == 2u) { stage3Status = "IN PROGRESS"; stage3Border = "border-primary text-primary bg-light"; stage3Badge = "bg-primary"; }
+        else if (statusId >= 3u && statusId != 6u) { stage3Status = "COMPLETED"; stage3Border = "border-success text-success"; stage3Badge = "bg-success"; }
+        else if (statusId == 6u) { stage3Status = "REJECTED"; stage3Border = "border-danger text-danger"; stage3Badge = "bg-danger"; }
+    }
+
+    // Stage 4: DWO Sanction Scrutiny
+    string stage4Status = "PENDING";
+    string stage4Border = "border-secondary text-muted";
+    string stage4Badge = "bg-secondary";
+    if (isLocked)
+    {
+        if (statusId == 3u) { stage4Status = "IN PROGRESS"; stage4Border = "border-primary text-primary bg-light"; stage4Badge = "bg-primary"; }
+        else if (statusId >= 4u && statusId != 6u && statusId != 7u) { stage4Status = "COMPLETED"; stage4Border = "border-success text-success"; stage4Badge = "bg-success"; }
+        else if (statusId == 7u) { stage4Status = "REJECTED"; stage4Border = "border-danger text-danger"; stage4Badge = "bg-danger"; }
+    }
+
+    // Stage 5: State Scholarship Sanction Order
+    string stage5Status = "PENDING";
+    string stage5Border = "border-secondary text-muted";
+    string stage5Badge = "bg-secondary";
+    if (isLocked)
+    {
+        if (statusId == 4u) { stage5Status = "IN PROGRESS"; stage5Border = "border-primary text-primary bg-light"; stage5Badge = "bg-primary"; }
+        else if (statusId >= 5u && statusId != 6u && statusId != 7u) { stage5Status = "COMPLETED"; stage5Border = "border-success text-success"; stage5Badge = "bg-success"; }
+    }
+
+    // Stage 6: DBT Bank Account Credit
+    string stage6Status = "PENDING";
+    string stage6Border = "border-secondary text-muted";
+    string stage6Badge = "bg-secondary";
+    if (isLocked && statusId >= 5u && statusId != 6u && statusId != 7u)
+    {
+        stage6Status = "COMPLETED";
+        stage6Border = "border-success text-success";
+        stage6Badge = "bg-success";
+    }
 }
 
 <div class="container my-4" style="max-width: 800px;">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Application Workflow Progression Status</h5>
-            <span class="badge bg-warning text-dark">Session: 2025-26</span>
+            <span class="badge bg-warning text-dark">Session: @(app?.AcademicYearCode ?? "2025-26")</span>
         </div>
 
         <div class="card-body p-4">
@@ -20,9 +76,9 @@
                             <td class="fw-bold text-primary">@(app?.ApplicationNumber ?? "-")</td>
                             <th style="width: 25%;">Current Status:</th>
                             <td>
-                                <span class="badge @(app?.IsLocked == true ? "bg-success" : "bg-warning text-dark") py-1 px-2">
-                                    <i class="bi @(app?.IsLocked == true ? "bi-shield-check" : "bi-pencil") me-1"></i>
-                                    @(app?.StatusName ?? (app?.IsLocked == true ? "LOCKED / PENDING SCRUTINY" : "DRAFT (IN PROGRESS)"))
+                                <span class="badge @(isLocked ? "bg-success" : "bg-warning text-dark") py-1 px-2">
+                                    <i class="bi @(isLocked ? "bi-shield-check" : "bi-pencil") me-1"></i>
+                                    @(app?.StatusName ?? (isLocked ? "LOCKED / PENDING SCRUTINY" : "DRAFT (IN PROGRESS)"))
                                 </span>
                             </td>
                         </tr>
@@ -30,7 +86,7 @@
                             <th>Academic Session:</th>
                             <td>@(app?.AcademicYearCode ?? "2025-26")</td>
                             <th>Lock Timestamp:</th>
-                            <td>@(app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? (app?.IsLocked == true ? DateTime.Now.ToString("dd-MM-yyyy") : "Not Locked Yet"))</td>
+                            <td>@(app?.LockedAt?.ToString("dd-MM-yyyy HH:mm") ?? (isLocked ? DateTime.Now.ToString("dd-MM-yyyy") : "Not Locked Yet"))</td>
                         </tr>
                     </tbody>
                 </table>
@@ -40,52 +96,52 @@
             <h6 class="fw-bold mb-3 text-secondary"><i class="bi bi-list-check me-2"></i>Stage-Wise Progression Timeline</h6>
 
             <div class="list-group">
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-success border-4 py-3">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage1Border">
                     <div>
-                        <h6 class="fw-bold mb-1 text-success"><i class="bi bi-check-circle-fill me-2"></i>Stage 1: Student Application Registration &amp; Form Fill</h6>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage1Status == "COMPLETED" ? "bi-check-circle-fill" : "bi-pencil-fill") me-2"></i>Stage 1: Student Application Registration &amp; Form Fill</h6>
                         <small class="text-muted">Personal, Academic, Bank, and Statutory certificates filled</small>
                     </div>
-                    <span class="badge bg-success">COMPLETED</span>
+                    <span class="badge @stage1Badge">@stage1Status</span>
                 </div>
 
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-success border-4 py-3">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage2Border">
                     <div>
-                        <h6 class="fw-bold mb-1 text-success"><i class="bi bi-check-circle-fill me-2"></i>Stage 2: Aadhaar OTP Final Application Lock</h6>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage2Status == "COMPLETED" ? "bi-check-circle-fill" : "bi-circle") me-2"></i>Stage 2: Aadhaar OTP Final Application Lock</h6>
                         <small class="text-muted">Dossier cryptographically locked; editing restricted</small>
                     </div>
-                    <span class="badge bg-success">COMPLETED</span>
+                    <span class="badge @stage2Badge">@stage2Status</span>
                 </div>
 
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-primary border-4 py-3 bg-light">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage3Border">
                     <div>
-                        <h6 class="fw-bold mb-1 text-primary"><i class="bi bi-hourglass-split me-2"></i>Stage 3: College / Institute Nodal Officer Scrutiny</h6>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage3Status == "COMPLETED" ? "bi-check-circle-fill" : (stage3Status == "IN PROGRESS" ? "bi-hourglass-split" : "bi-circle")) me-2"></i>Stage 3: College / Institute Nodal Officer Scrutiny</h6>
                         <small class="text-muted">Verification of admission, fees, qualifying marksheets, and attendance</small>
                     </div>
-                    <span class="badge bg-primary">IN PROGRESS</span>
+                    <span class="badge @stage3Badge">@stage3Status</span>
                 </div>
 
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage4Border">
                     <div>
-                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 4: District Welfare Officer (DWO) Sanction Scrutiny</h6>
-                        <small>Income certificate, category reservation, and scheme quota verification</small>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage4Status == "COMPLETED" ? "bi-check-circle-fill" : (stage4Status == "IN PROGRESS" ? "bi-hourglass-split" : "bi-circle")) me-2"></i>Stage 4: District Welfare Officer (DWO) Sanction Scrutiny</h6>
+                        <small class="text-muted">Income certificate, category reservation, and scheme quota verification</small>
                     </div>
-                    <span class="badge bg-secondary">PENDING</span>
+                    <span class="badge @stage4Badge">@stage4Status</span>
                 </div>
 
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage5Border">
                     <div>
-                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 5: State Scholarship Sanction Order &amp; Treasury Bill Generation</h6>
-                        <small>Batch bill preparation for state scholarship fund release</small>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage5Status == "COMPLETED" ? "bi-check-circle-fill" : (stage5Status == "IN PROGRESS" ? "bi-hourglass-split" : "bi-circle")) me-2"></i>Stage 5: State Scholarship Sanction Order &amp; Treasury Bill Generation</h6>
+                        <small class="text-muted">Batch bill preparation for state scholarship fund release</small>
                     </div>
-                    <span class="badge bg-secondary">PENDING</span>
+                    <span class="badge @stage5Badge">@stage5Status</span>
                 </div>
 
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-secondary border-4 py-3 text-muted">
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-4 py-3 @stage6Border">
                     <div>
-                        <h6 class="fw-bold mb-1"><i class="bi bi-circle me-2"></i>Stage 6: Direct Benefit Transfer (DBT) Bank Account Credit</h6>
-                        <small>Public Financial Management System (PFMS) credit confirmation</small>
+                        <h6 class="fw-bold mb-1"><i class="bi @(stage6Status == "COMPLETED" ? "bi-check-circle-fill" : "bi-circle") me-2"></i>Stage 6: Direct Benefit Transfer (DBT) Bank Account Credit</h6>
+                        <small class="text-muted">Public Financial Management System (PFMS) credit confirmation</small>
                     </div>
-                    <span class="badge bg-secondary">PENDING</span>
+                    <span class="badge @stage6Badge">@stage6Status</span>
                 </div>
             </div>
 

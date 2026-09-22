@@ -22,10 +22,12 @@ public class ProfileController : Controller
         var profileResp = await _apiClient.GetProfileAsync();
         var addrResp = await _apiClient.GetAddressAsync("PERMANENT");
         var corrAddrResp = await _apiClient.GetAddressAsync("CORRESPONDENCE");
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
 
         ViewBag.Profile = profileResp?.Data;
         ViewBag.PermanentAddress = addrResp?.Data;
         ViewBag.CorrespondenceAddress = corrAddrResp?.Data ?? addrResp?.Data;
+        ViewBag.IsApplicationLocked = appResp?.Data?.IsLocked == true;
 
         return View();
     }
@@ -34,6 +36,13 @@ public class ProfileController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit()
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["InfoMessage"] = "Aapka application lock aur submit ho chuka hai. Profile me badlav karne ki anumati nahi hai.";
+            return RedirectToAction("Index");
+        }
+
         var profileResp = await _apiClient.GetProfileAsync();
         var addrResp = await _apiClient.GetAddressAsync("CORRESPONDENCE");
         var states = await _apiClient.GetStatesAsync();
@@ -57,14 +66,22 @@ public class ProfileController : Controller
         ViewBag.HouseholdCategories = householdCats?.Data ?? new();
         ViewBag.DeprivationCriteria = depCriteria?.Data ?? new();
         ViewBag.Religions = religions?.Data ?? new();
+        ViewBag.IsApplicationLocked = false;
 
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(AddressViewModel addressModel, IFormFile? photoFile)
+    public async Task<IActionResult> Edit(StudentProfileViewModel profileModel, AddressViewModel addressModel, IFormFile? photoFile)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka application pehle se lock aur submit hai. Profile update nahi kiya ja sakta.";
+            return RedirectToAction("Index");
+        }
+
         if (photoFile != null && photoFile.Length > 0)
         {
             var uploadResp = await _apiClient.UploadDocumentAsync(1, 2, photoFile);
@@ -74,6 +91,10 @@ public class ProfileController : Controller
             }
         }
 
+        // 1. Update Profile (family, household, etc.)
+        await _apiClient.UpdateProfileAsync(profileModel);
+
+        // 2. Save Address
         addressModel.AddressType = "CORRESPONDENCE";
         var saveAddrResp = await _apiClient.SaveAddressAsync(addressModel);
         if (saveAddrResp != null && saveAddrResp.Success)
@@ -101,16 +122,30 @@ public class AcademicController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        bool isLocked = appResp?.Data?.IsLocked == true;
+        ViewBag.IsApplicationLocked = isLocked;
+
         var acadResp = await _apiClient.GetAcademicDetailsAsync();
+        var acad = acadResp?.Data;
+        ulong districtId = acad?.DistrictId > 0 ? acad.DistrictId.Value : 1;
+
         var districts = await _apiClient.GetDistrictsAsync(1);
         var courseTypes = await _apiClient.GetCourseTypesAsync();
         var admissionTypes = await _apiClient.GetAdmissionTypesAsync();
         var studyModes = await _apiClient.GetStudyModesAsync();
         var boards = await _apiClient.GetEducationBoardsAsync();
-        var institutes = await _apiClient.GetInstitutesAsync(1);
+        var institutes = await _apiClient.GetInstitutesAsync(districtId);
         var courses = await _apiClient.GetCoursesAsync(null);
 
-        ViewBag.Academic = acadResp?.Data;
+        List<LookupItemViewModel> branches = new();
+        if (acad?.CourseId > 0)
+        {
+            var branchResp = await _apiClient.GetCourseBranchesAsync(acad.CourseId.Value);
+            branches = branchResp?.Data ?? new();
+        }
+
+        ViewBag.Academic = acad;
         ViewBag.Districts = districts?.Data ?? new();
         ViewBag.CourseTypes = courseTypes?.Data ?? new();
         ViewBag.AdmissionTypes = admissionTypes?.Data ?? new();
@@ -118,6 +153,7 @@ public class AcademicController : Controller
         ViewBag.Boards = boards?.Data ?? new();
         ViewBag.Institutes = institutes?.Data ?? new();
         ViewBag.Courses = courses?.Data ?? new();
+        ViewBag.Branches = branches;
 
         return View();
     }
@@ -126,6 +162,13 @@ public class AcademicController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(AcademicDetailsViewModel model, IFormFile? tenthMarksheetFile, IFormFile? marksheetFile)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka application pehle se submit aur lock ho chuka hai. Academic details me badlav nahi kiya ja sakta.";
+            return RedirectToAction("Index");
+        }
+
         if (tenthMarksheetFile != null && tenthMarksheetFile.Length > 0)
         {
             var uploadResp = await _apiClient.UploadDocumentAsync(2, 2, tenthMarksheetFile);
@@ -171,6 +214,10 @@ public class BankController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        bool isLocked = appResp?.Data?.IsLocked == true;
+        ViewBag.IsApplicationLocked = isLocked;
+
         var bankResp = await _apiClient.GetBankAccountAsync();
         var banks = await _apiClient.GetBanksAsync();
 
@@ -184,6 +231,13 @@ public class BankController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(BankAccountViewModel model, IFormFile? passbookFile)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka application pehle se submit aur lock ho chuka hai. Bank details me badlav nahi kiya ja sakta.";
+            return RedirectToAction("Index");
+        }
+
         if (passbookFile != null && passbookFile.Length > 0)
         {
             var uploadResp = await _apiClient.UploadDocumentAsync(4, 2, passbookFile);
@@ -219,6 +273,10 @@ public class CertificateController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        bool isLocked = appResp?.Data?.IsLocked == true;
+        ViewBag.IsApplicationLocked = isLocked;
+
         var certsResp = await _apiClient.GetCertificatesAsync();
         ViewBag.Certificates = certsResp?.Data ?? new();
         return View();
@@ -228,6 +286,13 @@ public class CertificateController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Save(CertificateViewModel model, IFormFile? certificateFile)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka application pehle se submit aur lock ho chuka hai. Certificates me badlav nahi kiya ja sakta.";
+            return RedirectToAction("Index");
+        }
+
         if (certificateFile != null && certificateFile.Length > 0)
         {
             // Map CertificateTypeId (1: Caste -> docType 5, 2: Domicile -> docType 6, 3: Income -> docType 7, 4: Differently-Abled -> docType 8)
@@ -272,6 +337,10 @@ public class DocumentController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        bool isLocked = appResp?.Data?.IsLocked == true;
+        ViewBag.IsApplicationLocked = isLocked;
+
         var docsResp = await _apiClient.GetDocumentsAsync();
         var certsResp = await _apiClient.GetCertificatesAsync();
         var bankResp = await _apiClient.GetBankAccountAsync();
@@ -293,6 +362,13 @@ public class DocumentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Upload(uint documentTypeId, IFormFile file)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka application pehle se submit aur lock ho chuka hai. Naye documents upload nahi kiye ja sakte.";
+            return RedirectToAction("Index");
+        }
+
         if (file == null || file.Length == 0)
         {
             TempData["ErrorMessage"] = "Please select a file to upload.";

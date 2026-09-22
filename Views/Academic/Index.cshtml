@@ -10,9 +10,22 @@
     var boards = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Boards ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var institutes = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Institutes ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
     var courses = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Courses ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    var branches = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Branches ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    bool isLocked = ViewBag.IsApplicationLocked == true;
 }
 
 <div class="container my-3">
+    @if (isLocked)
+    {
+        <div class="alert alert-danger py-3 shadow-sm mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-lock-fill fs-3 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Application Locked &amp; Submitted (आवेदन लॉक एवं जमा हो चुका है)</h6>
+                <p class="mb-0 small">Aapka application lock ho chuka hai. Academic details ab read-only mode me hain aur badlav sambhav nahi hai. (Your application has been locked. Editing is restricted.)</p>
+            </div>
+        </div>
+    }
+
     <!-- Statutory Warning matching PDF Page 11-12 -->
     <div class="alert alert-warning py-2 small shadow-sm mb-4">
         <strong>NOTE :</strong>
@@ -37,11 +50,11 @@
                         <label class="form-label small fw-bold">Select Institute State <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="InstituteState" value="CG" checked id="stCG">
+                                <input class="form-check-input" type="radio" name="InstituteState" value="CG" checked id="stCG" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small fw-bold" for="stCG">Chhattisgarh State</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="InstituteState" value="OTHER" id="stOther">
+                                <input class="form-check-input" type="radio" name="InstituteState" value="OTHER" id="stOther" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small" for="stOther">Other State</label>
                             </div>
                         </div>
@@ -49,22 +62,22 @@
 
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Institute District <span class="required-asterisk">*</span></label>
-                        <select class="form-select dynamic-district" id="InstituteDistrictSelect" required>
+                        <select class="form-select dynamic-district" id="InstituteDistrictSelect" name="DistrictId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select District --</option>
                             @foreach (var d in districts)
                             {
-                                <option value="@d.Id">@d.Name</option>
+                                <option value="@d.Id" selected="@(acad?.DistrictId == d.Id)">@d.Name</option>
                             }
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Institute <span class="required-asterisk">*</span></label>
-                        <select class="form-select" id="InstituteSelect" required>
+                        <select class="form-select" id="InstituteSelect" name="InstituteId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Institute --</option>
                             @foreach (var inst in institutes)
                             {
-                                <option value="@inst.Id" data-code="@inst.Code">@inst.Name</option>
+                                <option value="@inst.Id" data-code="@inst.Code" selected="@(acad?.InstituteId == inst.Id)">@inst.Name</option>
                             }
                         </select>
                     </div>
@@ -77,11 +90,11 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Admission Date (DD-MM-YYYY) <span class="required-asterisk">*</span></label>
-                        <input type="date" class="form-control" name="AdmissionDate" value="@(acad != null && acad.AdmissionDate > DateTime.MinValue ? acad.AdmissionDate.ToString("yyyy-MM-dd") : "")" required />
+                        <input type="date" class="form-control" name="AdmissionDate" value="@(acad != null && acad.AdmissionDate > DateTime.MinValue ? acad.AdmissionDate.ToString("yyyy-MM-dd") : "")" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Enrollment Number</label>
-                        <input class="form-control" name="EnrollmentNumber" value="@(acad?.EnrollmentNumber ?? "")" placeholder="Institute Enrollment No." />
+                        <input class="form-control" name="EnrollmentNumber" value="@(acad?.EnrollmentNumber ?? "")" placeholder="Institute Enrollment No." @(isLocked ? "disabled" : "") />
                     </div>
                 </div>
 
@@ -97,7 +110,7 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Admission Type <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="AdmissionTypeId" required>
+                        <select class="form-select" name="AdmissionTypeId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Admission Type --</option>
                             @foreach (var at in admissionTypes)
                             {
@@ -107,7 +120,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Mode of Study <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="StudyModeId" required>
+                        <select class="form-select" name="StudyModeId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Mode of Study --</option>
                             @foreach (var sm in studyModes)
                             {
@@ -117,11 +130,11 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Course <span class="required-asterisk">*</span></label>
-                        <select class="form-select" id="CourseSelect" required>
+                        <select class="form-select" id="CourseSelect" name="CourseId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Course --</option>
                             @foreach (var c in courses)
                             {
-                                <option value="@c.Id" data-code="@c.Code">@c.Name</option>
+                                <option value="@c.Id" data-code="@c.Code" selected="@(acad?.CourseId == c.Id)">@c.Name</option>
                             }
                         </select>
                     </div>
@@ -130,8 +143,12 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Branch <span class="required-asterisk">*</span></label>
-                        <select class="form-select" id="BranchSelect" required>
+                        <select class="form-select" id="BranchSelect" name="BranchId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Branch --</option>
+                            @foreach (var br in branches)
+                            {
+                                <option value="@br.Id" selected="@(acad?.BranchId == br.Id || (!string.IsNullOrEmpty(acad?.BranchName) && br.Name.Contains(acad.BranchName)))">@br.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -141,7 +158,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Select Course Year <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="CourseYear" required>
+                        <select class="form-select" name="CourseYear" required @(isLocked ? "disabled" : "")>
                             <option value="1" selected="@(acad?.CourseYear == 1)">1st Year</option>
                             <option value="2" selected="@(acad?.CourseYear == 2)">2nd Year</option>
                             <option value="3" selected="@(acad?.CourseYear == 3)">3rd Year</option>
@@ -153,14 +170,14 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Hosteller or Day Scholar? <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="IsHosteller" required>
+                        <select class="form-select" name="IsHosteller" required @(isLocked ? "disabled" : "")>
                             <option value="false" selected="@(acad?.IsHosteller != true)">Day Scholar</option>
                             <option value="true" selected="@(acad?.IsHosteller == true)">Hosteller</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Lateral Entry Admission? <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="IsLateralEntry" required>
+                        <select class="form-select" name="IsLateralEntry" required @(isLocked ? "disabled" : "")>
                             <option value="false" selected="@(acad?.IsLateralEntry != true)">No</option>
                             <option value="true" selected="@(acad?.IsLateralEntry == true)">Yes</option>
                         </select>
@@ -178,15 +195,15 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthRollNumber" id="TenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Enter 10th Roll Number" required />
+                        <input class="form-control" name="TenthRollNumber" id="TenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Enter 10th Roll Number" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Confirm Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ConfirmTenthRollNumber" id="ConfirmTenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Re-enter 10th Roll Number" required />
+                        <input class="form-control" name="ConfirmTenthRollNumber" id="ConfirmTenthRollNumber" value="@(acad?.TenthRollNumber ?? "")" placeholder="Re-enter 10th Roll Number" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">School Category <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="SchoolType" required>
+                        <select class="form-select" name="SchoolType" required @(isLocked ? "disabled" : "")>
                             <option value="GOVERNMENT" selected="@(acad?.SchoolType != "NON_GOVERNMENT")">Government School</option>
                             <option value="NON_GOVERNMENT" selected="@(acad?.SchoolType == "NON_GOVERNMENT")">Non-Government / Private</option>
                         </select>
@@ -196,11 +213,11 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Year of Passing (YYYY) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthPassingYear" value="@(acad?.TenthPassingYear > 0 ? acad.TenthPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2022)" maxlength="4" required />
+                        <input class="form-control" name="TenthPassingYear" value="@(acad?.TenthPassingYear > 0 ? acad.TenthPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2022)" maxlength="4" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Board Name <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="TenthBoardId" required>
+                        <select class="form-select" name="TenthBoardId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Board --</option>
                             @foreach (var b in boards)
                             {
@@ -210,17 +227,20 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="TenthPercentage" value="@(acad?.TenthPercentage > 0 ? acad.TenthPercentage.ToString("F2") : "")" placeholder="e.g. 78.50" required />
+                        <input class="form-control" name="TenthPercentage" value="@(acad?.TenthPercentage > 0 ? acad.TenthPercentage.ToString("F2") : "")" placeholder="e.g. 78.50" required @(isLocked ? "disabled" : "") />
                     </div>
                 </div>
 
                 <!-- Upload High School (10th) Marksheet -->
                 <div class="row g-3 align-items-center">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Upload Class 10th Marksheet (PDF / JPG, Max 120KB)</label>
-                        <input type="file" class="form-control" name="tenthMarksheetFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
-                    </div>
+                    @if (!isLocked)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Upload Class 10th Marksheet (PDF / JPG, Max 120KB)</label>
+                            <input type="file" class="form-control" name="tenthMarksheetFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
+                        </div>
+                    }
                     @if (acad?.TenthMarksheetDocId != null && acad.TenthMarksheetDocId > 0)
                     {
                         <div class="col-md-6 pt-3">
@@ -244,7 +264,7 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Course Type <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="PreviousCourseTypeId" id="PreviousCourseTypeId" required>
+                        <select class="form-select" name="PreviousCourseTypeId" id="PreviousCourseTypeId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Course Type --</option>
                             @foreach (var ct in courseTypes)
                             {
@@ -254,7 +274,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Course <span class="required-asterisk">*</span></label>
-                        <select class="form-select" name="PreviousCourseId" id="PreviousCourseId" required>
+                        <select class="form-select" name="PreviousCourseId" id="PreviousCourseId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Course --</option>
                             @foreach (var c in courses)
                             {
@@ -264,32 +284,35 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Roll Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousRollNumber" value="@(acad?.PreviousRollNumber ?? "")" placeholder="Enter Previous Roll Number" required />
+                        <input class="form-control" name="PreviousRollNumber" value="@(acad?.PreviousRollNumber ?? "")" placeholder="Enter Previous Roll Number" required @(isLocked ? "disabled" : "") />
                     </div>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Passing Year (YYYY) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousPassingYear" value="@(acad?.PreviousPassingYear > 0 ? acad.PreviousPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2024)" maxlength="4" required />
+                        <input class="form-control" name="PreviousPassingYear" value="@(acad?.PreviousPassingYear > 0 ? acad.PreviousPassingYear.ToString() : "")" placeholder="YYYY (e.g. 2024)" maxlength="4" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Percentage (%) <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousPercentage" value="@(acad?.PreviousPercentage > 0 ? acad.PreviousPercentage.ToString("F2") : "")" placeholder="e.g. 74.20" required />
+                        <input class="form-control" name="PreviousPercentage" value="@(acad?.PreviousPercentage > 0 ? acad.PreviousPercentage.ToString("F2") : "")" placeholder="e.g. 74.20" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Previous Institute Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="PreviousInstituteName" value="@(acad?.PreviousInstituteName ?? "")" placeholder="Enter Previous School/College Name" required />
+                        <input class="form-control" name="PreviousInstituteName" value="@(acad?.PreviousInstituteName ?? "")" placeholder="Enter Previous School/College Name" required @(isLocked ? "disabled" : "") />
                     </div>
                 </div>
 
                 <!-- Upload Previous Marksheet (PDF Page 18) -->
                 <div class="row g-3 align-items-center">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Upload Previous / Last Exam Marksheet (PDF / JPG Max 120KB) <span class="required-asterisk">*</span></label>
-                        <input type="file" class="form-control" name="marksheetFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
-                    </div>
+                    @if (!isLocked)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Upload Previous / Last Exam Marksheet (PDF / JPG Max 120KB) <span class="required-asterisk">*</span></label>
+                            <input type="file" class="form-control" name="marksheetFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Format: PDF, JPG or JPEG. Max size: 120 KB.</div>
+                        </div>
+                    }
                     @if (acad?.PreviousMarksheetDocId != null && acad.PreviousMarksheetDocId > 0)
                     {
                         <div class="col-md-6 pt-3">
@@ -308,9 +331,85 @@
             <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Back to Profile
             </a>
-            <button type="submit" class="btn btn-success fw-bold px-4 py-2">
-                <i class="bi bi-check-circle-fill me-1"></i> Save Academic Details
-            </button>
+            @if (isLocked)
+            {
+                <button type="button" class="btn btn-secondary fw-bold px-4 py-2" disabled>
+                    <i class="bi bi-lock-fill me-1"></i> Application Locked (Editing Disabled)
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> Save Academic Details
+                </button>
+            }
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const districtSelect = document.getElementById('InstituteDistrictSelect');
+        const instSelect = document.getElementById('InstituteSelect');
+        const instCodeDisplay = document.getElementById('SelectedInstituteIdDisplay');
+        const courseSelect = document.getElementById('CourseSelect');
+        const courseCodeDisplay = document.getElementById('SelectedCourseCodeDisplay');
+        const branchSelect = document.getElementById('BranchSelect');
+
+        // Dynamic institute load on district change
+        if (districtSelect) {
+            districtSelect.addEventListener('change', function () {
+                const distId = this.value;
+                if (!distId) return;
+
+                fetch('/api/masters/institutes?districtId=' + distId)
+                    .then(r => r.json())
+                    .then(data => {
+                        instSelect.innerHTML = '<option value="">-- Select Institute --</option>';
+                        (data || []).forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.text = item.name;
+                            opt.setAttribute('data-code', item.code || '');
+                            instSelect.appendChild(opt);
+                        });
+                        instCodeDisplay.value = '';
+                    })
+                    .catch(err => console.error('Error fetching institutes:', err));
+            });
+        }
+
+        // Set institute code display
+        if (instSelect) {
+            instSelect.addEventListener('change', function () {
+                const selected = this.options[this.selectedIndex];
+                instCodeDisplay.value = selected ? (selected.getAttribute('data-code') || '') : '';
+            });
+        }
+
+        // Dynamic branch load on course change
+        if (courseSelect) {
+            courseSelect.addEventListener('change', function () {
+                const courseId = this.value;
+                const selected = this.options[this.selectedIndex];
+                courseCodeDisplay.value = selected ? (selected.getAttribute('data-code') || '') : '';
+                if (!courseId) return;
+
+                fetch('/api/masters/branches?courseId=' + courseId)
+                    .then(r => r.json())
+                    .then(data => {
+                        branchSelect.innerHTML = '<option value="">-- Select Branch --</option>';
+                        (data || []).forEach(item => {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.text = item.name;
+                            branchSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(err => console.error('Error fetching branches:', err));
+            });
+        }
+    });
+</script>
+}

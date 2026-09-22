@@ -53,14 +53,15 @@ public class ApplicationController : Controller
     {
         // Current application
         var appResp = await _apiClient.GetCurrentApplicationAsync(2);
-        if (appResp?.Data?.IsLocked == true && step < 6)
+        if (appResp?.Data?.IsLocked == true)
         {
-            TempData["InfoMessage"] = "Your application is locked and cannot be modified. You can view the final preview.";
+            TempData["InfoMessage"] = "Aapka scholarship application submit aur lock ho chuka hai. Dubara form fill nahi kiya ja sakta. Niche aapka final printable dossier uplabdh hai.";
             return RedirectToAction("Preview");
         }
 
         ViewBag.CurrentStep = step;
         ViewBag.Application = appResp?.Data;
+        ViewBag.IsApplicationLocked = false;
 
         // Load masters needed for the step
         if (step == 1) // Personal & Address
@@ -117,8 +118,128 @@ public class ApplicationController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SaveStep(int step, [FromForm] IFormCollection form)
     {
+        var appResp = await _apiClient.GetCurrentApplicationAsync(2);
+        if (appResp?.Data?.IsLocked == true)
+        {
+            TempData["ErrorMessage"] = "Aapka aavedan submit aur lock ho chuka hai. Form dubara submit nahi kiya ja sakta.";
+            return RedirectToAction("Preview");
+        }
+
+        if (step == 1)
+        {
+            var addrLine = form["AddressLine"].ToString();
+            var pincode = form["Pincode"].ToString();
+            if (!string.IsNullOrWhiteSpace(addrLine) && !string.IsNullOrWhiteSpace(pincode))
+            {
+                var curAddr = (await _apiClient.GetAddressAsync("PERMANENT"))?.Data ?? new ViewModels.AddressViewModel();
+                curAddr.AddressLine = addrLine;
+                curAddr.Pincode = pincode;
+                curAddr.AddressType = "PERMANENT";
+                await _apiClient.SaveAddressAsync(curAddr);
+            }
+
+            var profResp = await _apiClient.GetProfileAsync();
+            if (profResp?.Data != null)
+            {
+                var prof = profResp.Data;
+                if (decimal.TryParse(form["AnnualIncome"], out var income)) prof.AnnualIncome = income;
+                if (uint.TryParse(form["HouseholdCategoryId"], out var hhCatId)) prof.HouseholdCategoryId = hhCatId;
+                await _apiClient.UpdateProfileAsync(prof);
+            }
+        }
+        else if (step == 2 || step == 3)
+        {
+            var curAcad = (await _apiClient.GetAcademicDetailsAsync())?.Data ?? new ViewModels.AcademicDetailsViewModel();
+            if (step == 2)
+            {
+                if (ulong.TryParse(form["InstituteId"], out var instId)) curAcad.InstituteId = instId;
+                if (uint.TryParse(form["CourseTypeId"], out var ctId)) curAcad.CourseTypeId = ctId;
+                if (ulong.TryParse(form["CourseId"], out var cId)) curAcad.CourseId = cId;
+                if (uint.TryParse(form["SchemeId"], out var sId)) curAcad.SchemeId = sId;
+                if (uint.TryParse(form["CourseYear"], out var cy)) curAcad.CourseYear = cy;
+                if (uint.TryParse(form["AdmissionTypeId"], out var atId)) curAcad.AdmissionTypeId = atId;
+                if (uint.TryParse(form["StudyModeId"], out var smId)) curAcad.StudyModeId = smId;
+                if (DateTime.TryParse(form["AdmissionDate"], out var admDate)) curAcad.AdmissionDate = admDate;
+                var enroll = form["EnrollmentNumber"].ToString();
+                if (!string.IsNullOrWhiteSpace(enroll)) curAcad.EnrollmentNumber = enroll;
+                var branch = form["BranchName"].ToString();
+                if (!string.IsNullOrWhiteSpace(branch)) curAcad.BranchName = branch;
+                if (bool.TryParse(form["IsHosteller"], out var host)) curAcad.IsHosteller = host;
+            }
+            else if (step == 3)
+            {
+                var roll = form["TenthRollNumber"].ToString();
+                if (!string.IsNullOrWhiteSpace(roll)) curAcad.TenthRollNumber = roll;
+                if (ushort.TryParse(form["TenthPassingYear"], out var ty)) curAcad.TenthPassingYear = ty;
+                if (uint.TryParse(form["TenthBoardId"], out var tbId)) curAcad.TenthBoardId = tbId;
+                if (decimal.TryParse(form["TenthPercentage"], out var tp)) curAcad.TenthPercentage = tp;
+
+                var prevInst = form["PreviousInstituteName"].ToString();
+                if (!string.IsNullOrWhiteSpace(prevInst)) curAcad.PreviousInstituteName = prevInst;
+                var prevRoll = form["PreviousRollNumber"].ToString();
+                if (!string.IsNullOrWhiteSpace(prevRoll)) curAcad.PreviousRollNumber = prevRoll;
+                if (ushort.TryParse(form["PreviousPassingYear"], out var py)) curAcad.PreviousPassingYear = py;
+                if (decimal.TryParse(form["PreviousPercentage"], out var pp)) curAcad.PreviousPercentage = pp;
+            }
+            curAcad.AcademicYearId = 2;
+            await _apiClient.SaveAcademicDetailsAsync(curAcad);
+        }
+        else if (step == 4)
+        {
+            var acc = form["AccountNumber"].ToString();
+            var conf = form["ConfirmAccountNumber"].ToString();
+            ulong.TryParse(form["BankId"], out var bId);
+            bool isSeeded = form["IsAadhaarSeeded"] == "true" || form["IsAadhaarSeeded"] == "on";
+            if (!string.IsNullOrWhiteSpace(acc) && bId > 0)
+            {
+                var bModel = new ViewModels.BankAccountViewModel
+                {
+                    BankId = bId,
+                    BranchId = 1,
+                    AccountNumber = acc,
+                    ConfirmAccountNumber = string.IsNullOrWhiteSpace(conf) ? acc : conf,
+                    IsAadhaarSeeded = isSeeded
+                };
+                await _apiClient.SaveBankAccountAsync(bModel);
+            }
+        }
+        else if (step == 5)
+        {
+            var casteRef = form["CasteRefNo"].ToString();
+            bool casteOnline = form["IsOnlineCaste"] == "true";
+            if (!string.IsNullOrWhiteSpace(casteRef))
+            {
+                await _apiClient.SaveCertificateAsync(new ViewModels.CertificateViewModel
+                {
+                    CertificateTypeId = 1,
+                    IsOnlineGenerated = casteOnline,
+                    GeneratedFrom = "eDistrict",
+                    ReferenceNumber = casteRef
+                });
+            }
+
+            var domRef = form["DomicileRefNo"].ToString();
+            bool domOnline = form["IsOnlineDomicile"] == "true";
+            if (!string.IsNullOrWhiteSpace(domRef))
+            {
+                await _apiClient.SaveCertificateAsync(new ViewModels.CertificateViewModel
+                {
+                    CertificateTypeId = 2,
+                    IsOnlineGenerated = domOnline,
+                    GeneratedFrom = "eDistrict",
+                    ReferenceNumber = domRef
+                });
+            }
+        }
+
+        ulong schemeId = 1;
+        if (ulong.TryParse(form["SchemeId"], out ulong sid) && sid > 0)
+        {
+            schemeId = sid;
+        }
+
         // Advance or update draft in API
-        await _apiClient.SaveDraftApplicationAsync(2, 1, step + 1);
+        await _apiClient.SaveDraftApplicationAsync(2, schemeId, step + 1);
 
         if (step >= 5)
             return RedirectToAction("Preview");
@@ -142,6 +263,7 @@ public class ApplicationController : Controller
         ViewBag.Academic = acadResp?.Data;
         ViewBag.Bank = bankResp?.Data;
         ViewBag.Certificates = certsResp?.Data ?? new();
+        ViewBag.IsApplicationLocked = (appResp?.Data?.IsLocked == true);
 
         return View();
     }
@@ -155,7 +277,7 @@ public class ApplicationController : Controller
 
         if (appResp.Data.IsLocked)
         {
-            TempData["InfoMessage"] = "Your application is already locked.";
+            TempData["InfoMessage"] = "Aapka application pehle hi submit aur lock ho chuka hai.";
             return RedirectToAction("Status");
         }
 

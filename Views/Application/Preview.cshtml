@@ -39,9 +39,12 @@
         <div class="card-body p-3">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div class="d-flex align-items-center gap-2">
-                    <a asp-action="Wizard" asp-route-step="1" class="btn btn-outline-secondary btn-sm fw-semibold">
-                        <i class="bi bi-pencil-square me-1"></i> Edit Application Details
-                    </a>
+                    @if (app?.IsLocked != true)
+                    {
+                        <a asp-action="Wizard" asp-route-step="1" class="btn btn-outline-secondary btn-sm fw-semibold">
+                            <i class="bi bi-pencil-square me-1"></i> Edit Application Details
+                        </a>
+                    }
                     @if (app?.IsLocked == true)
                     {
                         <span class="badge bg-success py-2 px-3 fw-bold">

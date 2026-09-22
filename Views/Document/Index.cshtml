@@ -38,9 +38,20 @@
         new { Id = 12u, Name = "Admission Slip / Enrollment Proof", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Proof of enrollment issued by the institution." },
         new { Id = 10u, Name = "Other Supplementary Document", Accept = ".pdf,.jpg,.jpeg", MaxSize = "200 KB", FallbackId = (ulong?)null, Note = "Any additional required annexure or supporting proof." }
     };
+    bool isLocked = ViewBag.IsApplicationLocked == true;
 }
 
 <div class="container my-3">
+    @if (isLocked)
+    {
+        <div class="alert alert-danger py-3 shadow-sm mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-lock-fill fs-3 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Application Locked &amp; Submitted (आवेदन लॉक एवं जमा हो चुका है)</h6>
+                <p class="mb-0 small">Aapka application lock ho chuka hai. Documents ab read-only mode me hain aur badlav ya naye upload sambhav nahi hai. (Your application has been locked. Document uploads are restricted.)</p>
+            </div>
+        </div>
+    }
     <div class="gov-card shadow-sm mb-4">
         <div class="gov-card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-arrow-up me-2"></i> Document Upload Repository</h5>
@@ -110,14 +121,21 @@
                                     }
                                 </td>
                                 <td>
-                                    <form asp-action="Upload" method="post" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="documentTypeId" value="@def.Id" />
-                                        <input type="file" name="file" class="form-control form-control-sm" accept="@def.Accept" required />
-                                        <button type="submit" class="btn btn-primary btn-sm text-nowrap fw-bold" title="@(isUploaded ? "Replace Document" : "Upload Document")">
-                                            <i class="bi bi-upload me-1"></i>@(isUploaded ? "Replace" : "Upload")
-                                        </button>
-                                    </form>
+                                    @if (!isLocked)
+                                    {
+                                        <form asp-action="Upload" method="post" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="documentTypeId" value="@def.Id" />
+                                            <input type="file" name="file" class="form-control form-control-sm" accept="@def.Accept" required />
+                                            <button type="submit" class="btn btn-primary btn-sm text-nowrap fw-bold" title="@(isUploaded ? "Replace Document" : "Upload Document")">
+                                                <i class="bi bi-upload me-1"></i>@(isUploaded ? "Replace" : "Upload")
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary py-2 px-3"><i class="bi bi-lock-fill me-1"></i> Locked</span>
+                                    }
                                 </td>
                             </tr>
                         }

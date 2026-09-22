@@ -12,6 +12,7 @@ public interface IScholarshipApiClient
     Task<ApiResponseModel<AuthResultViewModel>?> LoginOfficialAsync(OfficialLoginViewModel model);
 
     Task<ApiResponseModel<StudentProfileViewModel>?> GetProfileAsync();
+    Task<ApiResponseModel<bool>?> UpdateProfileAsync(StudentProfileViewModel model);
     Task<ApiResponseModel<AddressViewModel>?> GetAddressAsync(string type);
     Task<ApiResponseModel<ulong>?> SaveAddressAsync(AddressViewModel model);
 
@@ -57,6 +58,7 @@ public interface IScholarshipApiClient
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetPostOfficesAsync(ulong districtId);
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetBanksAsync();
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetBankBranchesAsync(ulong bankId);
+    Task<ApiResponseModel<System.Text.Json.JsonElement>?> GetBranchByIfscAsync(string ifsc);
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetCourseTypesAsync();
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetCoursesAsync(uint? courseTypeId);
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetCourseBranchesAsync(ulong courseId);
@@ -146,6 +148,9 @@ public class ScholarshipApiClient : IScholarshipApiClient
     public Task<ApiResponseModel<StudentProfileViewModel>?> GetProfileAsync() =>
         SendGetAsync<StudentProfileViewModel>("/api/profile");
 
+    public Task<ApiResponseModel<bool>?> UpdateProfileAsync(StudentProfileViewModel model) =>
+        SendPostAsync<bool>("/api/profile", model);
+
     public Task<ApiResponseModel<AddressViewModel>?> GetAddressAsync(string type) =>
         SendGetAsync<AddressViewModel>($"/api/addresses/{type}");
 
@@ -232,6 +237,9 @@ public class ScholarshipApiClient : IScholarshipApiClient
 
     public Task<ApiResponseModel<List<LookupItemViewModel>>?> GetBankBranchesAsync(ulong bankId) =>
         SendGetAsync<List<LookupItemViewModel>>($"/api/masters/bank-branches?bankId={bankId}");
+
+    public Task<ApiResponseModel<System.Text.Json.JsonElement>?> GetBranchByIfscAsync(string ifsc) =>
+        SendGetAsync<System.Text.Json.JsonElement>($"/api/masters/branch-by-ifsc?ifsc={Uri.EscapeDataString(ifsc)}");
 
     public Task<ApiResponseModel<List<LookupItemViewModel>>?> GetCourseTypesAsync() =>
         SendGetAsync<List<LookupItemViewModel>>("/api/masters/course-types");

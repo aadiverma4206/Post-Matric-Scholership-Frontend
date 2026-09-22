@@ -5,9 +5,21 @@
     var casteCert = certs.FirstOrDefault(c => c.CertificateTypeId == 1);
     var domicileCert = certs.FirstOrDefault(c => c.CertificateTypeId == 2);
     var incomeCert = certs.FirstOrDefault(c => c.CertificateTypeId == 3);
+    bool isLocked = ViewBag.IsApplicationLocked == true;
 }
 
 <div class="container my-3">
+    @if (isLocked)
+    {
+        <div class="alert alert-danger py-3 shadow-sm mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-lock-fill fs-3 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Application Locked &amp; Submitted (आवेदन लॉक एवं जमा हो चुका है)</h6>
+                <p class="mb-0 small">Aapka application lock ho chuka hai. Certificates ab read-only mode me hain aur badlav sambhav nahi hai. (Your application has been locked. Certificates cannot be modified.)</p>
+            </div>
+        </div>
+    }
+
     <!-- Statutory Instructions matching PDF Page 22 -->
     <div class="alert alert-secondary py-2 small shadow-sm mb-4">
         <strong>Note :</strong>
@@ -34,11 +46,11 @@
                         <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(casteCert?.IsOnlineGenerated != false ? "checked" : "") id="casteOnlineYes">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(casteCert?.IsOnlineGenerated != false ? "checked" : "") id="casteOnlineYes" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small" for="casteOnlineYes">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(casteCert?.IsOnlineGenerated == false ? "checked" : "") id="casteOnlineNo">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(casteCert?.IsOnlineGenerated == false ? "checked" : "") id="casteOnlineNo" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small" for="casteOnlineNo">No</label>
                             </div>
                         </div>
@@ -49,22 +61,32 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Caste Certificate Number" required />
+                        <input class="form-control" name="ReferenceNumber" value="@(casteCert?.ReferenceNumber ?? casteCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Caste Certificate Number" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
-                            <i class="bi bi-check-circle me-1"></i> Save Details
-                        </button>
+                        @if (!isLocked)
+                        {
+                            <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> Save Details
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary w-100 py-2"><i class="bi bi-lock-fill me-1"></i> Locked</span>
+                        }
                     </div>
                 </div>
 
                 <!-- Caste Certificate File Upload -->
                 <div class="row g-3 align-items-center mb-3 pt-2 border-top">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Upload Caste Certificate Scan (PDF / JPG, Max 200KB)</label>
-                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Caste Certificate (PDF or JPG).</div>
-                    </div>
+                    @if (!isLocked)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Upload Caste Certificate Scan (PDF / JPG, Max 200KB)</label>
+                            <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Caste Certificate (PDF or JPG).</div>
+                        </div>
+                    }
                     @if (casteCert?.DocumentId != null && casteCert.DocumentId > 0)
                     {
                         <div class="col-md-6 pt-3">
@@ -102,11 +124,11 @@
                         <label class="form-label small fw-bold">Is Certificate generated online? <span class="required-asterisk">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(domicileCert?.IsOnlineGenerated != false ? "checked" : "") id="domicileOnlineYes">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="true" @(domicileCert?.IsOnlineGenerated != false ? "checked" : "") id="domicileOnlineYes" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small" for="domicileOnlineYes">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(domicileCert?.IsOnlineGenerated == false ? "checked" : "") id="domicileOnlineNo">
+                                <input class="form-check-input" type="radio" name="IsOnlineGenerated" value="false" @(domicileCert?.IsOnlineGenerated == false ? "checked" : "") id="domicileOnlineNo" @(isLocked ? "disabled" : "")>
                                 <label class="form-check-label small" for="domicileOnlineNo">No</label>
                             </div>
                         </div>
@@ -117,22 +139,32 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Certificate / Reference Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Domicile Certificate Number" required />
+                        <input class="form-control" name="ReferenceNumber" value="@(domicileCert?.ReferenceNumber ?? domicileCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Domicile Certificate Number" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
-                            <i class="bi bi-check-circle me-1"></i> Save Details
-                        </button>
+                        @if (!isLocked)
+                        {
+                            <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> Save Details
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary w-100 py-2"><i class="bi bi-lock-fill me-1"></i> Locked</span>
+                        }
                     </div>
                 </div>
 
                 <!-- Domicile Certificate File Upload -->
                 <div class="row g-3 align-items-center mb-3 pt-2 border-top">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Upload Domicile Certificate Scan (PDF / JPG, Max 200KB)</label>
-                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Domicile / Niwas Certificate (PDF or JPG).</div>
-                    </div>
+                    @if (!isLocked)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Upload Domicile Certificate Scan (PDF / JPG, Max 200KB)</label>
+                            <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Domicile / Niwas Certificate (PDF or JPG).</div>
+                        </div>
+                    }
                     @if (domicileCert?.DocumentId != null && domicileCert.DocumentId > 0)
                     {
                         <div class="col-md-6 pt-3">
@@ -168,30 +200,40 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Annual Family Income (INR) <span class="required-asterisk">*</span></label>
-                        <input class="form-control fw-bold" name="AnnualIncome" id="AnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Enter Annual Income" required />
+                        <input class="form-control fw-bold" name="AnnualIncome" id="AnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Enter Annual Income" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Confirm Annual Income <span class="required-asterisk">*</span></label>
-                        <input class="form-control fw-bold" id="ConfirmAnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Re-enter Annual Income" required />
+                        <input class="form-control fw-bold" id="ConfirmAnnualIncome" value="@(incomeCert?.AnnualIncome > 0 ? incomeCert.AnnualIncome.ToString("F2") : "")" placeholder="Re-enter Annual Income" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold">Income Certificate Reference No. <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ReferenceNumber" value="@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Income Certificate Ref No." required />
+                        <input class="form-control" name="ReferenceNumber" value="@(incomeCert?.ReferenceNumber ?? incomeCert?.MaskedReferenceNumber ?? "")" placeholder="Enter Income Certificate Ref No." required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
-                            <i class="bi bi-check-circle me-1"></i> Save Details
-                        </button>
+                        @if (!isLocked)
+                        {
+                            <button type="submit" class="btn btn-outline-primary btn-sm w-100 fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> Save Details
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary w-100 py-2"><i class="bi bi-lock-fill me-1"></i> Locked</span>
+                        }
                     </div>
                 </div>
 
                 <!-- Income Certificate File Upload -->
                 <div class="row g-3 align-items-center mb-3 pt-2 border-top">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold">Upload Income Certificate Scan (PDF / JPG, Max 200KB)</label>
-                        <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Income Certificate (PDF or JPG).</div>
-                    </div>
+                    @if (!isLocked)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Upload Income Certificate Scan (PDF / JPG, Max 200KB)</label>
+                            <input type="file" class="form-control" name="certificateFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Attach scanned copy of Income Certificate (PDF or JPG).</div>
+                        </div>
+                    }
                     @if (incomeCert?.DocumentId != null && incomeCert.DocumentId > 0)
                     {
                         <div class="col-md-6 pt-3">

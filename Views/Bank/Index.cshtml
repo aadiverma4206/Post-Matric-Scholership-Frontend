@@ -4,9 +4,21 @@
     Layout = "_Layout";
     var bank = (Scholarship.Web.ViewModels.BankAccountViewModel?)ViewBag.BankAccount;
     var banks = (List<Scholarship.Web.ViewModels.LookupItemViewModel>)(ViewBag.Banks ?? new List<Scholarship.Web.ViewModels.LookupItemViewModel>());
+    bool isLocked = ViewBag.IsApplicationLocked == true;
 }
 
 <div class="container my-3">
+    @if (isLocked)
+    {
+        <div class="alert alert-danger py-3 shadow-sm mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-lock-fill fs-3 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Application Locked &amp; Submitted (आवेदन लॉक एवं जमा हो चुका है)</h6>
+                <p class="mb-0 small">Aapka application lock ho chuka hai. Bank details ab read-only mode me hain aur badlav sambhav nahi hai. (Your application has been locked. Bank details editing is restricted.)</p>
+            </div>
+        </div>
+    }
+
     <!-- Mandatory Instructions matching PDF Page 19 -->
     <div class="alert alert-info py-2 small shadow-sm mb-4">
         <strong>Note :</strong>
@@ -30,21 +42,25 @@
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">IFSC Code <span class="required-asterisk">*</span></label>
                         <div class="input-group">
-                            <input class="form-control text-uppercase" id="IfscCodeInput" value="@(bank?.IfscCode ?? "")" placeholder="e.g. SBIN0002852" required />
-                            <button class="btn btn-outline-primary btn-sm" type="button" id="btnSearchIfsc"><i class="bi bi-search"></i></button>
+                            <input class="form-control text-uppercase" id="IfscCodeInput" name="IfscCode" value="@(bank?.IfscCode ?? "")" placeholder="e.g. SBIN0002852" required @(isLocked ? "disabled" : "") />
+                            @if (!isLocked)
+                            {
+                                <button class="btn btn-outline-primary btn-sm" type="button" id="btnSearchIfsc" title="Search IFSC Details"><i class="bi bi-search"></i></button>
+                            }
                         </div>
+                        <div id="ifscStatus" class="form-text small"></div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Bank Name</label>
-                        <input class="form-control bg-light fw-bold" id="BankNameDisplay" value="@(bank?.BankName ?? "")" placeholder="Bank Name" readonly />
+                        <input class="form-control bg-light fw-bold" id="BankNameDisplay" name="BankName" value="@(bank?.BankName ?? "")" placeholder="Bank Name" readonly />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Branch Name <span class="required-asterisk">*</span></label>
-                        <input class="form-control bg-light" id="BranchNameDisplay" value="@(bank?.BranchName ?? "")" placeholder="Branch Name" readonly />
+                        <input class="form-control bg-light" id="BranchNameDisplay" name="BranchName" value="@(bank?.BranchName ?? "")" placeholder="Branch Name" readonly />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-bold">Branch Address</label>
-                        <input class="form-control bg-light small" id="BranchAddressDisplay" value="@(bank?.BranchAddress ?? "")" placeholder="Branch Address" readonly />
+                        <input class="form-control bg-light small" id="BranchAddressDisplay" name="BranchAddress" value="@(bank?.BranchAddress ?? "")" placeholder="Branch Address" readonly />
                     </div>
                 </div>
 
@@ -52,20 +68,23 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Account Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="AccountNumber" id="AccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Enter Bank Account Number" required />
+                        <input class="form-control" name="AccountNumber" id="AccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Enter Bank Account Number" required @(isLocked ? "disabled" : "") />
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Confirm Account Number <span class="required-asterisk">*</span></label>
-                        <input class="form-control" name="ConfirmAccountNumber" id="ConfirmAccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Re-enter Bank Account Number" required />
+                        <input class="form-control" name="ConfirmAccountNumber" id="ConfirmAccountNumber" value="@(bank?.AccountNumber ?? "")" placeholder="Re-enter Bank Account Number" required @(isLocked ? "disabled" : "") />
                     </div>
                 </div>
 
                 <!-- Passbook Scan Upload (PDF Page 20) -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">Passbook Scan Copy (PDF / JPG, Max 120KB) <span class="required-asterisk">*</span></label>
-                        <input type="file" class="form-control" name="passbookFile" accept=".pdf,.jpg,.jpeg" />
-                        <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Front page showing Account Number and IFSC clearly. Max 120KB.</div>
+                        @if (!isLocked)
+                        {
+                            <label class="form-label small fw-bold">Passbook Scan Copy (PDF / JPG, Max 120KB) <span class="required-asterisk">*</span></label>
+                            <input type="file" class="form-control" name="passbookFile" accept=".pdf,.jpg,.jpeg" />
+                            <div class="form-text small text-muted"><i class="bi bi-info-circle me-1"></i>Front page showing Account Number and IFSC clearly. Max 120KB.</div>
+                        }
                         @if (bank?.PassbookDocumentId != null && bank.PassbookDocumentId > 0)
                         {
                             <div class="mt-2">
@@ -78,7 +97,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Select Aadhaar Seeded Bank <span class="required-asterisk">*</span></label>
-                        <select class="form-select" id="BankId" name="BankId" required>
+                        <select class="form-select" id="BankId" name="BankId" required @(isLocked ? "disabled" : "")>
                             <option value="">-- Select Bank --</option>
                             @foreach (var b in banks)
                             {
@@ -92,7 +111,7 @@
                 <!-- Mandatory Hindi Declaration Checkbox (PDF Page 20) -->
                 <div class="p-3 bg-light rounded border">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="IsAadhaarSeeded" value="true" @(bank?.IsAadhaarSeeded == true ? "checked" : "") id="dbtDeclaration" required />
+                        <input class="form-check-input" type="checkbox" name="IsAadhaarSeeded" value="true" @(bank?.IsAadhaarSeeded == true ? "checked" : "") id="dbtDeclaration" required @(isLocked ? "disabled" : "") />
                         <label class="form-check-label fw-bold text-dark small" for="dbtDeclaration">
                             मैं सत्यापित करता / करती हूँ कि मेरा बैंक अकाउंट सक्रिय है एवं मेरे द्वारा प्रदान किया गया बैंक खाता विवरण मेरे आधार नंबर के साथ सीडेड है |
                             <br />
@@ -107,9 +126,66 @@
             <a asp-controller="Academic" asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Back to Academic Details
             </a>
-            <button type="submit" class="btn btn-success fw-bold px-4 py-2">
-                <i class="bi bi-check-circle-fill me-1"></i> Save Bank Details
-            </button>
+            @if (isLocked)
+            {
+                <button type="button" class="btn btn-secondary fw-bold px-4 py-2" disabled>
+                    <i class="bi bi-lock-fill me-1"></i> Application Locked (Editing Disabled)
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> Save Bank Details
+                </button>
+            }
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btnSearch = document.getElementById('btnSearchIfsc');
+        const ifscInput = document.getElementById('IfscCodeInput');
+        const bankNameDisplay = document.getElementById('BankNameDisplay');
+        const branchNameDisplay = document.getElementById('BranchNameDisplay');
+        const branchAddressDisplay = document.getElementById('BranchAddressDisplay');
+        const branchIdInput = document.getElementById('BranchId');
+        const bankSelect = document.getElementById('BankId');
+        const statusDisplay = document.getElementById('ifscStatus');
+
+        if (btnSearch && ifscInput) {
+            btnSearch.addEventListener('click', function () {
+                const code = ifscInput.value.trim().toUpperCase();
+                if (!code) {
+                    if (statusDisplay) statusDisplay.innerHTML = '<span class="text-danger">Please enter an IFSC code.</span>';
+                    return;
+                }
+
+                if (statusDisplay) statusDisplay.innerHTML = '<span class="text-primary"><i class="spinner-border spinner-border-sm me-1"></i>Searching...</span>';
+
+                fetch('/api/masters/branch-by-ifsc?ifsc=' + encodeURIComponent(code))
+                    .then(r => {
+                        if (!r.ok) throw new Error('Branch not found');
+                        return r.json();
+                    })
+                    .then(data => {
+                        if (data) {
+                            bankNameDisplay.value = data.bankName || '';
+                            branchNameDisplay.value = data.branchName || '';
+                            branchAddressDisplay.value = data.branchAddress || '';
+                            if (branchIdInput) branchIdInput.value = data.branchId || 0;
+                            if (bankSelect && data.bankId) {
+                                bankSelect.value = data.bankId;
+                            }
+                            if (statusDisplay) statusDisplay.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Branch verified: ' + (data.branchName || '') + '</span>';
+                        }
+                    })
+                    .catch(err => {
+                        if (statusDisplay) statusDisplay.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>IFSC code not found in master database.</span>';
+                    });
+            });
+        }
+    });
+</script>
+}

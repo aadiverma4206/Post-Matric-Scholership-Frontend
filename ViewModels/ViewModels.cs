@@ -272,14 +272,18 @@ public class AcademicDetailsViewModel
     [Required] public string SchoolType { get; set; } = "GOVERNMENT";
     [Required] public ushort TenthPassingYear { get; set; }
     [Required] public uint TenthBoardId { get; set; }
+    public string? TenthBoardName { get; set; }
     [Required] public decimal TenthPercentage { get; set; }
     public ulong? TenthMarksheetDocId { get; set; }
 
     // Previous Education
     public ulong? PreviousEducationId { get; set; }
     [Required] public uint PreviousCourseTypeId { get; set; }
+    public string? PreviousCourseTypeName { get; set; }
     [Required] public ulong PreviousCourseId { get; set; }
+    public string? PreviousCourseName { get; set; }
     public ulong? PreviousBranchId { get; set; }
+    public string? PreviousBranchName { get; set; }
     [Required] public string PreviousInstituteName { get; set; } = string.Empty;
     [Required] public string PreviousRollNumber { get; set; } = string.Empty;
     [Required] public ushort PreviousPassingYear { get; set; }
@@ -288,9 +292,12 @@ public class AcademicDetailsViewModel
 
     // Current Academic Record
     public ulong? AcademicRecordId { get; set; }
+    public ulong? DistrictId { get; set; }
+    public string? DistrictName { get; set; }
     public ulong? InstituteId { get; set; }
     public uint? CourseTypeId { get; set; }
     public ulong? CourseId { get; set; }
+    public ulong? BranchId { get; set; }
     [Required] public uint AcademicYearId { get; set; }
     [Required] public ulong SchemeId { get; set; }
     [Required] public ulong InstituteCourseId { get; set; }

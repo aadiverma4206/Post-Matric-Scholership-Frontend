@@ -106,6 +106,17 @@ public class MastersProxyController : ControllerBase
         return Ok(res?.Data ?? new());
     }
 
+    [HttpGet("branch-by-ifsc")]
+    public async Task<IActionResult> GetBranchByIfsc([FromQuery] string ifsc)
+    {
+        var res = await _apiClient.GetBranchByIfscAsync(ifsc);
+        if (res == null || !res.Success || res.Data.ValueKind == System.Text.Json.JsonValueKind.Null || res.Data.ValueKind == System.Text.Json.JsonValueKind.Undefined)
+        {
+            return NotFound(new { message = res?.Message ?? "Branch not found" });
+        }
+        return Ok(res.Data);
+    }
+
     [HttpGet("course-types")]
     public async Task<IActionResult> GetCourseTypes()
     {

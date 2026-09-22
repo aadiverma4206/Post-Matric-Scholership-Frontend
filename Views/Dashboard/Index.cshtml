@@ -126,21 +126,35 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="stat-card green">
+                <div class="stat-card @(bank?.IsAadhaarSeeded == true ? "green" : "amber")">
                     <p class="stat-label">Bank Seeded (DBT)</p>
                     <h5 class="fw-bold mb-1">
-                        <i class="bi bi-check-circle-fill me-1"></i> VERIFIED
+                        @if (bank?.IsAadhaarSeeded == true)
+                        {
+                            <i class="bi bi-check-circle-fill me-1"></i> <span>VERIFIED</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-exclamation-circle-fill me-1"></i> <span>NOT SEEDED</span>
+                        }
                     </h5>
-                    <small class="opacity-75">@(bank?.MaskedAccountNumber ?? "Aadhaar Mapped")</small>
+                    <small class="opacity-75">@(bank?.MaskedAccountNumber ?? "Pending Linking")</small>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="stat-card amber">
+                <div class="stat-card @(!string.IsNullOrEmpty(profile?.OtrNumber) ? "green" : "amber")">
                     <p class="stat-label">e-KYC &amp; OTR</p>
                     <h5 class="fw-bold mb-1">
-                        <i class="bi bi-shield-fill-check me-1"></i> LINKED
+                        @if (!string.IsNullOrEmpty(profile?.OtrNumber))
+                        {
+                            <i class="bi bi-shield-fill-check me-1"></i> <span>LINKED</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-hourglass-split me-1"></i> <span>PENDING</span>
+                        }
                     </h5>
-                    <small class="opacity-75">Aadhaar Authenticated</small>
+                    <small class="opacity-75">@(string.IsNullOrEmpty(profile?.OtrNumber) ? "Aadhaar e-KYC Pending" : "OTR: " + profile.OtrNumber)</small>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
