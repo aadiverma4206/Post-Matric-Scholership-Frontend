@@ -97,4 +97,4 @@ C:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\Scholarshi
 C:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\Scholarship.Web.genruntimeconfig.cache
 C:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\ref\Scholarship.Web.dll
 C:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\compressed\jttx6h69y7-{0}-kdna0a2ird-kdna0a2ird.gz
-C:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\compressed\sgv1nzsv9a-{0}-k1ty3zwits-k1ty3zwits.gz
+c:\Users\PCv\Desktop\scholership ms\Scholarship.Web\obj\Debug\net10.0\compressed\sgv1nzsv9a-{0}-xff2ll9qzq-xff2ll9qzq.gz

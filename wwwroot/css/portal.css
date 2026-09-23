@@ -1153,3 +1153,194 @@ body.high-contrast .form-select {
     print-color-adjust: exact !important;
   }
 }
+
+/* ==========================================================================
+   DIGNITARIES & HOME PORTAL STYLES (Hon'ble PM & Hon'ble CM Showcase)
+   ========================================================================== */
+.dignitary-showcase-bar {
+  background: #ffffff;
+  border-radius: var(--gov-radius-lg);
+  border: 1px solid var(--gov-border);
+  box-shadow: var(--gov-shadow-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.dignitary-showcase-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff9933 0%, #ff9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%, #138808 100%);
+}
+
+.dignitary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid rgba(14, 75, 145, 0.12);
+  border-radius: var(--gov-radius-md);
+  transition: var(--gov-transition);
+  height: 100%;
+}
+
+.dignitary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--gov-shadow-md);
+  border-color: rgba(14, 75, 145, 0.3);
+}
+
+.dignitary-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #f97316, #d97706, #059669);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dignitary-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ffffff;
+}
+
+.dignitary-info {
+  flex-grow: 1;
+}
+
+.dignitary-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.dignitary-badge-india {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.dignitary-badge-cg {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.dignitary-name {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--gov-navy);
+  margin-bottom: 2px;
+  line-height: 1.25;
+}
+
+.dignitary-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #0284c7;
+  margin-bottom: 6px;
+}
+
+.dignitary-quote {
+  font-size: 0.78rem;
+  color: var(--gov-text-secondary);
+  line-height: 1.4;
+  margin: 0;
+  font-style: italic;
+}
+
+.quick-action-tile {
+  background: #ffffff;
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-md);
+  padding: 20px;
+  text-align: center;
+  transition: var(--gov-transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none !important;
+  color: var(--gov-text-primary);
+  box-shadow: var(--gov-shadow-xs);
+}
+
+.quick-action-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--gov-shadow-md);
+  border-color: var(--gov-blue-accent);
+  color: var(--gov-blue-primary);
+}
+
+.quick-action-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+
+.scheme-card-box {
+  background: #ffffff;
+  border-radius: var(--gov-radius-lg);
+  border: 1px solid var(--gov-border);
+  box-shadow: var(--gov-shadow-sm);
+  transition: var(--gov-transition);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.scheme-card-box:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--gov-shadow-hover);
+}
+
+.step-box-item {
+  background: #ffffff;
+  border: 1px solid var(--gov-border);
+  border-radius: var(--gov-radius-md);
+  padding: 22px 18px;
+  transition: var(--gov-transition);
+  height: 100%;
+}
+
+.step-box-item:hover {
+  border-color: var(--gov-blue-accent);
+  box-shadow: var(--gov-shadow-md);
+}
+
+.badge-live-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+  }
+}
+

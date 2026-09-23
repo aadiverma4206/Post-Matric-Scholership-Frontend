@@ -1,0 +1,174 @@
+@model Scholarship.Web.ViewModels.OfficialLoginViewModel
+@{
+    ViewData["Title"] = "प्रशासनिक लॉगिन | Official & Administrative Login";
+}
+
+<div class="gov-login-container py-4">
+    <div class="gov-login-card shadow-lg border-0" style="max-width: 520px; margin: 0 auto; border-radius: 12px; overflow: hidden;">
+        <!-- Header with Official State Emblem & Distinctive Gold / Dark Navy Government Styling -->
+        <div class="gov-login-header py-4 px-4 text-center" style="background: linear-gradient(135deg, #0d2847 0%, #173b6c 50%, #001f3f 100%); border-bottom: 4px solid #f59e0b;">
+            <div class="d-flex justify-content-center mb-2">
+                <div class="gov-emblem-badge" style="width: 76px; height: 76px; background: #ffffff; border-radius: 50%; padding: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.35);">
+                    <img src="~/images/cg-emblem.png" alt="Chhattisgarh State Emblem" style="width: 100%; height: 100%; object-fit: contain;" />
+                </div>
+            </div>
+            <div class="sub-hindi small text-warning fw-bold mb-1 letter-spacing-1">
+                छत्तीसगढ़ शासन | GOVERNMENT OF CHHATTISGARH
+            </div>
+            <h4 class="fw-bold mb-1 text-white">
+                <i class="bi bi-shield-shaded text-warning me-2"></i>प्रशासनिक लॉगिन
+            </h4>
+            <div class="text-white-50 small">
+                State, District &amp; Institutional Scholarship Administration System
+            </div>
+        </div>
+
+        <div class="p-4 p-md-5 bg-white">
+            <!-- Security Badge & Title -->
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-person-lock text-primary me-2"></i>Official Authority Sign-In
+                    </h5>
+                    <span class="text-muted small">Restricted to authorized officials only</span>
+                </div>
+                <span class="badge bg-warning text-dark fw-bold border border-warning px-2 py-1 small">
+                    <i class="bi bi-shield-check"></i> OFFICIAL ONLY
+                </span>
+            </div>
+
+            <!-- Mandatory Notice: No Self-Registration -->
+            <div class="alert alert-light border border-warning-subtle bg-warning-subtle text-dark small py-2 px-3 mb-4 rounded-3 d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-5 me-2 mt-1 flex-shrink-0"></i>
+                <div>
+                    <strong>सूचना (Administrative Notice):</strong> प्रशासनिक खातों का निर्माण राज्य कल्याण विभाग द्वारा केंद्रीकृत रूप से किया जाता है। प्रशासनिक उपयोगकर्ताओं हेतु <strong>स्व-पंजीकरण (Self-Registration) की आवश्यकता नहीं है।</strong>
+                </div>
+            </div>
+
+            <form asp-controller="Admin" asp-action="Login" method="post" novalidate id="adminLoginForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                <input type="hidden" asp-for="CaptchaToken" id="CaptchaToken" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 border-start border-danger border-3 mb-3" role="alert"></div>
+
+                <!-- Official User ID -->
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label fw-bold text-dark small">
+                        <i class="bi bi-person-badge-fill text-primary me-1"></i>Official User ID / Username <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0">
+                            <i class="bi bi-person-gear"></i>
+                        </span>
+                        <input asp-for="UserName" class="form-control font-monospace fw-semibold" placeholder="e.g. admin or inst_raipur or dist_raipur" autocomplete="username" autofocus />
+                    </div>
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label asp-for="Password" class="form-label fw-bold text-dark small">
+                            <i class="bi bi-key-fill text-primary me-1"></i>Security Password <span class="text-danger">*</span>
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Enter Official Password" autocomplete="current-password" id="adminPasswordInput" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="const p = document.getElementById('adminPasswordInput'); const icon = this.querySelector('i'); if (p.type === 'password') { p.type = 'text'; icon.className = 'bi bi-eye-slash'; } else { p.type = 'password'; icon.className = 'bi bi-eye'; }">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <!-- Captcha Verification -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark small">
+                        <i class="bi bi-shield-check text-primary me-1"></i>Security Captcha <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded border">
+                        <div class="captcha-box flex-grow-1 text-center py-2" style="background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 10px, #cbd5e1 10px, #cbd5e1 20px); border-radius: 6px;">
+                            <span id="captchaDisplay" class="font-monospace fw-bolder fs-4 text-dark letter-spacing-3 user-select-none" style="letter-spacing: 6px;">@Model.CaptchaToken</span>
+                        </div>
+                        <button id="btnRefreshCaptcha" class="btn btn-outline-primary btn-sm px-3 py-2 fw-semibold" type="button" title="Refresh Captcha Code">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                    <input asp-for="CaptchaInput" class="form-control text-uppercase font-monospace fw-bold text-center fs-5" placeholder="ENTER CAPTCHA" maxlength="6" autocomplete="off" />
+                    <span asp-validation-for="CaptchaInput" class="text-danger small"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm py-2" style="background: linear-gradient(135deg, #1e40af, #1d4ed8); border: none;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>सुरक्षित लॉगिन | Secure Sign-In
+                    </button>
+                </div>
+
+                <!-- Quick Pre-Seeded Testing Credentials Guide -->
+                <div class="card border border-info-subtle bg-info-subtle rounded-3 p-3 mb-3">
+                    <div class="fw-bold text-info-emphasis small mb-1">
+                        <i class="bi bi-info-circle-fill me-1"></i>Pre-Configured Administrative Logins:
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        <button type="button" class="btn btn-outline-dark btn-sm py-0 px-2 small bg-white" onclick="setAdminCredentials('admin', 'System@123')">
+                            <strong>Super Admin:</strong> <code>admin</code>
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-sm py-0 px-2 small bg-white" onclick="setAdminCredentials('dist_raipur', 'System@123')">
+                            <strong>District Admin:</strong> <code>dist_raipur</code>
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-sm py-0 px-2 small bg-white" onclick="setAdminCredentials('inst_raipur', 'System@123')">
+                            <strong>Institute Admin:</strong> <code>inst_raipur</code>
+                        </button>
+                    </div>
+                    <div class="text-muted small mt-1" style="font-size: 0.75rem;">
+                        Default Password: <code class="fw-bold">System@123</code> (Click any button above to autofill)
+                    </div>
+                </div>
+
+                <!-- Switch to Student Login -->
+                <div class="text-center pt-2 border-top">
+                    <span class="text-muted small">विद्यार्थी हैं? / Are you a student applicant?</span><br />
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-link text-decoration-none fw-bold small p-0 mt-1">
+                        <i class="bi bi-mortarboard-fill me-1"></i>छात्र लॉगिन पृष्ठ पर जाएं | Go to Student Login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function setAdminCredentials(username, password) {
+            document.querySelector("input[name='UserName']").value = username;
+            document.getElementById("adminPasswordInput").value = password;
+        }
+
+        document.getElementById('btnRefreshCaptcha').addEventListener('click', function () {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>...';
+
+            fetch('@Url.Action("RefreshCaptcha", "Admin")')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('captchaDisplay').textContent = data.captcha;
+                    document.getElementById('CaptchaToken').value = data.captcha;
+                    document.querySelector("input[name='CaptchaInput']").value = '';
+                })
+                .catch(err => {
+                    console.error('Error refreshing captcha:', err);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Refresh';
+                });
+        });
+    </script>
+}

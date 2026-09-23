@@ -1,0 +1,299 @@
+@{
+    ViewData["Title"] = "प्रशासनिक डैशबोर्ड | State Scholarship Admin Dashboard";
+    var stats = ViewBag.Stats as Scholarship.Web.ViewModels.AdminDashboardStatsSummaryViewModel ?? new Scholarship.Web.ViewModels.AdminDashboardStatsSummaryViewModel();
+    var recentStudents = ViewBag.RecentStudents as List<Scholarship.Web.ViewModels.AdminStudentListItemViewModel> ?? new List<Scholarship.Web.ViewModels.AdminStudentListItemViewModel>();
+    string userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "ADMIN";
+}
+
+<div class="container-fluid px-0">
+    <!-- Top Authority Banner -->
+    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; border-radius: 12px;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                            <img src="~/images/cg-emblem.png" alt="CG Emblem" style="max-width: 100%; max-height: 100%;" />
+                        </div>
+                        <div>
+                            <div class="text-warning small fw-bold text-uppercase letter-spacing-1">
+                                आदिम जाति तथा अनुसूचित जाति विकास विभाग, छत्तीसगढ़ शासन
+                            </div>
+                            <h3 class="fw-bold mb-1 text-white">
+                                प्रशासनिक नियंत्रण कक्ष | Administrative Command Center
+                            </h3>
+                            <p class="text-white-50 mb-0 small">
+                                Logged in as: <strong>@User.Identity?.Name</strong> | Role: <span class="badge bg-warning text-dark fw-bold">@userRole</span> | Session: <strong>AY 2025-26</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                        <a asp-controller="Admin" asp-action="Students" class="btn btn-warning fw-bold shadow-sm">
+                            <i class="bi bi-people-fill me-1"></i>विद्यार्थी सूची | Student Directory
+                        </a>
+                        @if (User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                        {
+                            <a asp-controller="Verification" asp-action="InstituteQueue" class="btn btn-outline-light btn-sm fw-semibold">
+                                <i class="bi bi-building-check me-1"></i>Institute Queue
+                            </a>
+                        }
+                        @if (User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                        {
+                            <a asp-controller="Verification" asp-action="DistrictQueue" class="btn btn-outline-light btn-sm fw-semibold">
+                                <i class="bi bi-shield-check me-1"></i>District Queue
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <div class="row g-3 mb-4">
+        <!-- 1. Total Registered Students -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">कुल पंजीकृत छात्र | Total Students</span>
+                        <div class="bg-primary-subtle text-primary rounded-3 p-2">
+                            <i class="bi bi-people-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.TotalStudents</h2>
+                    <div class="small text-muted">
+                        <a asp-action="Students" class="text-decoration-none fw-semibold">
+                            पूरी सूची देखें | View Directory <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Total Applications -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">छात्रवृत्ति आवेदन | Total Applications</span>
+                        <div class="bg-info-subtle text-info rounded-3 p-2">
+                            <i class="bi bi-file-earmark-text-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.TotalApplications</h2>
+                    <div class="small text-muted">
+                        <span class="text-info fw-semibold">AY 2025-26 Applications</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Pending Institute Verification -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">संस्थान स्तर लंबित | Pending at Institute</span>
+                        <div class="bg-warning-subtle text-warning-emphasis rounded-3 p-2">
+                            <i class="bi bi-building-exclamation fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.PendingInstituteVerification</h2>
+                    <div class="small text-muted">
+                        <a asp-controller="Verification" asp-action="InstituteQueue" class="text-warning-emphasis fw-semibold text-decoration-none">
+                            सत्यापन करें | Verify Now <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Pending District Verification -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-danger border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">जिला स्तर लंबित | Pending at District</span>
+                        <div class="bg-danger-subtle text-danger rounded-3 p-2">
+                            <i class="bi bi-shield-exclamation fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.PendingDistrictVerification</h2>
+                    <div class="small text-muted">
+                        <a asp-controller="Verification" asp-action="DistrictQueue" class="text-danger fw-semibold text-decoration-none">
+                            स्क्रूटनी करें | Review Queue <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Approved Applications -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-success border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">स्वीकृत आवेदन | Approved</span>
+                        <div class="bg-success-subtle text-success rounded-3 p-2">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.ApprovedApplications</h2>
+                    <div class="small text-success fw-semibold">
+                        Ready for DBT Sanction
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. DBT Disbursed -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-secondary border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">डीबीटी भुगतान | Paid / Disbursed</span>
+                        <div class="bg-secondary-subtle text-secondary rounded-3 p-2">
+                            <i class="bi bi-cash-stack fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.DisbursedApplications</h2>
+                    <div class="small text-muted">
+                        Aadhaar Seeding / PFMS Completed
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Active Districts -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-dark border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">सक्रिय जिले | Active Districts</span>
+                        <div class="bg-dark-subtle text-dark rounded-3 p-2">
+                            <i class="bi bi-geo-alt-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.TotalDistricts</h2>
+                    <div class="small text-muted">
+                        State-wide Coverage (CG)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Institutes -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 h-100 border-start border-primary-subtle border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-bold small text-uppercase">संस्थान | Registered Institutes</span>
+                        <div class="bg-primary-subtle text-primary rounded-3 p-2">
+                            <i class="bi bi-buildings-fill fs-4"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bolder mb-1 text-dark">@stats.TotalInstitutes</h2>
+                    <div class="small text-muted">
+                        Govt &amp; Private Colleges
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Registered Students Section -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-clock-history text-primary me-2"></i>हाल ही में पंजीकृत विद्यार्थी | Recent Student Registrations
+            </h5>
+            <a asp-action="Students" class="btn btn-primary btn-sm fw-semibold">
+                <i class="bi bi-list-ul me-1"></i>सभी विद्यार्थी देखें | View All (@stats.TotalStudents)
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="small text-uppercase text-muted">
+                            <th class="ps-4">Student ID</th>
+                            <th>Student Name</th>
+                            <th>Category</th>
+                            <th>District</th>
+                            <th>Application No.</th>
+                            <th>Application Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (recentStudents.Any())
+                        {
+                            @foreach (var s in recentStudents)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold font-monospace text-primary">
+                                        @s.StudentCode
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@s.FullName</div>
+                                        <div class="text-muted small">DOB: @s.DateOfBirth.ToString("dd-MM-yyyy")</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-dark">@s.CategoryName</span>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-geo-alt text-danger me-1"></i>@(s.DistrictName ?? "Raipur")
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(s.ApplicationNumber))
+                                        {
+                                            <span class="font-monospace fw-semibold">@s.ApplicationNumber</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Not Applied Yet</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            string badgeClass = s.ApplicationStatusCode switch
+                                            {
+                                                "APPROVED" => "bg-success text-white",
+                                                "REJECTED" => "bg-danger text-white",
+                                                "INSTITUTE_VERIFICATION" => "bg-warning text-dark",
+                                                "DISTRICT_VERIFICATION" => "bg-primary text-white",
+                                                "SUBMITTED" or "LOCKED" => "bg-info text-dark",
+                                                "PAID" => "bg-success-subtle text-success-emphasis border border-success",
+                                                _ => "bg-light text-muted border"
+                                            };
+                                        }
+                                        <span class="badge @badgeClass">
+                                            @(s.ApplicationStatusName ?? "No Application")
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a asp-action="StudentDetails" asp-route-id="@s.StudentId" class="btn btn-outline-primary btn-sm fw-semibold">
+                                            <i class="bi bi-eye-fill me-1"></i>विवरण | Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                    कोई हालिया छात्र रिकॉर्ड नहीं मिला। | No registered students found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

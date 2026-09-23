@@ -89,9 +89,25 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="min-width: 220px;">
                             <li class="dropdown-header text-uppercase small fw-bold text-muted">Portal User Account</li>
-                            <li><a class="dropdown-item py-2" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Preview"><i class="bi bi-file-earmark-person text-info me-2"></i>My Application Dossier</a></li>
-                            <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Status"><i class="bi bi-clock-history text-warning me-2"></i>Application Status</a></li>
+                            @if (User.IsInRole("SUPER_ADMIN") || User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("VERIFIER"))
+                            {
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2 text-primary me-2"></i>Admin Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Students"><i class="bi bi-people-fill text-success me-2"></i>विद्यार्थी सूची | Students</a></li>
+                                @if (User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                                {
+                                    <li><a class="dropdown-item py-2" asp-controller="Verification" asp-action="InstituteQueue"><i class="bi bi-building-check text-warning me-2"></i>Institute Scrutiny</a></li>
+                                }
+                                @if (User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("SUPER_ADMIN"))
+                                {
+                                    <li><a class="dropdown-item py-2" asp-controller="Verification" asp-action="DistrictQueue"><i class="bi bi-shield-check text-danger me-2"></i>District Scrutiny</a></li>
+                                }
+                            }
+                            else
+                            {
+                                <li><a class="dropdown-item py-2" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Preview"><i class="bi bi-file-earmark-person text-info me-2"></i>My Application Dossier</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Application" asp-action="Status"><i class="bi bi-clock-history text-warning me-2"></i>Application Status</a></li>
+                            }
                             <li><a class="dropdown-item py-2" asp-controller="Account" asp-action="ChangePassword"><i class="bi bi-key text-secondary me-2"></i>Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
@@ -109,10 +125,10 @@
                 {
                     <div class="d-flex align-items-center gap-2">
                         <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm fw-bold px-3 py-1">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            <i class="bi bi-person-fill me-1"></i>छात्र लॉगिन | Student Login
                         </a>
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-sm fw-bold px-3 py-1 shadow-sm">
-                            <i class="bi bi-person-plus-fill me-1"></i>New Registration
+                        <a asp-controller="Admin" asp-action="Login" class="btn btn-warning btn-sm fw-bold px-3 py-1 shadow-sm">
+                            <i class="bi bi-shield-lock-fill me-1"></i>प्रशासनिक लॉगिन | Admin Login
                         </a>
                     </div>
                 }
@@ -138,51 +154,70 @@
     <nav class="gov-nav-bar no-print">
         <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center px-4">
             <div class="d-flex align-items-center flex-wrap">
+                @{
+                    var cName = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+                    var aName = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+                    bool isOfficialUser = User.IsInRole("SUPER_ADMIN") || User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("VERIFIER");
+                }
+                <a class="gov-nav-link @(cName == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-door-fill"></i> Home
+                </a>
                 @if (User.Identity?.IsAuthenticated != true)
                 {
-                    <a class="gov-nav-link active" asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-house-door-fill"></i> Home
-                    </a>
-                    <a class="gov-nav-link" asp-controller="Account" asp-action="Register">
+                    <a class="gov-nav-link @(cName == "Account" && aName == "Register" ? "active" : "")" asp-controller="Account" asp-action="Register">
                         <i class="bi bi-person-plus-fill"></i> Student Registration
                     </a>
-                    <a class="gov-nav-link" asp-controller="Account" asp-action="Login">
-                        <i class="bi bi-shield-lock-fill"></i> Portal Login
+                    <a class="gov-nav-link @(cName == "Account" && aName == "Login" ? "active" : "")" asp-controller="Account" asp-action="Login">
+                        <i class="bi bi-mortarboard-fill"></i> Student Login
                     </a>
-                    <a class="gov-nav-link" asp-controller="Account" asp-action="ForgotUserId">
+                    <a class="gov-nav-link text-warning @(cName == "Admin" && aName == "Login" ? "active" : "")" asp-controller="Admin" asp-action="Login">
+                        <i class="bi bi-shield-lock-fill"></i> प्रशासनिक लॉगिन (Official Login)
+                    </a>
+                    <a class="gov-nav-link @(cName == "Account" && aName == "ForgotUserId" ? "active" : "")" asp-controller="Account" asp-action="ForgotUserId">
                         <i class="bi bi-search"></i> Search Application ID
                     </a>
                 }
-                else
+                else if (isOfficialUser)
                 {
-                    <a class="gov-nav-link active" asp-controller="Dashboard" asp-action="Index">
-                        <i class="bi bi-speedometer2"></i> Student Dashboard
+                    <!-- Admin / Official Navigation -->
+                    <a class="gov-nav-link @(cName == "Admin" && aName == "Index" ? "active" : "")" asp-controller="Admin" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i> Admin Command
                     </a>
-                    <a class="gov-nav-link" asp-controller="Profile" asp-action="Index">
-                        <i class="bi bi-person-badge"></i> Student Profile
-                    </a>
-                    <a class="gov-nav-link" asp-controller="Application" asp-action="Wizard">
-                        <i class="bi bi-ui-checks-grid"></i> Application Form
-                    </a>
-                    <a class="gov-nav-link" asp-controller="Application" asp-action="Preview">
-                        <i class="bi bi-file-earmark-person"></i> Application Dossier
-                    </a>
-                    <a class="gov-nav-link" asp-controller="Application" asp-action="Status">
-                        <i class="bi bi-clock-history"></i> Track Status
+                    <a class="gov-nav-link text-warning @(cName == "Admin" && (aName == "Students" || aName == "StudentDetails") ? "active" : "")" asp-controller="Admin" asp-action="Students">
+                        <i class="bi bi-people-fill"></i> विद्यार्थी निर्देशिका | Student Directory
                     </a>
 
                     @if (User.IsInRole("INSTITUTE_ADMIN") || User.IsInRole("SUPER_ADMIN"))
                     {
-                        <a class="gov-nav-link text-warning-emphasis" asp-controller="Verification" asp-action="InstituteQueue">
+                        <a class="gov-nav-link text-warning-emphasis @(cName == "Verification" && aName == "InstituteQueue" ? "active" : "")" asp-controller="Verification" asp-action="InstituteQueue">
                             <i class="bi bi-building-check"></i> Institute Scrutiny
                         </a>
                     }
                     @if (User.IsInRole("DISTRICT_ADMIN") || User.IsInRole("DEPARTMENT_ADMIN") || User.IsInRole("SUPER_ADMIN"))
                     {
-                        <a class="gov-nav-link text-success-emphasis" asp-controller="Verification" asp-action="DistrictQueue">
+                        <a class="gov-nav-link text-success-emphasis @(cName == "Verification" && aName == "DistrictQueue" ? "active" : "")" asp-controller="Verification" asp-action="DistrictQueue">
                             <i class="bi bi-shield-check"></i> District Scrutiny
                         </a>
                     }
+                }
+                else
+                {
+                    <!-- Student Navigation -->
+                    <a class="gov-nav-link @(cName == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i> Student Dashboard
+                    </a>
+                    <a class="gov-nav-link @(cName == "Profile" ? "active" : "")" asp-controller="Profile" asp-action="Index">
+                        <i class="bi bi-person-badge"></i> Student Profile
+                    </a>
+                    <a class="gov-nav-link @(cName == "Application" && aName == "Wizard" ? "active" : "")" asp-controller="Application" asp-action="Wizard">
+                        <i class="bi bi-ui-checks-grid"></i> Application Form
+                    </a>
+                    <a class="gov-nav-link @(cName == "Application" && aName == "Preview" ? "active" : "")" asp-controller="Application" asp-action="Preview">
+                        <i class="bi bi-file-earmark-person"></i> Application Dossier
+                    </a>
+                    <a class="gov-nav-link @(cName == "Application" && aName == "Status" ? "active" : "")" asp-controller="Application" asp-action="Status">
+                        <i class="bi bi-clock-history"></i> Track Status
+                    </a>
                 }
             </div>
             <div class="d-none d-lg-block text-muted small">

@@ -71,7 +71,13 @@ public interface IScholarshipApiClient
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetAdmissionTypesAsync();
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetStudyModesAsync();
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetEducationBoardsAsync();
+    Task<ApiResponseModel<List<LookupItemViewModel>>?> GetStatusesAsync();
     Task<ApiResponseModel<List<LookupItemViewModel>>?> GetDocumentTypesAsync();
+
+    // Admin Module APIs
+    Task<ApiResponseModel<PagedResultViewModel<AdminStudentListItemViewModel>>?> GetAdminStudentsAsync(string? search, ulong? districtId, int? statusId, uint? categoryId, int page, int pageSize);
+    Task<ApiResponseModel<AdminStudentDetailsViewModel>?> GetAdminStudentDetailsAsync(ulong studentId);
+    Task<ApiResponseModel<AdminDashboardStatsSummaryViewModel>?> GetAdminStatsAsync();
 }
 
 public class ScholarshipApiClient : IScholarshipApiClient
@@ -343,6 +349,25 @@ public class ScholarshipApiClient : IScholarshipApiClient
     public Task<ApiResponseModel<List<LookupItemViewModel>>?> GetEducationBoardsAsync() =>
         SendGetAsync<List<LookupItemViewModel>>("/api/masters/education-boards");
 
+    public Task<ApiResponseModel<List<LookupItemViewModel>>?> GetStatusesAsync() =>
+        SendGetAsync<List<LookupItemViewModel>>("/api/masters/statuses");
+
     public Task<ApiResponseModel<List<LookupItemViewModel>>?> GetDocumentTypesAsync() =>
         SendGetAsync<List<LookupItemViewModel>>("/api/masters/document-types");
+
+    public Task<ApiResponseModel<PagedResultViewModel<AdminStudentListItemViewModel>>?> GetAdminStudentsAsync(string? search, ulong? districtId, int? statusId, uint? categoryId, int page, int pageSize)
+    {
+        var sb = new StringBuilder($"/api/admin/students?page={page}&pageSize={pageSize}");
+        if (!string.IsNullOrWhiteSpace(search)) sb.Append($"&search={Uri.EscapeDataString(search.Trim())}");
+        if (districtId.HasValue && districtId.Value > 0) sb.Append($"&districtId={districtId.Value}");
+        if (statusId.HasValue && statusId.Value > 0) sb.Append($"&statusId={statusId.Value}");
+        if (categoryId.HasValue && categoryId.Value > 0) sb.Append($"&categoryId={categoryId.Value}");
+        return SendGetAsync<PagedResultViewModel<AdminStudentListItemViewModel>>(sb.ToString());
+    }
+
+    public Task<ApiResponseModel<AdminStudentDetailsViewModel>?> GetAdminStudentDetailsAsync(ulong studentId) =>
+        SendGetAsync<AdminStudentDetailsViewModel>($"/api/admin/students/{studentId}");
+
+    public Task<ApiResponseModel<AdminDashboardStatsSummaryViewModel>?> GetAdminStatsAsync() =>
+        SendGetAsync<AdminDashboardStatsSummaryViewModel>("/api/admin/stats");
 }

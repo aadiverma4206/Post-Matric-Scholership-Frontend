@@ -20,6 +20,13 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
+    public IActionResult AdminLogin(string? returnUrl = null)
+    {
+        return RedirectToAction("Login", "Admin", new { returnUrl });
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null, string? registeredUserId = null)
     {
         if (User.Identity?.IsAuthenticated == true)

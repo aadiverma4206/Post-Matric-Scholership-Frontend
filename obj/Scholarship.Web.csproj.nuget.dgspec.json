@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj": {}
+    "c:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj": {
+    "c:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj",
+        "projectUniqueName": "c:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj",
         "projectName": "Scholarship.Web",
-        "projectPath": "C:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj",
+        "projectPath": "c:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\Scholarship.Web.csproj",
         "packagesPath": "C:\\Users\\PCv\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\obj\\",
+        "outputPath": "c:\\Users\\PCv\\Desktop\\scholership ms\\Scholarship.Web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\PCv\\AppData\\Roaming\\NuGet\\NuGet.Config"

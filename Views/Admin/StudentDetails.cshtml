@@ -1,0 +1,544 @@
+@model Scholarship.Web.ViewModels.AdminStudentDetailsViewModel
+@{
+    ViewData["Title"] = $"विद्यार्थी प्रोफाइल | {Model.FullName} ({Model.StudentCode})";
+}
+
+<div class="container-fluid px-0">
+    <!-- Action Bar & Breadcrumbs -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom gap-3 no-print">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index" class="text-decoration-none">Admin Command</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Students" class="text-decoration-none">Student Directory</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Student Dossier</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-file-earmark-person-fill text-primary me-2"></i>विद्यार्थी संपूर्ण प्रोफाइल डॉसियर | Student Dossier
+            </h3>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-action="Students" class="btn btn-outline-secondary btn-sm fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i>वापस | Back to Directory
+            </a>
+            <button type="button" class="btn btn-outline-primary btn-sm fw-semibold" onclick="window.print()">
+                <i class="bi bi-printer-fill me-1"></i>प्रिंट डॉसियर | Print Dossier
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. Hero Identity Card -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-2 shadow" style="width: 72px; height: 72px; border: 3px solid rgba(255,255,255,0.2);">
+                            @(Model.FirstName.Length > 0 ? Model.FirstName.Substring(0, 1).ToUpper() : "S")
+                        </div>
+                        <div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h3 class="fw-bold mb-0 text-white">@Model.FullName</h3>
+                                <span class="badge bg-warning text-dark fw-bold font-monospace fs-6 px-2 py-1">
+                                    ID: @Model.StudentCode
+                                </span>
+                            </div>
+                            <div class="text-white-50 small">
+                                <span class="me-3"><i class="bi bi-calendar3 me-1 text-warning"></i>DOB: <strong>@Model.DateOfBirth.ToString("dd MMMM yyyy")</strong></span>
+                                <span class="me-3"><i class="bi bi-tag-fill me-1 text-info"></i>Category: <strong>@Model.CategoryName</strong></span>
+                                <span><i class="bi bi-geo-alt-fill me-1 text-danger"></i>District: <strong>@(Model.PermanentDistrict ?? "Chhattisgarh")</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="small text-white-50 mb-1">Current Application Status</div>
+                    @{
+                        string statusBadge = Model.ApplicationStatusCode switch
+                        {
+                            "APPROVED" => "bg-success text-white",
+                            "REJECTED" => "bg-danger text-white",
+                            "INSTITUTE_VERIFICATION" => "bg-warning text-dark",
+                            "DISTRICT_VERIFICATION" => "bg-primary text-white",
+                            "SUBMITTED" or "LOCKED" => "bg-info text-dark",
+                            "PAID" => "bg-success text-white fw-bold",
+                            _ => "bg-secondary text-white"
+                        };
+                    }
+                    <span class="badge @statusBadge fs-6 px-3 py-2 shadow-sm">
+                        @(Model.ApplicationStatusName ?? "No Active Application")
+                    </span>
+                    @if (!string.IsNullOrEmpty(Model.ApplicationNumber))
+                    {
+                        <div class="small text-white-50 font-monospace mt-1">
+                            Application No: @Model.ApplicationNumber
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Detailed Grid Panels -->
+    <div class="row g-4">
+        <!-- Panel 1: Personal & Aadhaar Verification -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-person-badge-fill text-primary fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">1. व्यक्तिगत पहचान एवं आधार विवरण | Personal &amp; Aadhaar</h5>
+                </div>
+                <div class="card-body p-4">
+                    <table class="table table-borderless table-striped align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 45%;">पूरा नाम | Full Name:</th>
+                                <td class="fw-bold text-dark">@Model.FullName</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">छात्र कोड | Student Portal ID:</th>
+                                <td class="font-monospace fw-bold text-primary">@Model.StudentCode</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">जन्मतिथि | Date of Birth:</th>
+                                <td>@Model.DateOfBirth.ToString("dd-MM-yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">लिंग | Gender:</th>
+                                <td>@Model.GenderName</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">सामाजिक वर्ग | Social Category:</th>
+                                <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">@Model.CategoryName</span></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">धर्म | Religion:</th>
+                                <td>@Model.ReligionName</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">आधार संख्या | Aadhaar Card:</th>
+                                <td>
+                                    <span class="font-monospace fw-bold text-dark">@Model.MaskedAadhaar</span>
+                                    <span class="badge @(Model.AadhaarVerificationStatus == "VERIFIED" ? "bg-success" : "bg-warning text-dark") ms-2 small">
+                                        <i class="bi bi-shield-check me-1"></i>@Model.AadhaarVerificationStatus
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">आधार सहमति | UIDAI Consent:</th>
+                                <td>
+                                    @if (Model.AadhaarConsentGiven)
+                                    {
+                                        <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Consent Granted</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger small fw-bold">Consent Pending</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">मोबाइल नंबर | Mobile:</th>
+                                <td><i class="bi bi-telephone text-primary me-1"></i>@Model.MaskedMobile</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">ईमेल | Email Address:</th>
+                                <td><i class="bi bi-envelope text-info me-1"></i>@Model.MaskedEmail</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">पंजीकरण दिनांक | Registration Date:</th>
+                                <td>@Model.RegistrationDate.ToString("dd-MM-yyyy hh:mm tt")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Family & Socio-Economic -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-house-door-fill text-success fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">2. पारिवारिक एवं आर्थिक विवरण | Family &amp; Socio-Economic</h5>
+                </div>
+                <div class="card-body p-4">
+                    <table class="table table-borderless table-striped align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted" style="width: 45%;">पिता / अभिभावक का नाम | Father:</th>
+                                <td class="fw-semibold">@(string.IsNullOrEmpty(Model.FatherGuardianName) ? "Not Specified" : Model.FatherGuardianName)</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">पिता का व्यवसाय | Father Occupation:</th>
+                                <td>@(Model.FatherOccupation ?? "Not Specified")</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">माता का नाम | Mother's Name:</th>
+                                <td class="fw-semibold">@(string.IsNullOrEmpty(Model.MotherName) ? "Not Specified" : Model.MotherName)</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">माता का व्यवसाय | Mother Occupation:</th>
+                                <td>@(Model.MotherOccupation ?? "Homemaker / Not Specified")</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">वार्षिक पारिवारिक आय | Annual Income:</th>
+                                <td class="fw-bold text-success fs-5">
+                                    ₹@Model.AnnualIncome.ToString("N2")
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">आर्थिक श्रेणी | Household Category:</th>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-dark border">
+                                        @(Model.HouseholdCategory ?? "General / APL")
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">अनाथ छात्र स्थिति | Orphan Status:</th>
+                                <td>
+                                    @if (Model.IsOrphan)
+                                    {
+                                        <span class="badge bg-danger">हाँ | Yes (Orphan)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">नहीं | No</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">दिव्यांगता | Differently Abled:</th>
+                                <td>
+                                    @if (Model.IsDifferentlyAbled)
+                                    {
+                                        <span class="badge bg-warning text-dark">हाँ | Yes (Divyangjan)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">नहीं | No</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">माता एकल महिला | Single Mother:</th>
+                                <td>@(Model.IsMotherSingleWoman ? "Yes" : "No")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Address & Geography -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-geo-alt-fill text-danger fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">3. स्थायी एवं पत्राचार पता | Address &amp; Geography</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <div class="text-uppercase small fw-bold text-primary mb-2">
+                            <i class="bi bi-pin-map-fill me-1"></i>स्थायी पता | Permanent Address
+                        </div>
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="fw-semibold text-dark mb-1">@(Model.PermanentAddressLine ?? "Address on file")</div>
+                            <div class="row g-2 mt-1 small text-muted">
+                                <div class="col-6"><strong>ग्राम / शहर:</strong> @(Model.PermanentCityVillage ?? "N/A")</div>
+                                <div class="col-6"><strong>ब्लॉक:</strong> @(Model.PermanentBlock ?? "N/A")</div>
+                                <div class="col-6"><strong>विधानसभा:</strong> @(Model.PermanentVidhansabha ?? "N/A")</div>
+                                <div class="col-6"><strong>जिला:</strong> @(Model.PermanentDistrict ?? "Raipur")</div>
+                                <div class="col-6"><strong>राज्य:</strong> @(Model.PermanentState ?? "Chhattisgarh")</div>
+                                <div class="col-6"><strong>पिनकोड:</strong> @(Model.PermanentPincode ?? "")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.CorrespondenceAddressLine))
+                    {
+                        <div>
+                            <div class="text-uppercase small fw-bold text-secondary mb-2">
+                                <i class="bi bi-envelope-paper me-1"></i>पत्राचार पता | Correspondence Address
+                            </div>
+                            <div class="p-3 bg-light rounded-3 border small">
+                                <div class="text-dark">@Model.CorrespondenceAddressLine</div>
+                                <div class="text-muted mt-1">
+                                    @(Model.CorrespondenceDistrict ?? ""), @(Model.CorrespondenceState ?? "") - @(Model.CorrespondencePincode ?? "")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 4: Current Academic Enrollment -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-mortarboard-fill text-info fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">4. वर्तमान शैक्षणिक विवरण | Current Academic Enrollment</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (!string.IsNullOrEmpty(Model.InstituteName))
+                    {
+                        <table class="table table-borderless table-striped align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="text-muted" style="width: 45%;">संस्थान का नाम | Institute:</th>
+                                    <td class="fw-bold text-dark">
+                                        @Model.InstituteName
+                                        @if (!string.IsNullOrEmpty(Model.InstituteCode))
+                                        {
+                                            <div class="text-muted small">Code: @Model.InstituteCode</div>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">पाठ्यक्रम | Course:</th>
+                                    <td class="fw-semibold">@Model.CourseName</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">शाखा | Branch / Spec.:</th>
+                                    <td>@(Model.BranchName ?? "General")</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">अध्ययन वर्ष | Course Year:</th>
+                                    <td><span class="badge bg-info text-dark">Year @Model.CourseYear</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">नामांकन संख्या | Enrollment No:</th>
+                                    <td class="font-monospace">@(Model.EnrollmentNumber ?? "Pending")</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">प्रवेश दिनांक | Admission Date:</th>
+                                    <td>@(Model.AdmissionDate?.ToString("dd-MM-yyyy") ?? "N/A")</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">प्रवेश का प्रकार | Admission Type:</th>
+                                    <td>@(Model.AdmissionTypeName ?? "Merit / General")</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">छात्रावास स्थिति | Hostel:</th>
+                                    <td>@(Model.IsHosteller ? "Hosteller" : "Day Scholar")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-mortarboard fs-1 d-block mb-2 text-secondary"></i>
+                            <p class="mb-0">इस छात्र के लिए शैक्षणिक विवरण अभी दर्ज नहीं किया गया है।</p>
+                            <span class="small text-muted">Current academic enrollment not yet linked.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 5: Bank Account & DBT Details -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-bank2 text-warning fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">5. बैंक खाता एवं डीबीटी विवरण | Bank &amp; DBT Mapping</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (!string.IsNullOrEmpty(Model.BankName))
+                    {
+                        <table class="table table-borderless table-striped align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="text-muted" style="width: 45%;">बैंक का नाम | Bank Name:</th>
+                                    <td class="fw-bold text-dark">@Model.BankName</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">शाखा | Branch Name:</th>
+                                    <td>@Model.BankBranchName</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">आईएफएससी कोड | IFSC Code:</th>
+                                    <td class="font-monospace fw-bold text-primary">@Model.IFSCCode</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">खाता संख्या | Account No:</th>
+                                    <td class="font-monospace fw-bold">@Model.MaskedAccountNumber</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">आधार सीडिंग स्थिति | Aadhaar Seeded:</th>
+                                    <td>
+                                        @if (Model.IsAadhaarSeeded)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
+                                                <i class="bi bi-check-circle-fill me-1"></i>NPCI Seeded / DBT Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>Aadhaar Seeding Pending
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">सत्यापन स्थिति | Verification:</th>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @(Model.BankVerificationStatus ?? "PENDING")
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-credit-card fs-1 d-block mb-2 text-secondary"></i>
+                            <p class="mb-0">बैंक खाता विवरण अभी दर्ज नहीं किया गया है।</p>
+                            <span class="small text-muted">No active bank account on record.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 6: Application & Verification Trail -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-check-fill text-primary fs-5 me-2"></i>
+                        <h5 class="fw-bold mb-0 text-dark">6. आवेदन एवं सत्यापन इतिहास | Verification Trail</h5>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.ApplicationId.HasValue)
+                    {
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-muted">Application Number:</span>
+                                <span class="font-monospace fw-bold text-primary">@Model.ApplicationNumber</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-muted">Academic Session:</span>
+                                <span class="badge bg-warning text-dark fw-bold">@(Model.AcademicYearCode ?? "2025-26")</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">Scheme Name:</span>
+                                <span class="fw-semibold text-dark small text-truncate" style="max-width: 250px;">@(Model.SchemeName ?? "Post-Matric Scholarship")</span>
+                            </div>
+                        </div>
+
+                        <div class="fw-bold text-dark small text-uppercase mb-2">
+                            <i class="bi bi-clock-history me-1"></i>सत्यापन निर्णय इतिहास | Review Audit Trail:
+                        </div>
+                        @if (Model.Verifications.Any())
+                        {
+                            <div class="timeline border-start border-2 border-primary ps-3 my-2">
+                                @foreach (var v in Model.Verifications)
+                                {
+                                    <div class="mb-3 position-relative">
+                                        <div class="fw-bold text-dark small">
+                                            @v.VerificationLevel Level Review: 
+                                            <span class="badge @(v.Status == "APPROVED" ? "bg-success" : "bg-danger")">@v.Status</span>
+                                        </div>
+                                        <div class="text-muted small">
+                                            By: <strong>@(v.VerifiedByUserName ?? "Official Verifier")</strong> on @v.VerifiedAt.ToString("dd-MM-yyyy hh:mm tt")
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(v.Remarks))
+                                        {
+                                            <div class="text-dark small bg-white p-2 rounded border mt-1 fst-italic">
+                                                "@v.Remarks"
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-light border small text-muted mb-0">
+                                <i class="bi bi-info-circle me-1"></i>आवेदन अभी सत्यापन हेतु कतार में है। No verification decisions logged yet.
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-file-earmark-x fs-1 d-block mb-2 text-secondary"></i>
+                            <p class="mb-0">इस छात्र द्वारा अभी तक कोई छात्रवृत्ति आवेदन प्रस्तुत नहीं किया गया है।</p>
+                            <span class="small text-muted">No scholarship application submitted for this academic year.</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 7: Documents & Certificates List -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <i class="bi bi-paperclip text-secondary fs-5 me-2"></i>
+                    <h5 class="fw-bold mb-0 text-dark">7. संलग्न दस्तावेज एवं प्रमाण पत्र | Uploaded Documents &amp; Certificates</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-uppercase text-muted">
+                                    <th class="ps-4">Document Type</th>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Uploaded Date</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Documents.Any())
+                                {
+                                    @foreach (var doc in Model.Documents)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-semibold text-dark">
+                                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>@doc.DocumentTypeName
+                                            </td>
+                                            <td class="font-monospace small">@doc.FileName</td>
+                                            <td class="text-muted small">@((doc.FileSizeBytes / 1024.0).ToString("N1")) KB</td>
+                                            <td class="text-muted small">@doc.UploadedAt.ToString("dd-MM-yyyy")</td>
+                                            <td>
+                                                <span class="badge @(doc.IsVerified ? "bg-success" : "bg-warning text-dark")">
+                                                    @(doc.IsVerified ? "Verified" : "Pending")
+                                                </span>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="/api/documents/@doc.DocumentId/download" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-download me-1"></i>Download / View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            <i class="bi bi-folder-x fs-2 d-block mb-1 text-secondary"></i>
+                                            कोई अपलोड किया गया दस्तावेज़ नहीं मिला। | No documents uploaded yet.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

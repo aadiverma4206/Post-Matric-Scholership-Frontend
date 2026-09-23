@@ -1,0 +1,362 @@
+@model Scholarship.Web.ViewModels.PagedResultViewModel<Scholarship.Web.ViewModels.AdminStudentListItemViewModel>
+@{
+    ViewData["Title"] = "विद्यार्थी सूची | Registered Student Directory";
+    var districts = ViewBag.Districts as List<Scholarship.Web.ViewModels.LookupItemViewModel> ?? new();
+    var statuses = ViewBag.Statuses as List<Scholarship.Web.ViewModels.LookupItemViewModel> ?? new();
+    var categories = ViewBag.Categories as List<Scholarship.Web.ViewModels.LookupItemViewModel> ?? new();
+    var stats = ViewBag.Stats as Scholarship.Web.ViewModels.AdminDashboardStatsSummaryViewModel ?? new();
+
+    string? currentSearch = ViewBag.Search as string;
+    ulong? currentDistrict = ViewBag.DistrictId as ulong?;
+    int? currentStatus = ViewBag.StatusId as int?;
+    uint? currentCategory = ViewBag.CategoryId as uint?;
+}
+
+<div class="container-fluid px-0">
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-2 border-bottom gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Index" class="text-decoration-none">Admin Command</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Student Directory</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-people-fill text-primary me-2"></i>पंजीकृत विद्यार्थी निर्देशिका | Registered Students Directory
+            </h3>
+            <p class="text-muted small mb-0">
+                Search, filter, and inspect detailed profiles, academic enrollments &amp; scholarship applications of all registered students.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary px-3 py-2 fs-6 shadow-sm">
+                <i class="bi bi-database-check me-1"></i>कुल छात्र: <strong>@Model.TotalCount</strong>
+            </span>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print Directory
+            </button>
+        </div>
+    </div>
+
+    <!-- Search & Filter Card -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-light border-top border-primary border-3">
+        <div class="card-body p-4">
+            <form method="get" asp-controller="Admin" asp-action="Students" class="row g-3 align-items-end">
+                <!-- Search Keyword -->
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label small fw-bold text-dark">
+                        <i class="bi bi-search text-primary me-1"></i>खोजें | Search Student
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" value="@currentSearch" class="form-control" placeholder="Student ID, Name, App No..." />
+                    </div>
+                </div>
+
+                <!-- District Filter -->
+                <div class="col-md-3 col-lg-2">
+                    <label class="form-label small fw-bold text-dark">
+                        <i class="bi bi-geo-alt text-danger me-1"></i>जिला | District
+                    </label>
+                    <select name="districtId" class="form-select">
+                        <option value="">-- All Districts --</option>
+                        @foreach (var d in districts)
+                        {
+                            <option value="@d.Id" selected="@(currentDistrict == d.Id ? "selected" : null)">@d.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Application Status Filter -->
+                <div class="col-md-3 col-lg-3">
+                    <label class="form-label small fw-bold text-dark">
+                        <i class="bi bi-activity text-warning me-1"></i>आवेदन स्थिति | Application Status
+                    </label>
+                    <select name="statusId" class="form-select">
+                        <option value="">-- All Statuses --</option>
+                        @foreach (var st in statuses)
+                        {
+                            <option value="@st.Id" selected="@(currentStatus == (int)st.Id ? "selected" : null)">@st.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="col-md-2 col-lg-2">
+                    <label class="form-label small fw-bold text-dark">
+                        <i class="bi bi-tag text-info me-1"></i>वर्ग | Category
+                    </label>
+                    <select name="categoryId" class="form-select">
+                        <option value="">-- All Categories --</option>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id" selected="@(currentCategory == c.Id ? "selected" : null)">@c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="col-md-12 col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary fw-bold flex-grow-1 shadow-sm">
+                        <i class="bi bi-funnel-fill me-1"></i>Filter
+                    </button>
+                    <a asp-controller="Admin" asp-action="Students" class="btn btn-outline-secondary" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table of Students -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-table text-primary me-2"></i>विद्यार्थियों का विवरण | Students List
+            </h5>
+            <div class="small text-muted">
+                Showing <strong>@(Model.TotalCount == 0 ? 0 : (Model.PageNumber - 1) * Model.PageSize + 1)</strong> to 
+                <strong>@Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount)</strong> of 
+                <strong>@Model.TotalCount</strong> records
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="small text-uppercase text-muted">
+                            <th class="ps-4" style="width: 60px;">#</th>
+                            <th>Student ID</th>
+                            <th>Student Name &amp; Family</th>
+                            <th>Category &amp; Gender</th>
+                            <th>District / Address</th>
+                            <th>Institute &amp; Course</th>
+                            <th>Scholarship Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items.Any())
+                        {
+                            int index = (Model.PageNumber - 1) * Model.PageSize + 1;
+                            @foreach (var s in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-4 text-muted fw-bold">@(index++)</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="font-monospace fw-bold text-primary fs-6">@s.StudentCode</span>
+                                            <button type="button" class="btn btn-link text-muted p-0 ms-1" title="Copy Student ID" onclick="navigator.clipboard.writeText('@s.StudentCode'); alert('Copied ID: @s.StudentCode');">
+                                                <i class="bi bi-clipboard small"></i>
+                                            </button>
+                                        </div>
+                                        <div class="text-muted small" style="font-size: 0.75rem;">
+                                            Registered: @s.RegistrationDate.ToString("dd MMM yyyy")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark fs-6">@s.FullName</div>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i>DOB: @s.DateOfBirth.ToString("dd-MM-yyyy")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-dark mb-1">@s.CategoryName</span>
+                                        <div class="text-muted small">@s.GenderName | @s.ReligionName</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">
+                                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>@(s.DistrictName ?? "Chhattisgarh")
+                                        </div>
+                                        <div class="text-muted small text-truncate" style="max-width: 180px;" title="@s.AddressLine">
+                                            @(s.AddressLine ?? "Address on file") - @(s.Pincode ?? "")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(s.InstituteName))
+                                        {
+                                            <div class="fw-semibold text-dark small text-truncate" style="max-width: 220px;" title="@s.InstituteName">
+                                                <i class="bi bi-building text-info me-1"></i>@s.InstituteName
+                                            </div>
+                                            <div class="text-muted small">
+                                                @(s.CourseName ?? "Course Enrolled") @(string.IsNullOrEmpty(s.BranchName) ? "" : $"({s.BranchName})")
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small fst-italic">Academic record not updated</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            string statusBadge = s.ApplicationStatusCode switch
+                                            {
+                                                "APPROVED" => "bg-success text-white",
+                                                "REJECTED" => "bg-danger text-white",
+                                                "INSTITUTE_VERIFICATION" => "bg-warning text-dark",
+                                                "DISTRICT_VERIFICATION" => "bg-primary text-white",
+                                                "SUBMITTED" or "LOCKED" => "bg-info text-dark",
+                                                "PAID" => "bg-success-subtle text-success-emphasis border border-success fw-bold",
+                                                "DRAFT" => "bg-secondary-subtle text-dark border",
+                                                _ => "bg-light text-muted border"
+                                            };
+                                        }
+                                        <span class="badge @statusBadge">
+                                            @(s.ApplicationStatusName ?? "Not Applied")
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(s.ApplicationNumber))
+                                        {
+                                            <div class="font-monospace small text-muted mt-1" style="font-size: 0.75rem;">
+                                                App: @s.ApplicationNumber
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-info" title="Quick Preview Dossier" onclick="loadStudentModal(@s.StudentId)">
+                                                <i class="bi bi-eye"></i> Quick View
+                                            </button>
+                                            <a asp-action="StudentDetails" asp-route-id="@s.StudentId" class="btn btn-primary fw-semibold" title="Open Full Student Dossier">
+                                                <i class="bi bi-folder2-open me-1"></i>Full Dossier
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people fs-1 text-secondary d-block mb-2"></i>
+                                    <h5>कोई विद्यार्थी रिकॉर्ड नहीं मिला।</h5>
+                                    <p class="small text-muted mb-0">No student records matched your search or filter criteria.</p>
+                                    @if (!string.IsNullOrEmpty(currentSearch) || currentDistrict.HasValue || currentStatus.HasValue || currentCategory.HasValue)
+                                    {
+                                        <a asp-action="Students" class="btn btn-outline-primary btn-sm mt-3">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Clear Filters
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination Footer -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer bg-white py-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="small text-muted">
+                    Page <strong>@Model.PageNumber</strong> of <strong>@Model.TotalPages</strong>
+                </span>
+                <nav aria-label="Student Directory Pagination">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Students" 
+                               asp-route-page="@(Model.PageNumber - 1)" 
+                               asp-route-search="@currentSearch"
+                               asp-route-districtId="@currentDistrict"
+                               asp-route-statusId="@currentStatus"
+                               asp-route-categoryId="@currentCategory">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+
+                        @for (int p = 1; p <= Model.TotalPages; p++)
+                        {
+                            if (p == 1 || p == Model.TotalPages || (p >= Model.PageNumber - 2 && p <= Model.PageNumber + 2))
+                            {
+                                <li class="page-item @(p == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" asp-action="Students" 
+                                       asp-route-page="@p" 
+                                       asp-route-search="@currentSearch"
+                                       asp-route-districtId="@currentDistrict"
+                                       asp-route-statusId="@currentStatus"
+                                       asp-route-categoryId="@currentCategory">@p</a>
+                                </li>
+                            }
+                            else if (p == Model.PageNumber - 3 || p == Model.PageNumber + 3)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+                        }
+
+                        <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="Students" 
+                               asp-route-page="@(Model.PageNumber + 1)" 
+                               asp-route-search="@currentSearch"
+                               asp-route-districtId="@currentDistrict"
+                               asp-route-statusId="@currentStatus"
+                               asp-route-categoryId="@currentCategory">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Container for Quick View -->
+<div class="modal fade" id="studentQuickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header bg-dark text-white py-3 border-bottom border-warning border-3">
+                <h5 class="modal-title fw-bold" id="quickViewModalLabel">
+                    <i class="bi bi-person-bounding-box text-warning me-2"></i>विद्यार्थी त्वरित पूर्वावलोकन | Student Quick Dossier
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="quickViewModalContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary mb-2" role="status"></div>
+                    <div class="text-muted small">Loading student details from database...</div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <a id="btnModalFullDossier" href="#" class="btn btn-primary btn-sm fw-bold">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Open Full Dossier Page
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadStudentModal(studentId) {
+            const modalEl = document.getElementById('studentQuickViewModal');
+            const modal = new bootstrap.Modal(modalEl);
+            const container = document.getElementById('quickViewModalContent');
+            const fullLink = document.getElementById('btnModalFullDossier');
+
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary mb-2" role="status"></div>
+                    <div class="text-muted small">Loading student details from database...</div>
+                </div>`;
+
+            fullLink.href = '@Url.Action("StudentDetails", "Admin")/' + studentId;
+            modal.show();
+
+            fetch('@Url.Action("StudentQuickView", "Admin")?id=' + studentId)
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to load student details');
+                    return res.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                })
+                .catch(err => {
+                    container.innerHTML = `<div class="alert alert-danger py-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error loading student details. Please try again.</div>`;
+                });
+        }
+    </script>
+}
