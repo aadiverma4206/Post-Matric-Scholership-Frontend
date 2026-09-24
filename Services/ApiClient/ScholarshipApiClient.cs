@@ -78,6 +78,7 @@ public interface IScholarshipApiClient
     Task<ApiResponseModel<PagedResultViewModel<AdminStudentListItemViewModel>>?> GetAdminStudentsAsync(string? search, ulong? districtId, int? statusId, uint? categoryId, int page, int pageSize);
     Task<ApiResponseModel<AdminStudentDetailsViewModel>?> GetAdminStudentDetailsAsync(ulong studentId);
     Task<ApiResponseModel<AdminDashboardStatsSummaryViewModel>?> GetAdminStatsAsync();
+    Task<(bool IsHealthy, string Message)> CheckApiHealthAsync();
 }
 
 public class ScholarshipApiClient : IScholarshipApiClient
@@ -92,6 +93,24 @@ public class ScholarshipApiClient : IScholarshipApiClient
         _httpContextAccessor = httpContextAccessor;
     }
 
+    public async Task<(bool IsHealthy, string Message)> CheckApiHealthAsync()
+    {
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            var response = await _httpClient.GetAsync("/health", cts.Token);
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Scholarship.Api backend is online and responding.");
+            }
+            return (false, $"Scholarship.Api responded with status {(int)response.StatusCode}.");
+        }
+        catch (Exception ex)
+        {
+            return (false, GetFriendlyErrorMessage(ex, "/health"));
+        }
+    }
+
     private void AttachBearerToken()
     {
         var token = _httpContextAccessor.HttpContext?.User.FindFirst("AccessToken")?.Value
@@ -103,6 +122,165 @@ public class ScholarshipApiClient : IScholarshipApiClient
         }
     }
 
+    private static string GetFriendlyErrorMessage(Exception ex, string endpoint)
+    {
+        if (ex is HttpRequestException || ex.InnerException is System.Net.Sockets.SocketException || ex.Message.Contains("actively refused", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Backend Service Offline: Unable to reach the Scholarship API service at http://localhost:5001. Please ensure that the backend service (Scholarship.Api) is running.";
+        }
+        if (ex is TaskCanceledException or TimeoutException)
+        {
+            return "Backend Service Timeout: The request to the Scholarship API service timed out. Please try again.";
+        }
+        return $"Communication Error: Unable to communicate with Scholarship API at {endpoint}. ({ex.Message})";
+    }
+
+    private static ApiResponseModel<T> CreateErrorResponse<T>(Exception ex, string endpoint)
+    {
+        var msg = GetFriendlyErrorMessage(ex, endpoint);
+        return new ApiResponseModel<T>
+        {
+            Success = false,
+            Message = msg,
+            Errors = new List<string> { msg }
+        };
+    }
+
+    private async Task<ApiResponseModel<T>> ParseResponseAsync<T>(HttpResponseMessage response, string endpoint)
+    {
+        string rawJson = string.Empty;
+        try
+        {
+            rawJson = await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            return new ApiResponseModel<T>
+            {
+                Success = false,
+                Message = $"Failed to read response from API: {ex.Message}",
+                Errors = new List<string> { ex.Message }
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(rawJson))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                return new ApiResponseModel<T> { Success = true };
+            }
+
+            string statusMsg = GetStatusCodeMessage(response.StatusCode, endpoint);
+            return new ApiResponseModel<T>
+            {
+                Success = false,
+                Message = statusMsg,
+                Errors = new List<string> { statusMsg }
+            };
+        }
+
+        // 1. Try standard ApiResponseModel<T>
+        try
+        {
+            var result = JsonSerializer.Deserialize<ApiResponseModel<T>>(rawJson, _jsonOptions);
+            if (result != null)
+            {
+                if (!response.IsSuccessStatusCode && result.Success)
+                {
+                    result.Success = false;
+                }
+                if (!result.Success && string.IsNullOrWhiteSpace(result.Message))
+                {
+                    result.Message = GetStatusCodeMessage(response.StatusCode, endpoint);
+                }
+                return result;
+            }
+        }
+        catch
+        {
+            // Fallthrough to try parsing ProblemDetails or standard errors
+        }
+
+        // 2. Try parsing ProblemDetails or ValidationProblemDetails
+        try
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var root = doc.RootElement;
+            var errorsList = new List<string>();
+            string message = string.Empty;
+
+            if (root.TryGetProperty("message", out var msgProp) && msgProp.ValueKind == JsonValueKind.String)
+                message = msgProp.GetString() ?? string.Empty;
+            else if (root.TryGetProperty("title", out var titleProp) && titleProp.ValueKind == JsonValueKind.String)
+                message = titleProp.GetString() ?? string.Empty;
+
+            if (root.TryGetProperty("errors", out var errorsProp))
+            {
+                if (errorsProp.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var prop in errorsProp.EnumerateObject())
+                    {
+                        if (prop.Value.ValueKind == JsonValueKind.Array)
+                        {
+                            foreach (var item in prop.Value.EnumerateArray())
+                            {
+                                var errStr = item.GetString();
+                                if (!string.IsNullOrWhiteSpace(errStr))
+                                    errorsList.Add(errStr);
+                            }
+                        }
+                    }
+                }
+                else if (errorsProp.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var item in errorsProp.EnumerateArray())
+                    {
+                        var errStr = item.GetString();
+                        if (!string.IsNullOrWhiteSpace(errStr))
+                            errorsList.Add(errStr);
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(message) && errorsList.Count > 0)
+                message = string.Join("; ", errorsList);
+
+            if (string.IsNullOrWhiteSpace(message))
+                message = GetStatusCodeMessage(response.StatusCode, endpoint);
+
+            return new ApiResponseModel<T>
+            {
+                Success = response.IsSuccessStatusCode,
+                Message = message,
+                Errors = errorsList.Count > 0 ? errorsList : new List<string> { message }
+            };
+        }
+        catch
+        {
+            // Not JSON
+            string friendlyMsg = GetStatusCodeMessage(response.StatusCode, endpoint);
+            return new ApiResponseModel<T>
+            {
+                Success = response.IsSuccessStatusCode,
+                Message = friendlyMsg,
+                Errors = new List<string> { friendlyMsg }
+            };
+        }
+    }
+
+    private static string GetStatusCodeMessage(System.Net.HttpStatusCode code, string endpoint) => code switch
+    {
+        System.Net.HttpStatusCode.Unauthorized => "Your session has expired or authentication is required. Please sign in again.",
+        System.Net.HttpStatusCode.Forbidden => "Access Denied: You do not have sufficient permissions to perform this action.",
+        System.Net.HttpStatusCode.NotFound => $"The requested information or service ({endpoint}) was not found.",
+        System.Net.HttpStatusCode.BadRequest => "The submitted data was invalid. Please review your input and try again.",
+        System.Net.HttpStatusCode.UnprocessableEntity => "Validation error: Some fields do not meet the required format.",
+        System.Net.HttpStatusCode.InternalServerError => "The backend server encountered an error processing your request. Please try again shortly.",
+        System.Net.HttpStatusCode.BadGateway => "The API gateway was unable to reach the upstream service. Please ensure the backend is active.",
+        System.Net.HttpStatusCode.ServiceUnavailable => "The scholarship service is temporarily unavailable due to maintenance. Please try again later.",
+        _ => $"Service responded with HTTP {(int)code}."
+    };
+
     private async Task<ApiResponseModel<T>?> SendPostAsync<T>(string endpoint, object payload)
     {
         try
@@ -110,16 +288,11 @@ public class ScholarshipApiClient : IScholarshipApiClient
             AttachBearerToken();
             var content = new StringContent(JsonSerializer.Serialize(payload, _jsonOptions), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(endpoint, content);
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ApiResponseModel<T>>(json, _jsonOptions);
+            return await ParseResponseAsync<T>(response, endpoint);
         }
         catch (Exception ex)
         {
-            return new ApiResponseModel<T>
-            {
-                Success = false,
-                Message = $"Backend Service Connection Error: Unable to reach API at {endpoint}. ({ex.Message})"
-            };
+            return CreateErrorResponse<T>(ex, endpoint);
         }
     }
 
@@ -129,16 +302,11 @@ public class ScholarshipApiClient : IScholarshipApiClient
         {
             AttachBearerToken();
             var response = await _httpClient.GetAsync(endpoint);
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ApiResponseModel<T>>(json, _jsonOptions);
+            return await ParseResponseAsync<T>(response, endpoint);
         }
         catch (Exception ex)
         {
-            return new ApiResponseModel<T>
-            {
-                Success = false,
-                Message = $"Backend Service Connection Error: Unable to reach API at {endpoint}. ({ex.Message})"
-            };
+            return CreateErrorResponse<T>(ex, endpoint);
         }
     }
 
@@ -292,16 +460,11 @@ public class ScholarshipApiClient : IScholarshipApiClient
             formData.Add(fileContent, "file", file.FileName);
 
             var response = await _httpClient.PostAsync("/api/documents/upload", formData);
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<ApiResponseModel<DocumentUploadResultViewModel>>(json, _jsonOptions);
+            return await ParseResponseAsync<DocumentUploadResultViewModel>(response, "/api/documents/upload");
         }
         catch (Exception ex)
         {
-            return new ApiResponseModel<DocumentUploadResultViewModel>
-            {
-                Success = false,
-                Message = $"Error uploading document: {ex.Message}"
-            };
+            return CreateErrorResponse<DocumentUploadResultViewModel>(ex, "/api/documents/upload");
         }
     }
 

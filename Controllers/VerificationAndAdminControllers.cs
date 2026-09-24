@@ -168,7 +168,18 @@ public class AdminController : Controller
             return RedirectToAction("Students");
         }
 
-        ModelState.AddModelError(string.Empty, response?.Message ?? "Invalid Official User ID or Password. Verification failed.");
+        if (response?.Errors != null && response.Errors.Count > 0)
+        {
+            foreach (var err in response.Errors)
+            {
+                ModelState.AddModelError(string.Empty, err);
+            }
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, response?.Message ?? "Invalid Official User ID or Password. Verification failed.");
+        }
+
         model.CaptchaToken = GenerateCaptchaCode();
         HttpContext.Session.SetString("AdminCaptchaCode", model.CaptchaToken);
         return View(model);

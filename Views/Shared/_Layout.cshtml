@@ -264,6 +264,30 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm border-start border-warning border-4 py-3 no-print" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
+                    <div>
+                        <strong class="text-warning-emphasis">Warning:</strong> @TempData["WarningMessage"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.BackendWarning as string))
+        {
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm border-start border-warning border-4 py-3 no-print" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-hdd-network-fill text-warning fs-4 me-3"></i>
+                    <div>
+                        <strong class="text-warning-emphasis">Backend Service Notice:</strong> @ViewBag.BackendWarning
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
         @RenderBody()
     </main>

@@ -1,25 +1,109 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = Model.Title;
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0" style="border-radius: var(--gov-radius-md); overflow: hidden;">
+                <!-- Error Header Strip -->
+                <div class="p-4 text-white @(Model.StatusCode == 404 ? "bg-primary" : "bg-danger")" style="background: linear-gradient(135deg, var(--gov-navy), @(Model.StatusCode == 404 ? "var(--gov-blue-primary)" : "#b91c1c")); border-bottom: 3px solid var(--gov-saffron);">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-25" style="width: 56px; height: 56px;">
+                                @if (Model.StatusCode == 404)
+                                {
+                                    <i class="bi bi-search text-warning fs-3"></i>
+                                }
+                                else if (Model.StatusCode == 403 || Model.StatusCode == 401)
+                                {
+                                    <i class="bi bi-shield-lock-fill text-warning fs-3"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-3"></i>
+                                }
+                            </div>
+                            <div>
+                                <span class="badge bg-warning text-dark fw-bold mb-1">HTTP @Model.StatusCode</span>
+                                <h4 class="fw-bold mb-0 text-white">@Model.Title</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+                <div class="card-body p-4 p-md-5">
+                    @if (Model.IsApiDown)
+                    {
+                        <div class="alert alert-danger border-start border-danger border-4 shadow-sm p-4 mb-4" role="alert">
+                            <div class="d-flex align-items-start gap-3">
+                                <i class="bi bi-hdd-network-fill text-danger fs-3 mt-1"></i>
+                                <div>
+                                    <h5 class="fw-bold text-danger mb-1">Backend Service Is Currently Offline (port 5001)</h5>
+                                    <p class="mb-2 text-dark small">
+                                        The web application cannot communicate with <strong>Scholarship.Api</strong> on <code>http://localhost:5001</code>.
+                                        This typically happens when only the web frontend was started without running the API backend.
+                                    </p>
+                                    <div class="p-3 bg-white rounded border border-danger-subtle small font-monospace">
+                                        <div class="fw-bold text-secondary mb-1"># Start both services together (Recommended):</div>
+                                        <div class="text-primary fw-semibold">powershell -ExecutionPolicy Bypass -File .\start-both.ps1</div>
+                                        <div class="fw-bold text-secondary mt-2 mb-1"># Or run API in a separate terminal:</div>
+                                        <div class="text-primary fw-semibold">dotnet run --project .\Scholarship.Api\Scholarship.Api.csproj --launch-profile http</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark">विवरण | Description:</h6>
+                        <p class="text-secondary mb-3">@Model.Description</p>
+
+                        @if (!string.IsNullOrEmpty(Model.SolutionHint))
+                        {
+                            <div class="p-3 bg-light rounded border border-secondary-subtle small">
+                                <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+                                <strong>Suggested Action:</strong> @Model.SolutionHint
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.ShowRequestId || !string.IsNullOrEmpty(Model.OriginalPath))
+                    {
+                        <div class="p-3 bg-light rounded mb-4 font-monospace small border">
+                            @if (!string.IsNullOrEmpty(Model.OriginalPath))
+                            {
+                                <div class="mb-1"><strong>Requested Path:</strong> <code>@Model.OriginalPath</code></div>
+                            }
+                            @if (Model.ShowRequestId)
+                            {
+                                <div><strong>Diagnostic Tracking ID:</strong> <code>@Model.RequestId</code></div>
+                            }
+                        </div>
+                    }
+
+                    <hr class="my-4" />
+
+                    <!-- Quick Navigation & Helpline -->
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-3 shadow-sm" style="background: linear-gradient(135deg, var(--gov-navy), var(--gov-blue-primary)); border: none;">
+                                <i class="bi bi-house-door-fill me-1"></i> मुख्य पृष्ठ (Home)
+                            </a>
+                            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary px-3">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </a>
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary px-3">
+                                <i class="bi bi-arrow-left me-1"></i> Go Back
+                            </a>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-telephone-fill text-primary me-1"></i> Helpline: <strong>1800-233-1234</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

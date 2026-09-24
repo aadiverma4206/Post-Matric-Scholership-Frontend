@@ -93,7 +93,18 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Dashboard");
         }
 
-        ModelState.AddModelError(string.Empty, response?.Message ?? "Invalid User ID or Password.");
+        if (response?.Errors != null && response.Errors.Count > 0)
+        {
+            foreach (var err in response.Errors)
+            {
+                ModelState.AddModelError(string.Empty, err);
+            }
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, response?.Message ?? "Invalid User ID or Password.");
+        }
+
         model.CaptchaToken = GenerateCaptchaCode();
         HttpContext.Session.SetString("CaptchaCode", model.CaptchaToken);
         return View(model);
